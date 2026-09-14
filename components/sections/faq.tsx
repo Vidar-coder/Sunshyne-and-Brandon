@@ -134,7 +134,7 @@ function FaqTitle() {
 }
 
 function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
-  const guestArrival = siteConfig.ceremony.guestsTime ?? "8:30 AM"
+  const guestArrival = siteConfig.ceremony.guestsTime ?? "9:00 AM"
   const rsvpPhone = siteConfig.details.rsvp.phone.trim()
   const showRsvpPhone =
     rsvpPhone.length > 0 && !/to be announced/i.test(rsvpPhone)
@@ -280,7 +280,7 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
     {
       question: "What is the dress code?",
       answer:
-        "Please follow the attire guide in Event Details. Guests may wear a midi or cocktail dress, or a collared shirt with cream trousers, in Fern Green, Sage, Cosmic Latte, Jasmine, or Saffron. Kindly avoid white, black, and casual clothes or shoes.",
+        "Our theme is Whimsical Spring Minimalist. Entourage: women, a flowy spring sage green dress, strictly floor length; gentlemen, a black and white suit, a white and gray suit, or sage green long sleeves with gray or brown pants — kindly no rubber shoes. Guests: casual attire, Whimsical Spring.",
     },
     {
       question: "Will the ceremony be unplugged?",

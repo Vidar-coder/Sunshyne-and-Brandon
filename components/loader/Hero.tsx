@@ -3,7 +3,6 @@
 import React, {
   useCallback,
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
@@ -29,15 +28,15 @@ interface HeroProps {
 }
 
 const DESKTOP_POLAROID_PHOTOS = [
-  { src: '/envelope/box (1).JPG', side: 'left' as const },
-  { src: '/envelope/box (5).JPG', side: 'center' as const },
-  { src: '/envelope/box (4).JPG', side: 'right' as const },
-  { src: '/envelope/box (3).JPG', side: 'right-inner' as const },
+  { src: '/envelope/boxes (1).JPG', side: 'left' as const },
+  { src: '/envelope/boxes (2).JPG', side: 'center' as const },
+  { src: '/envelope/boxes (3).JPG', side: 'right' as const },
+  { src: '/envelope/boxes (4).JPG', side: 'right-inner' as const },
 ];
 
 const MOBILE_ENVELOPE_PHOTOS = [
-  { src: '/envelope/left.jpg', side: 'left' as const },
-  { src: '/envelope/right.jpg', side: 'right' as const },
+  { src: '/envelope/boxes (1).JPG', side: 'left' as const },
+  { src: '/envelope/boxes (3).JPG', side: 'right' as const },
 ] as const;
 
 const photoInteractEase: Transition = { duration: 0.38, ease: [0.22, 1, 0.36, 1] };
@@ -89,10 +88,6 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const siteConfig = useSiteConfig();
   const reduceMotion = useReducedMotion();
-  const sealId = useId().replace(/:/g, '');
-  const sealWaxGrad = `env-seal-wax-${sealId}`;
-  const sealFaceGrad = `env-seal-face-${sealId}`;
-  const sealSoftFilter = `env-seal-soft-${sealId}`;
   const openedRef = useRef(false);
   const enterBtnRef = useRef<HTMLButtonElement>(null);
   const [mounted, setMounted] = useState(false);
@@ -105,7 +100,6 @@ export const Hero: React.FC<HeroProps> = ({
   const groomName = siteConfig.couple.groomNickname;
   const brideName = siteConfig.couple.brideNickname;
   const coupleNames = `${groomName} & ${brideName}`;
-  const monogramSrc = siteConfig.couple.monogram;
 
   const letterDateNumeric = useMemo(() => {
     const parsed = parseWeddingDate(siteConfig.ceremony.date ?? siteConfig.wedding.date);
@@ -793,194 +787,14 @@ export const Hero: React.FC<HeroProps> = ({
                 disabled={phase !== 'idle'}
                 aria-label="Break the wax seal to open the invitation"
               >
-                <svg
-                  className="env-invite-seal-svg"
-                  viewBox="0 0 120 120"
-                  aria-hidden="true"
-                >
-                  <defs>
-                    <radialGradient id={sealWaxGrad} cx="32%" cy="26%" r="78%">
-                      <stop offset="0%" stopColor="var(--env-seal-light)" />
-                      <stop offset="28%" stopColor="#E8D070" />
-                      <stop offset="58%" stopColor="var(--env-seal-gold)" />
-                      <stop offset="82%" stopColor="var(--env-seal-mid)" />
-                      <stop offset="100%" stopColor="var(--env-seal-deep)" />
-                    </radialGradient>
-                    <radialGradient id={sealFaceGrad} cx="50%" cy="36%" r="68%">
-                      <stop offset="0%" stopColor="#F5E6A8" />
-                      <stop offset="42%" stopColor="var(--env-seal-gold)" />
-                      <stop offset="100%" stopColor="var(--env-seal-mid)" />
-                    </radialGradient>
-                    <radialGradient id={`${sealId}-rim`} cx="38%" cy="30%" r="70%">
-                      <stop offset="0%" stopColor="#EDD878" />
-                      <stop offset="45%" stopColor="var(--env-seal-gold)" />
-                      <stop offset="100%" stopColor="var(--env-seal-deep)" />
-                    </radialGradient>
-                    <filter id={sealSoftFilter} x="-30%" y="-30%" width="160%" height="160%">
-                      <feDropShadow dx="0" dy="2.2" stdDeviation="1.6" floodColor="#1a2218" floodOpacity="0.35" />
-                    </filter>
-                    <filter id={`${sealId}-inset`} x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur in="SourceAlpha" stdDeviation="1.4" result="b" />
-                      <feOffset dy="1.2" result="o" />
-                      <feComposite in="o" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="s" />
-                      <feColorMatrix
-                        in="s"
-                        type="matrix"
-                        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.28 0"
-                        result="shadow"
-                      />
-                      <feBlend in="SourceGraphic" in2="shadow" mode="normal" />
-                    </filter>
-                    <clipPath id={`${sealId}-mono`}>
-                      <circle cx="60" cy="59.5" r="24" />
-                    </clipPath>
-                  </defs>
-
-                  {/* Poured-wax outer blob — scalloped irregular rim */}
-                  <path
-                    className="env-invite-seal-blob"
-                    d="M59.5 4.2
-                       C66.8 3.1 73.2 5.4 78.8 8.6
-                       C84.6 12 91.8 14.2 96.8 19.8
-                       C102.2 25.8 107.4 31.2 109.8 39.2
-                       C112.4 47.8 113.6 56.4 111.6 65.2
-                       C109.8 73.4 106.2 81.6 100.2 87.8
-                       C94.6 93.6 88.4 99.4 80.2 102.8
-                       C72.4 106 63.8 108.6 55.2 107.4
-                       C46.2 106.2 38.4 101.8 31.6 96.2
-                       C24.4 90.2 17.8 83.6 14.2 74.8
-                       C10.4 65.4 7.8 55.2 9.6 45
-                       C11.2 36.2 15.8 28.4 22.4 22
-                       C29.2 15.4 36.8 10.8 45.6 7.6
-                       C50.8 5.6 55.2 4.8 59.5 4.2 Z"
-                    fill={`url(#${sealWaxGrad})`}
-                    filter={`url(#${sealSoftFilter})`}
-                  />
-
-                  {/* Raised wax lip (ring between outer edge and face) */}
-                  <path
-                    fill={`url(#${sealId}-rim)`}
-                    fillRule="evenodd"
-                    d="M60 14.5
-                       C69.2 13.2 78 16.4 84.8 21.8
-                       C92 27.6 98.6 33.2 101.4 42.2
-                       C104.4 51.6 105.2 61.2 102.2 70.4
-                       C99.6 78.6 94.4 86.2 86.8 91.2
-                       C79.6 96 70.6 99.2 61.2 98.6
-                       C51.6 98 42.8 93.8 36.2 87.4
-                       C29.2 80.6 24.4 72.2 23.2 62.4
-                       C22 52.4 25.2 42.6 31.2 35
-                       C37.4 27.2 47.2 16.2 60 14.5 Z
-                       M60 26.5
-                       C70.2 25.4 79.4 31.2 84.2 39.6
-                       C89.2 48.4 88.6 59.8 82.6 67.8
-                       C76.8 75.6 66.8 80.2 57.2 78.8
-                       C47.4 77.4 39.2 70.4 36.4 61
-                       C33.6 51.4 37.8 40.8 45.8 35.2
-                       C50.2 32.2 55.2 27.2 60 26.5 Z"
-                  />
-                  {/* Rim highlight + shadow for 3D lip */}
-                  <ellipse
-                    cx="52"
-                    cy="28"
-                    rx="22"
-                    ry="10"
-                    fill="rgba(255,255,255,0.18)"
-                    style={{ mixBlendMode: 'soft-light' }}
-                  />
-                  <path
-                    d="M28 70 C34 88 52 98 72 96 C88 94 100 82 104 68"
-                    fill="none"
-                    stroke="rgba(0,0,0,0.12)"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Recessed stamped face */}
-                  <circle
-                    cx="60"
-                    cy="59.5"
-                    r="28.5"
-                    fill={`url(#${sealFaceGrad})`}
-                    filter={`url(#${sealId}-inset)`}
-                  />
-                  <circle
-                    cx="60"
-                    cy="59.5"
-                    r="28.5"
-                    fill="none"
-                    stroke="rgba(0,0,0,0.2)"
-                    strokeWidth="1.5"
-                  />
-                  <circle
-                    cx="60"
-                    cy="59.5"
-                    r="26"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.55)"
-                    strokeWidth="0.85"
-                  />
-                  <circle
-                    cx="60"
-                    cy="59.5"
-                    r="24.4"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.28)"
-                    strokeWidth="0.5"
-                  />
-
-                  {/* Left botanical sprig */}
-                  <g
-                    fill="rgba(255,255,255,0.95)"
-                    stroke="rgba(255,255,255,0.95)"
-                    strokeWidth="0.9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M39.5 74.5 C35.5 66 34.2 55.5 37.5 44" fill="none" />
-                    <path d="M37.8 61 C33.2 59.2 30.2 55.5 29.2 51.5" fill="none" />
-                    <path d="M36.8 54.5 C32.4 52 30.6 47.5 31.2 43.5" fill="none" />
-                    <path d="M37.2 49 C34 46 33.2 42 34.4 38.5" fill="none" />
-                    <path d="M38.2 67.5 C34.2 66.2 31.5 63.2 30.5 59.8" fill="none" />
-                    <ellipse cx="29.4" cy="51.2" rx="1.7" ry="2.7" transform="rotate(-32 29.4 51.2)" />
-                    <ellipse cx="31.4" cy="43.8" rx="1.55" ry="2.5" transform="rotate(-20 31.4 43.8)" />
-                    <ellipse cx="34.6" cy="38.8" rx="1.4" ry="2.3" transform="rotate(-10 34.6 38.8)" />
-                    <ellipse cx="30.8" cy="59.5" rx="1.5" ry="2.4" transform="rotate(-38 30.8 59.5)" />
-                    <ellipse cx="33.2" cy="66.2" rx="1.25" ry="2" transform="rotate(-42 33.2 66.2)" />
-                  </g>
-
-                  {/* Right botanical sprig */}
-                  <g
-                    fill="rgba(255,255,255,0.95)"
-                    stroke="rgba(255,255,255,0.95)"
-                    strokeWidth="0.9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M80.5 74.5 C84.5 66 85.8 55.5 82.5 44" fill="none" />
-                    <path d="M82.2 61 C86.8 59.2 89.8 55.5 90.8 51.5" fill="none" />
-                    <path d="M83.2 54.5 C87.6 52 89.4 47.5 88.8 43.5" fill="none" />
-                    <path d="M82.8 49 C86 46 86.8 42 85.6 38.5" fill="none" />
-                    <path d="M81.8 67.5 C85.8 66.2 88.5 63.2 89.5 59.8" fill="none" />
-                    <ellipse cx="90.6" cy="51.2" rx="1.7" ry="2.7" transform="rotate(32 90.6 51.2)" />
-                    <ellipse cx="88.6" cy="43.8" rx="1.55" ry="2.5" transform="rotate(20 88.6 43.8)" />
-                    <ellipse cx="85.4" cy="38.8" rx="1.4" ry="2.3" transform="rotate(10 85.4 38.8)" />
-                    <ellipse cx="89.2" cy="59.5" rx="1.5" ry="2.4" transform="rotate(38 89.2 59.5)" />
-                    <ellipse cx="86.8" cy="66.2" rx="1.25" ry="2" transform="rotate(42 86.8 66.2)" />
-                  </g>
-
-                  {/* Couple monogram from site config */}
-                  <image
-                    href={monogramSrc}
-                    x="36.5"
-                    y="36"
-                    width="47"
-                    height="47"
-                    preserveAspectRatio="xMidYMid meet"
-                    clipPath={`url(#${sealId}-mono)`}
-                    className="env-invite-seal-mono-img"
-                  />
-                </svg>
+                <Image
+                  src="/decoration/seal.png"
+                  alt=""
+                  fill
+                  priority
+                  sizes="(min-width: 768px) 148px, 132px"
+                  className="env-invite-seal-img object-contain"
+                />
               </motion.button>
             </div>
 

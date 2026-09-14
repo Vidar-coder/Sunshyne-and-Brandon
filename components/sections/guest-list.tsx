@@ -17,21 +17,16 @@ import {
   Phone,
   UserPlus,
   Users,
+  ChevronRight,
 } from "lucide-react"
 import { Cinzel } from "next/font/google"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { modalTitleSize, sectionType, welcomeTitleSize } from "@/lib/section-typography"
-import {
-  sectionBackground,
-  sectionDividerLineStyle,
-  sectionDividerLineStyleLeft,
-  sectionText,
-} from "@/lib/section-background"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 })
 
 const theSeasons = localFont({
@@ -46,34 +41,37 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-const OUTSIDE_TEXT = sectionText.title
-const OUTSIDE_TEXT_MUTED = sectionText.body
+const IVORY = "#fffaf4"
+const CHAMPAGNE = "#E8D5A3"
+const NAV_GOLD =
+  "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
+const LIGHT_OVERLAY = "color-mix(in srgb, #f7f3e9 42%, rgb(91 74 55 / 22%))"
 
 const palette = {
   body: "var(--color-welcome-text)",
   heading: "var(--color-welcome-navy)",
-  label: "var(--color-welcome-heading)",
-  accent: "var(--color-welcome-green)",
+  label: "var(--color-welcome-gold)",
+  accent: "var(--color-welcome-gold)",
 } as const
 
 const modalCardStyle = {
-  background: "var(--color-welcome-bg)",
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 14%, transparent)",
+  background: IVORY,
+  borderColor: "color-mix(in srgb, #CDB072 42%, transparent)",
   borderWidth: "1px",
   borderStyle: "solid" as const,
   boxShadow:
-    "0 8px 28px color-mix(in srgb, var(--color-motif-deep) 7%, transparent), inset 0 1px 0 color-mix(in srgb, white 70%, transparent)",
+    "0 18px 40px rgb(42 34 28 / 28%), inset 0 1px 0 rgb(255 250 244 / 70%)",
 } as const
 
 const innerSurfaceStyle = {
-  background: "var(--color-welcome-bg-soft)",
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 10%, transparent)",
+  background: `color-mix(in srgb, ${IVORY} 82%, ${CHAMPAGNE})`,
+  borderColor: "color-mix(in srgb, #CDB072 22%, transparent)",
 } as const
 
-const modalInputClass = `w-full rounded-lg border bg-white px-2.5 py-1.5 font-goudy-italic ${sectionType.text} transition-all duration-300 focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-welcome-green)_25%,transparent)] sm:px-3 sm:py-2`
+const modalInputClass = `w-full rounded-lg border bg-[#fffaf4] px-2.5 py-1.5 font-goudy-italic ${sectionType.text} transition-all duration-300 focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-welcome-gold)_28%,transparent)] sm:px-3 sm:py-2`
 
 const modalInputStyle = {
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 14%, transparent)",
+  borderColor: "color-mix(in srgb, #CDB072 32%, transparent)",
   color: palette.heading,
 } as const
 
@@ -81,8 +79,28 @@ const modalLabelClass = `font-goudy-italic mb-1.5 flex flex-wrap items-center ga
 
 const dividerLineStyle = {
   background:
-    "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-deep) 38%, transparent), transparent)",
+    "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
+
+function HighlightedName({ name, query }: { name: string; query: string }) {
+  const trimmed = query.trim()
+  if (!trimmed) return <>{name}</>
+
+  const lowerName = name.toLowerCase()
+  const lowerQuery = trimmed.toLowerCase()
+  const index = lowerName.indexOf(lowerQuery)
+  if (index === -1) return <>{name}</>
+
+  return (
+    <>
+      {name.slice(0, index)}
+      <span className="font-semibold" style={{ color: "var(--color-welcome-gold)" }}>
+        {name.slice(index, index + trimmed.length)}
+      </span>
+      {name.slice(index + trimmed.length)}
+    </>
+  )
+}
 
 interface ApiGuest {
   id: string | number
@@ -121,11 +139,11 @@ export function GuestList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isSearching, setIsSearching] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [requestSuccess, setRequestSuccess] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
+  const [showSearchModal, setShowSearchModal] = useState(false)
   const [hasResponded, setHasResponded] = useState(false)
   const [showRequestModal, setShowRequestModal] = useState(false)
 
@@ -158,6 +176,24 @@ export function GuestList() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (!showSearchModal) return
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !showModal && !showRequestModal) {
+        setShowSearchModal(false)
+      }
+    }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    window.addEventListener("keydown", onKey)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener("keydown", onKey)
+    }
+  }, [showSearchModal, showModal, showRequestModal])
 
   // Update companions array based on allowedGuests when a guest is selected
   useEffect(() => {
@@ -202,7 +238,6 @@ export function GuestList() {
     // Don't show suggestions if search is empty
     if (!searchQuery.trim()) {
       setFilteredGuests([])
-      setIsSearching(false)
       return
     }
 
@@ -240,22 +275,7 @@ export function GuestList() {
     })
 
     setFilteredGuests(sorted)
-    setIsSearching(sorted.length > 0)
   }, [searchQuery, guests])
-
-  // Close search dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsSearching(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
 
   const fetchGuests = async () => {
     setIsLoading(true)
@@ -297,7 +317,6 @@ export function GuestList() {
   const handleSearchSelect = (guest: Guest) => {
     setSelectedGuest(guest)
     setSearchQuery(guest.Name)
-    setIsSearching(false)
     
     // Set form data with existing guest info
     setFormData({
@@ -320,7 +339,7 @@ export function GuestList() {
     // Check if guest has already responded (status is confirmed or declined)
     setHasResponded(!!(guest.Status && (guest.Status === "confirmed" || guest.Status === "declined")))
     
-    // Show modal
+    setShowSearchModal(false)
     setShowModal(true)
   }
 
@@ -459,203 +478,300 @@ export function GuestList() {
 
   return (
     <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}
-      style={{ background: sectionBackground }}
+      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-visible`}
     >
     <section
       id="guest-list"
-      className="relative z-30 py-6 sm:py-10 md:py-12 lg:py-16"
+      className="relative z-30 overflow-visible px-5 pb-10 pt-12 sm:px-8 sm:pb-12 sm:pt-14"
     >
-      {/* Header */}
-      <div className="relative z-10 mx-auto mb-4 max-w-5xl px-2 text-center @container/guest-list sm:mb-6 sm:px-3 md:mb-8 md:px-4 lg:mb-10">
-        {/* Ornamental divider */}
-        <div className="mx-auto mb-5 flex items-center justify-center gap-1.5 sm:mb-6 md:mb-7">
-          <span className="h-px w-6 sm:w-10" style={sectionDividerLineStyle} />
-          <span className="h-0.5 w-0.5 rounded-full bg-motif-deep/45 sm:h-1 sm:w-1" aria-hidden />
-          <span className="h-px w-6 sm:w-10" style={sectionDividerLineStyleLeft} />
-        </div>
-
-        {/* Title block */}
-        <div
-          className="welcome-title-lockup relative mx-auto mt-2 w-full max-w-full text-center sm:mt-3 md:mt-4"
+      <fieldset
+        className="relative mx-auto w-full max-w-[22.5rem] overflow-visible rounded-[1.85rem] px-5 pb-8 pt-6 text-center @container/rsvp sm:max-w-[24rem] sm:px-7 sm:pb-9 sm:pt-7"
+        style={{
+          background: IVORY,
+          border: "1px solid color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)",
+          boxShadow: "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent)",
+        }}
+      >
+        <h2
+          className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
           style={
             {
-              "--title-size": welcomeTitleSize.main,
+              "--welcome-size": welcomeTitleSize.main,
               "--script-size": welcomeTitleSize.script,
-            } as CSSProperties
+              "--script-overlap": welcomeTitleSize.overlap,
+            } as React.CSSProperties
           }
         >
+          <span className="sr-only">RSVP. Are you going?</span>
           <span
-            className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em] pb-1 sm:pb-1.5`}
-            style={{ fontSize: "var(--title-size)", color: sectionText.title }}
+            aria-hidden
+            className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em]`}
+            style={{
+              fontSize: "var(--welcome-size)",
+              color: "var(--color-welcome-navy)",
+            }}
           >
             RSVP
           </span>
           <span
             aria-hidden
-            className={`${aboveTheBeyond.className} mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] mt-2 sm:mt-2.5 md:mt-3`}
+            className={`${aboveTheBeyond.className} relative z-10 mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
             style={{
+              marginTop: "var(--script-overlap)",
               fontSize: "var(--script-size)",
-              color: sectionText.script,
+              color: "var(--color-welcome-green)",
+              textShadow:
+                "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)",
             }}
           >
-            Confirm your attendance
+            Are you going
+            <span className={`${cinzel.className} relative -top-[0.06em] ml-[0.04em] inline-block font-normal`}>
+              ?
+            </span>
           </span>
-        </div>
+        </h2>
 
-        {/* Subtitle block */}
-        <div className="mx-auto mt-5 max-w-xl space-y-2 px-2 sm:mt-6 sm:space-y-3">
-          <p className={`font-goudy-italic ${sectionType.textRelaxed}`} style={{ color: OUTSIDE_TEXT_MUTED }}>
-            To help us plan a beautiful and intimate celebration, we kindly ask that you confirm your
-            attendance. Please search for your name below to confirm your presence at our special day.
-          </p>
-          <p className={`font-goudy-italic ${sectionType.textRelaxed}`} style={{ color: OUTSIDE_TEXT_MUTED }}>
-            If we do not receive your response by the deadline, we will assume you are unable to attend.
-          </p>
-          <p className={`${cinzel.className} ${sectionType.text} font-semibold tracking-wide`} style={{ color: OUTSIDE_TEXT }}>
-            RSVP Deadline: {siteConfig.details.rsvp.deadline}
-          </p>
-          {/* <p className={`${cinzel.className} ${sectionType.text} font-semibold tracking-wide`} style={{ color: OUTSIDE_TEXT }}>
-            Coordinator: {siteConfig.details.rsvp.coordinator} · {siteConfig.details.rsvp.phone}
-          </p> */}
-        </div>
-
-        {/* Divider below header */}
-        <div className="mt-4 flex items-center justify-center sm:mt-5">
-          <span className="h-px w-16 sm:w-24 md:w-32 bg-motif-deep/35" />
-        </div>
-      </div>
-
-      {/* Search Section */}
-      <div className="relative z-10 max-w-2xl mx-auto px-2 sm:px-4 md:px-6 overflow-visible">
-        {/* Card with elegant border */}
-        <div
-          className="relative overflow-visible rounded-lg border backdrop-blur-xl sm:rounded-xl md:rounded-2xl"
-          style={{
-            background: "var(--color-welcome-bg)",
-            borderColor: "color-mix(in srgb, var(--color-motif-deep) 18%, transparent)",
-            boxShadow: "0 8px 28px color-mix(in srgb, var(--color-motif-deep) 7%, transparent), inset 0 1px 0 color-mix(in srgb, white 70%, transparent)",
-          }}
+        <p
+          className={`font-goudy-italic mx-auto mt-3 max-w-[17.5rem] ${sectionType.textSnug} sm:mt-4`}
+          style={{ color: "var(--color-welcome-text)" }}
         >
-          {/* Card content */}
-          <div className="relative p-2.5 sm:p-4 md:p-5 lg:p-6 overflow-visible">
-            <div className="relative z-10 space-y-3 sm:space-y-4 overflow-visible">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="bg-motif-deep p-1.5 sm:p-2 rounded-lg shadow-md">
-                  <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-white" />
+          Kindly confirm your attendance so we may prepare a place for you at our celebration.
+        </p>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSearchQuery("")
+            setShowSearchModal(true)
+          }}
+          className={`${cinzel.className} ${sectionType.label} mt-5 inline-flex min-h-11 w-full max-w-[13.5rem] items-center justify-center rounded-full px-6 py-2.5 font-semibold uppercase tracking-[0.16em] shadow-[0_8px_18px_color-mix(in_srgb,var(--color-welcome-gold)_22%,transparent)] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:mt-6 sm:tracking-[0.18em]`}
+          style={{ background: NAV_GOLD, color: IVORY }}
+        >
+          Tap here if Yes
+        </button>
+      </fieldset>
+    </section>
+
+      {isMounted && showSearchModal && createPortal(
+        <div
+          className="fixed inset-0 z-[9998] flex items-start justify-center overflow-hidden px-4 pb-6 pt-[max(4.75rem,11dvh)] backdrop-blur-[6px] animate-in fade-in sm:px-6 sm:pt-[max(5.5rem,13dvh)]"
+          style={{ background: LIGHT_OVERLAY }}
+          onClick={() => setShowSearchModal(false)}
+          role="presentation"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="rsvp-search-title"
+            className="relative w-full max-w-[22.75rem] @container/guest-modal sm:max-w-md"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div
+              className="relative overflow-hidden rounded-[1.35rem] border"
+              style={modalCardStyle}
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-6 top-0 h-px"
+                style={{
+                  background:
+                    "linear-gradient(to right, transparent, var(--color-motif-yellow), transparent)",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowSearchModal(false)}
+                className="absolute right-3 top-3 z-10 rounded-full p-1.5 transition-colors hover:bg-black/5"
+                style={{ color: palette.heading }}
+                aria-label="Close search"
+              >
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
+              </button>
+
+              <div className="px-5 pb-4 pt-6 sm:px-6 sm:pt-7">
+                <h2
+                  id="rsvp-search-title"
+                  className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
+                  style={
+                    {
+                      "--title-size": modalTitleSize.main,
+                      "--script-size": modalTitleSize.script,
+                    } as CSSProperties
+                  }
+                >
+                  <span className="sr-only">RSVP — Find your name</span>
+                  <span
+                    aria-hidden
+                    className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em]`}
+                    style={{
+                      fontSize: "var(--title-size)",
+                      color: palette.heading,
+                    }}
+                  >
+                    RSVP
+                  </span>
+                  <span
+                    aria-hidden
+                    className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
+                    style={{
+                      fontSize: "var(--script-size)",
+                      color: palette.accent,
+                    }}
+                  >
+                    Find your Name
+                  </span>
+                </h2>
+
+                <div className="mx-auto mt-3 flex items-center justify-center gap-1.5 sm:mt-4">
+                  <span className="h-px w-6 sm:w-8" style={dividerLineStyle} />
+                  <Heart className="h-3 w-3 sm:h-3.5 sm:w-3.5" style={{ color: "var(--color-welcome-gold)" }} aria-hidden />
+                  <span className="h-px w-6 sm:w-8" style={dividerLineStyle} />
                 </div>
-                <div>
-                  <label className={`block ${sectionType.text} font-semibold font-sans mb-0.5 sm:mb-1`} style={{ color: "var(--color-welcome-navy)" }}>
-                    Find Your Name
-                  </label>
-                  <p className={`${sectionType.label} font-sans`} style={{ color: "var(--color-welcome-text)" }}>
-                    Type as you search to see instant results
-                  </p>
-                </div>
-              </div>
-              <div ref={searchRef} className="relative z-[100]">
-                <div className="relative">
-                  <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-motif-deep/70 pointer-events-none transition-colors duration-200" />
+
+                <div ref={searchRef} className="relative mt-4 sm:mt-5">
+                  <Search
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2"
+                    style={{ color: "var(--color-welcome-gold)" }}
+                  />
                   <input
+                    id="rsvp-name-search"
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Type your name..."
-                    className="w-full pl-8 sm:pl-10 pr-2.5 sm:pr-3 py-2 sm:py-2.5 md:py-3 border-2 border-motif-deep/60 focus:border-motif-deep rounded-lg text-xs sm:text-sm font-sans text-motif-deep placeholder:text-motif-medium/70 transition-all duration-300 hover:border-motif-deep/70 focus:ring-2 focus:ring-motif-deep/20 bg-white shadow-sm focus:shadow-md"
+                    placeholder="Begin with your first name"
+                    autoFocus
+                    autoComplete="off"
+                    className="w-full rounded-full border bg-[#fffaf4] py-2.5 pl-10 pr-4 font-goudy-italic text-[0.95rem] shadow-sm outline-none transition-all duration-200 placeholder:text-[color-mix(in_srgb,var(--color-welcome-text)_45%,transparent)] sm:py-3 sm:text-base"
+                    style={{
+                      borderColor: searchQuery
+                        ? "var(--color-welcome-gold)"
+                        : "color-mix(in srgb, var(--color-motif-deep) 22%, transparent)",
+                      color: palette.heading,
+                      boxShadow: searchQuery
+                        ? "0 0 0 3px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)"
+                        : undefined,
+                    }}
                   />
                 </div>
-                {/* Autocomplete dropdown */}
-                {isSearching && filteredGuests.length > 0 && (
-                  <div 
-                    className="absolute z-[9999] w-full mt-1 sm:mt-1.5 md:mt-2 bg-white/95 backdrop-blur-lg border border-motif-deep/70 rounded-lg sm:rounded-xl shadow-xl overflow-hidden" 
-                    style={{ 
-                      position: 'absolute', 
-                      top: '100%',
-                      left: 0,
-                      right: 0
-                    }}
-                  >
-                    {filteredGuests.map((guest, index) => (
-                      <button
-                        key={guest.id ?? index}
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => handleSearchSelect(guest)}
-                        className="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 text-left hover:bg-motif-cream/40 active:bg-motif-deep/40 transition-all duration-200 flex items-center gap-2 sm:gap-3 border-b border-motif-deep/40 last:border-b-0 group"
+              </div>
+
+              {searchQuery.trim() && filteredGuests.length > 0 && (
+                <div
+                  className="border-t"
+                  style={{
+                    borderColor: "color-mix(in srgb, #CDB072 28%, transparent)",
+                    background: `color-mix(in srgb, ${IVORY} 82%, ${CHAMPAGNE})`,
+                  }}
+                >
+                  {filteredGuests.slice(0, 6).map((guest, index) => (
+                    <button
+                      key={guest.id ?? index}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleSearchSelect(guest)}
+                      className="group flex w-full items-center gap-3 border-b px-5 py-3 text-left last:border-b-0 hover:bg-[color-mix(in_srgb,#fffaf4_55%,#E8D5A3)] sm:px-6 sm:py-3.5"
+                      style={{
+                        borderColor: "color-mix(in srgb, #CDB072 22%, transparent)",
+                      }}
+                    >
+                      <div
+                        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full sm:h-9 sm:w-9"
+                        style={{ background: NAV_GOLD }}
                       >
-                        <div className="relative flex-shrink-0">
-                          <div className="bg-motif-deep p-1 sm:p-1.5 rounded-full shadow-sm group-hover:shadow-md transition-all duration-300">
-                            <User className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-xs sm:text-sm text-motif-deep group-hover:text-motif-deep transition-colors duration-200 truncate">
-                            {guest.Name}
-                          </div>
-                          {guest.Email && guest.Email !== "Pending" && (
-                            <div className={`${sectionType.label} text-motif-medium/80 truncate mt-0.5`}>
-                              {guest.Email}
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-motif-medium/70 group-hover:text-motif-deep group-hover:translate-x-1 transition-all duration-200 flex-shrink-0">
-                          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {searchQuery && filteredGuests.length === 0 && (
-                  <div 
-                    className="absolute z-[9999] w-full mt-1.5 sm:mt-2 bg-white/95 backdrop-blur-lg border-2 border-motif-deep/80 rounded-lg shadow-xl overflow-hidden" 
-                    style={{ 
-                      position: 'absolute', 
-                      top: '100%',
-                      left: 0,
-                      right: 0
-                    }}
-                  >
-                    <div className="p-2.5 sm:p-3 md:p-4">
-                      <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-                        <div className="bg-motif-deep p-1.5 sm:p-2 rounded-lg flex-shrink-0 shadow-sm">
-                          <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-xs sm:text-sm text-motif-deep mb-1">Not finding your name?</h4>
-                          <p className={`${sectionType.label} text-motif-deep leading-relaxed`}>
-                            We'd love to have you with us! Send a request to join the celebration.
-                          </p>
-                        </div>
+                        <User className="h-3.5 w-3.5 text-[#fffaf4] sm:h-4 sm:w-4" />
                       </div>
-                      <button
-                        onClick={() => {
-                          setRequestFormData({ ...requestFormData, Name: searchQuery })
-                          setShowRequestModal(true)
-                        }}
-                        className={`w-full !bg-motif-deep hover:!bg-motif-deep/90 text-white py-2 sm:py-2.5 rounded-lg ${sectionType.text} font-semibold shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center`}
+                      <div className="min-w-0 flex-1">
+                        <div
+                          className="truncate font-goudy-italic text-[0.95rem] sm:text-base"
+                          style={{ color: palette.heading }}
+                        >
+                          <HighlightedName name={guest.Name} query={searchQuery} />
+                        </div>
+                        {guest.Email && guest.Email !== "Pending" && (
+                          <div
+                            className={`mt-0.5 truncate ${sectionType.label}`}
+                            style={{ color: "var(--color-welcome-text-soft)" }}
+                          >
+                            {guest.Email}
+                          </div>
+                        )}
+                      </div>
+                      <ChevronRight
+                        className="h-4 w-4 flex-shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
+                        style={{ color: "var(--color-welcome-gold)" }}
+                      />
+                    </button>
+                  ))}
+                  {filteredGuests.length > 6 && (
+                    <p
+                      className={`${cinzel.className} px-5 py-2.5 text-center text-[0.62rem] font-medium tracking-[0.14em] sm:px-6`}
+                      style={{ color: "var(--color-welcome-gold)" }}
+                    >
+                      Keep typing to refine results
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {searchQuery.trim() && filteredGuests.length === 0 && (
+                <div
+                  className="border-t px-5 py-4 sm:px-6 sm:py-5"
+                  style={{
+                    borderColor: "color-mix(in srgb, var(--color-motif-deep) 10%, transparent)",
+                    background: "var(--color-welcome-bg-soft)",
+                  }}
+                >
+                  <div className="mb-3 flex items-start gap-3">
+                    <div
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
+                      style={{ background: NAV_GOLD }}
+                    >
+                      <UserPlus className="h-4 w-4 text-[#fffaf4]" />
+                    </div>
+                    <div className="flex-1">
+                      <h4
+                        className={`${cinzel.className} text-[0.78rem] font-semibold tracking-[0.08em]`}
+                        style={{ color: palette.heading }}
                       >
-                        <UserPlus className="h-3 w-3 mr-1.5 sm:mr-2 inline" />
-                        Request to Join
-                      </button>
+                        Not finding your name?
+                      </h4>
+                      <p
+                        className={`font-goudy-italic mt-1 ${sectionType.textSnug}`}
+                        style={{ color: palette.body }}
+                      >
+                        We&apos;d love to have you with us. Send a request to join the celebration.
+                      </p>
                     </div>
                   </div>
-                )}
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRequestFormData({ ...requestFormData, Name: searchQuery })
+                      setShowRequestModal(true)
+                    }}
+                    className={`${cinzel.className} flex w-full items-center justify-center rounded-full py-2.5 text-[0.72rem] font-semibold tracking-[0.12em] text-[#fffaf4] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+                    style={{ background: NAV_GOLD }}
+                  >
+                    <UserPlus className="mr-2 h-3.5 w-3.5" />
+                    Request to Join
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      </div>
+        </div>,
+        document.body
+      )}
 
       {/* RSVP Modal — portaled to escape motion/filter stacking context */}
       {isMounted && showModal && createPortal(
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-1 backdrop-blur-sm animate-in fade-in sm:p-2 md:p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden p-3 backdrop-blur-sm animate-in fade-in sm:p-4"
+          style={{ background: LIGHT_OVERLAY }}
           onClick={handleCloseModal}
         >
           <div
-            className="relative mx-1 flex max-h-[95vh] w-full max-w-md flex-col overflow-hidden rounded-xl animate-in zoom-in-95 duration-300 @container/guest-modal sm:mx-2 sm:max-w-lg sm:rounded-2xl md:mx-4"
+            className="relative mx-1 flex w-full max-w-md flex-col overflow-visible rounded-xl animate-in zoom-in-95 duration-300 @container/guest-modal sm:mx-2 sm:max-w-lg sm:rounded-2xl md:mx-4"
             style={modalCardStyle}
             onClick={(e) => e.stopPropagation()}
           >
@@ -734,7 +850,7 @@ export function GuestList() {
             </div>
 
             {/* Modal Content */}
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-5 md:px-7 md:pb-6">
+            <div className="px-4 pb-4 sm:px-6 sm:pb-5 md:px-7 md:pb-6">
                 {hasResponded ? (
                   <div className="py-3 text-center sm:py-4 md:py-6">
                     <div
@@ -848,7 +964,7 @@ export function GuestList() {
                               ? {
                                   borderColor: palette.accent,
                                   backgroundColor:
-                                    "color-mix(in srgb, var(--color-welcome-green) 10%, white)",
+                                    "color-mix(in srgb, var(--color-welcome-gold) 14%, white)",
                                 }
                               : { borderColor: innerSurfaceStyle.borderColor }
                           }
@@ -1089,7 +1205,7 @@ export function GuestList() {
                   className="h-[3px] w-full"
                   style={{
                     background:
-                      "linear-gradient(to right, transparent, var(--color-welcome-green), transparent)",
+                      "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
                   }}
                 />
                 <div className="px-6 pb-6 pt-6 text-center">
@@ -1098,7 +1214,7 @@ export function GuestList() {
                       className="absolute h-14 w-14 animate-ping rounded-full"
                       style={{
                         animationDuration: "2.5s",
-                        backgroundColor: "color-mix(in srgb, var(--color-welcome-green) 20%, transparent)",
+                        backgroundColor: "color-mix(in srgb, var(--color-welcome-gold) 20%, transparent)",
                       }}
                     />
                     <div
@@ -1188,11 +1304,12 @@ export function GuestList() {
         {/* Request to Join Modal */}
         {isMounted && showRequestModal && createPortal(
           <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-1 backdrop-blur-sm animate-in fade-in sm:p-2 md:p-4"
+            className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden p-3 backdrop-blur-sm animate-in fade-in sm:p-4"
+            style={{ background: LIGHT_OVERLAY }}
             onClick={handleCloseRequestModal}
           >
             <div
-              className="relative mx-1 flex max-h-[95vh] w-full max-w-md flex-col overflow-hidden rounded-xl animate-in zoom-in-95 duration-300 @container/guest-modal sm:mx-2 sm:max-w-lg sm:rounded-2xl md:mx-4"
+              className="relative mx-1 flex w-full max-w-md flex-col overflow-visible rounded-xl animate-in zoom-in-95 duration-300 @container/guest-modal sm:mx-2 sm:max-w-lg sm:rounded-2xl md:mx-4"
               style={modalCardStyle}
               onClick={(e) => e.stopPropagation()}
             >
@@ -1234,7 +1351,7 @@ export function GuestList() {
                     className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] pb-1 sm:pb-1.5`}
                     style={{ fontSize: "var(--title-size)", color: palette.heading }}
                   >
-                    Request to Join
+                    Request
                   </span>
                   <span
                     aria-hidden
@@ -1244,7 +1361,7 @@ export function GuestList() {
                       color: palette.accent,
                     }}
                   >
-                    celebrate with us
+                    to join us
                   </span>
                 </h3>
 
@@ -1263,7 +1380,7 @@ export function GuestList() {
                 </p>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-5 md:px-7 md:pb-6">
+              <div className="px-4 pb-4 sm:px-6 sm:pb-5 md:px-7 md:pb-6">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -1459,7 +1576,6 @@ export function GuestList() {
           </div>
         </div>
       )}
-    </section>
     </div>
   )
 }

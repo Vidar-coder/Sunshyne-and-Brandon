@@ -5,33 +5,36 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useState, useEffect } from "react"
 import { Cinzel } from "next/font/google"
 import { sectionType } from "@/lib/section-typography"
-import { sectionText } from "@/lib/section-background"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
 })
 
-const OUTSIDE_TEXT = sectionText.heading
-const OUTSIDE_TEXT_MUTED = sectionText.body
+const IVORY = "#fffaf4"
+const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const BODY = "var(--color-welcome-text)"
+const NAV_GOLD =
+  "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
 
 const palette = {
-  body: "var(--color-welcome-text)",
-  heading: "var(--color-welcome-navy)",
-  label: "var(--color-welcome-heading)",
-  accent: "var(--color-welcome-green)",
+  body: BODY,
+  heading: NAVY,
+  label: GOLD,
+  accent: GOLD,
 } as const
 
 const messageCardStyle = {
-  background: "var(--color-welcome-bg)",
+  background: IVORY,
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 14%, transparent)",
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)",
   boxShadow:
-    "0 8px 28px color-mix(in srgb, var(--color-motif-deep) 7%, transparent), inset 0 1px 0 color-mix(in srgb, white 70%, transparent)",
+    "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)",
 } as const
 
-const skeletonBg = "color-mix(in srgb, var(--color-motif-deep) 18%, white)"
+const skeletonBg = "color-mix(in srgb, var(--color-welcome-gold) 22%, white)"
 
 interface Message {
   timestamp: string
@@ -64,7 +67,7 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
     return (
       <div className="space-y-2 sm:space-y-3 md:space-y-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="rounded-xl border sm:rounded-2xl" style={messageCardStyle}>
+          <Card key={i} className="rounded-[1.35rem] border sm:rounded-[1.5rem]" style={messageCardStyle}>
             <CardContent className="p-3 sm:p-4 md:p-5">
               <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center space-x-3">
@@ -85,26 +88,29 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
 
   if (messages.length === 0) {
     return (
-      <div className="px-4 py-8 text-center sm:py-12 md:py-16">
+      <div
+        className="rounded-[1.85rem] border px-4 py-8 text-center sm:py-12 md:py-16"
+        style={messageCardStyle}
+      >
         <h3
-          className={`${cinzel.className} mb-2 font-semibold sm:mb-3 ${sectionType.subheader}`}
-          style={{ color: OUTSIDE_TEXT }}
+          className={`${cinzel.className} mb-2 font-semibold uppercase tracking-[0.16em] sm:mb-3 ${sectionType.subheader}`}
+          style={{ color: NAVY }}
         >
           No messages yet
         </h3>
         <p
           className={`font-goudy-italic mx-auto mb-5 max-w-md sm:mb-6 ${sectionType.textRelaxed}`}
-          style={{ color: OUTSIDE_TEXT_MUTED }}
+          style={{ color: BODY }}
         >
           Be the first to leave a note for the happy couple.
         </p>
         <div className="flex justify-center">
           <span
-            className={`font-goudy-italic ${sectionType.label} rounded-sm border px-4 py-2`}
+            className={`${cinzel.className} ${sectionType.label} rounded-full border px-4 py-2 font-semibold uppercase tracking-[0.16em]`}
             style={{
-              color: palette.heading,
-              backgroundColor: "var(--color-welcome-bg-soft)",
-              borderColor: "color-mix(in srgb, var(--color-motif-deep) 18%, transparent)",
+              color: GOLD,
+              backgroundColor: IVORY,
+              borderColor: "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)",
             }}
           >
             Your message will appear here
@@ -119,7 +125,7 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
       {visibleMessages.map((msg, index) => (
         <Card
           key={index}
-          className={`group relative transform overflow-hidden rounded-xl border transition-all duration-500 hover:scale-[1.01] sm:rounded-2xl ${
+          className={`group relative transform overflow-hidden rounded-[1.35rem] border transition-all duration-500 hover:scale-[1.01] sm:rounded-[1.5rem] ${
             isAnimating ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
           }`}
           style={{
@@ -129,29 +135,28 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow =
-              "0 12px 32px color-mix(in srgb, var(--color-motif-deep) 12%, transparent), inset 0 1px 0 color-mix(in srgb, white 70%, transparent)"
+              "0 14px 32px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)"
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = messageCardStyle.boxShadow as string
           }}
         >
           <div
-            className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/35 via-white/8 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            aria-hidden
-          />
-          <div
             className="absolute left-0 top-0 h-0.5 w-full origin-left scale-x-0 transform transition-transform duration-500 group-hover:scale-x-100"
-            style={{ backgroundColor: palette.accent }}
+            style={{ background: NAV_GOLD }}
           />
 
           <CardContent className="relative p-3 sm:p-4 md:p-5">
             <div className="mb-2 flex items-start justify-between sm:mb-3">
               <div className="flex min-w-0 flex-1 items-center space-x-2 sm:space-x-3">
                 <div
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-md ring-2 ring-white transition-transform duration-300 group-hover:scale-110 sm:h-9 sm:w-9 md:h-10 md:w-10"
-                  style={{ backgroundColor: palette.accent }}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-md transition-transform duration-300 group-hover:scale-110 sm:h-9 sm:w-9 md:h-10 md:w-10"
+                  style={{
+                    background: NAV_GOLD,
+                    boxShadow: "0 6px 14px color-mix(in srgb, var(--color-welcome-gold) 28%, transparent)",
+                  }}
                 >
-                  <span className={`${cinzel.className} ${sectionType.label} font-semibold text-white`}>
+                  <span className={`${cinzel.className} ${sectionType.label} font-semibold`} style={{ color: IVORY }}>
                     {msg.name
                       .split(" ")
                       .map((n) => n[0])
@@ -162,12 +167,15 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4
-                    className={`${cinzel.className} ${sectionType.text} truncate font-semibold`}
+                    className={`${cinzel.className} ${sectionType.text} truncate font-semibold tracking-[0.04em]`}
                     style={{ color: palette.heading }}
                   >
                     {msg.name}
                   </h4>
-                  <span className={sectionType.label} style={{ color: palette.label }}>
+                  <span
+                    className={`${cinzel.className} ${sectionType.label} uppercase tracking-[0.12em]`}
+                    style={{ color: palette.label }}
+                  >
                     {new Date(msg.timestamp).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "short",
@@ -183,7 +191,7 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
             <div className="relative py-1 pl-5 pr-2 sm:py-2 sm:pl-6 sm:pr-4">
               <span
                 className="font-goudy-italic absolute left-0 top-0 select-none text-2xl leading-none sm:text-3xl"
-                style={{ color: palette.accent, opacity: 0.45 }}
+                style={{ color: GOLD, opacity: 0.55 }}
               >
                 &ldquo;
               </span>

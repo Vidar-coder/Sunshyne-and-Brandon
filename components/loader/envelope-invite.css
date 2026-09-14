@@ -1,28 +1,29 @@
 /* ── Design tokens ── */
 .env-invite-screen {
-  /* Envelope — pale champagne gold paper */
-  --env-envelope: #E2D78C;
-  --env-base: #D4C478;
-  --env-highlight: #EDE4A8;
-  --env-shadow: #C4B56E;
-  --env-fold: #B8A862;
+  /* Envelope — warm ivory linen paper */
+  --env-envelope: #EFE4D4;
+  --env-base: #E6D8C4;
+  --env-highlight: #F8F3EA;
+  --env-shadow: #D4C4AA;
+  --env-fold: #C9B89A;
 
-  /* UI + surfaces — from globals / loading palette */
+  /* UI + surfaces — linen garden palette */
   --env-ui-brand: var(--color-motif-deep);
   --env-ui-accent: var(--color-motif-accent);
   --env-text: var(--color-welcome-text);
   --env-text-soft: var(--color-welcome-text-soft);
-  --env-wax: #D4AF37;
-  --env-seal-light: #F0E088;
-  --env-seal-gold: #D4AF37;
-  --env-seal-mid: #C19B2E;
-  --env-seal-deep: #A88628;
-  --env-seal-shadow: #8A6F20;
-  --env-paper: var(--color-motif-cream);
-  --env-gold: #EEC853;
-  --env-ivory: #5C6E46;
-  --env-border: color-mix(in srgb, var(--env-shadow) 32%, transparent);
-  --env-border-soft: color-mix(in srgb, var(--env-seal-deep) 24%, transparent);
+  --env-wax: #C4A265;
+  --env-seal-light: #E8D5A8;
+  --env-seal-gold: #C4A265;
+  --env-seal-mid: #B49A68;
+  --env-seal-deep: #9A7E4A;
+  --env-seal-shadow: #7A6340;
+  --env-paper: #F7F2E8;
+  --env-gold: #B49A68;
+  --env-ivory: #EDE6D8;
+  --env-blush: var(--color-motif-blush);
+  --env-border: color-mix(in srgb, var(--env-fold) 48%, transparent);
+  --env-border-soft: color-mix(in srgb, var(--env-seal-deep) 22%, transparent);
 
   /*
     Physical stack (always):
@@ -46,7 +47,7 @@
   */
   --env-ratio: 1.48;
   --env-width: min(88vw, 420px);
-  --env-seal-size: clamp(78px, calc(var(--env-width) * 0.2), 118px);
+  --env-seal-size: clamp(86px, calc(var(--env-width) * 0.24), 132px);
   --env-letter-w: clamp(180px, calc(var(--env-width) * 0.4), 300px);
   --env-letter-h: clamp(220px, calc(var(--env-width) * 0.5), 360px);
   --env-polaroid-w: clamp(104px, calc(var(--env-width) * 0.24), 176px);
@@ -95,17 +96,17 @@
   background:
     radial-gradient(
       920px 620px at 50% 18%,
-      color-mix(in srgb, var(--env-ui-accent) 14%, transparent) 0,
+      color-mix(in srgb, var(--env-gold) 16%, transparent) 0,
       transparent 58%
     ),
     radial-gradient(
       560px 400px at 10% 86%,
-      color-mix(in srgb, var(--env-ui-brand) 6%, transparent) 0,
+      color-mix(in srgb, var(--env-blush) 14%, transparent) 0,
       transparent 55%
     ),
     radial-gradient(
       440px 320px at 92% 72%,
-      color-mix(in srgb, var(--env-gold) 10%, transparent) 0,
+      color-mix(in srgb, var(--env-ui-accent) 12%, transparent) 0,
       transparent 52%
     );
   transition: opacity 1.15s cubic-bezier(0.22, 1, 0.36, 1);
@@ -131,7 +132,7 @@
     ),
     radial-gradient(
       520px 380px at 78% 82%,
-      color-mix(in srgb, var(--env-ui-accent) 10%, transparent) 0,
+      color-mix(in srgb, var(--env-blush) 12%, transparent) 0,
       transparent 58%
     );
 }
@@ -315,7 +316,7 @@
     linear-gradient(
       105deg,
       var(--env-envelope) 0%,
-      color-mix(in srgb, var(--env-envelope) 88%, #8a6a18) 100%
+      color-mix(in srgb, var(--env-envelope) 82%, var(--env-seal-deep)) 100%
     );
   box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.22);
 }
@@ -387,7 +388,7 @@
   width: 78%;
   height: 34px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(42, 32, 53, 0.34) 0%, transparent 72%);
+  background: radial-gradient(ellipse, rgba(91, 74, 55, 0.28) 0%, transparent 72%);
   filter: blur(14px);
   pointer-events: none;
   z-index: 0;
@@ -400,7 +401,7 @@
   width: 62%;
   height: 10px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(42, 32, 53, 0.26) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(91, 74, 55, 0.2) 0%, transparent 70%);
   filter: blur(4px);
   pointer-events: none;
   z-index: 0;
@@ -419,8 +420,8 @@
   perspective: 1400px;
   overflow: hidden;
   filter:
-    drop-shadow(0 22px 40px rgba(42, 32, 53, 0.28))
-    drop-shadow(0 8px 16px rgba(42, 32, 53, 0.16));
+    drop-shadow(0 22px 40px rgba(91, 74, 55, 0.18))
+    drop-shadow(0 8px 16px rgba(91, 74, 55, 0.1));
   transform: none;
   border-radius: 8px;
 }
@@ -462,17 +463,17 @@
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  opacity: 0.28;
+  opacity: 0.4;
   background:
     repeating-linear-gradient(
-      45deg,
-      transparent 0 3px,
-      rgba(255, 255, 255, 0.018) 3px 4px
+      90deg,
+      transparent 0 2px,
+      rgba(180, 154, 104, 0.045) 2px 3px
     ),
     repeating-linear-gradient(
-      -45deg,
-      transparent 0 4px,
-      rgba(0, 0, 0, 0.022) 4px 5px
+      0deg,
+      transparent 0 3px,
+      rgba(91, 74, 55, 0.03) 3px 4px
     );
   pointer-events: none;
 }
@@ -629,8 +630,8 @@
   );
   border: 1px solid color-mix(in srgb, var(--env-border) 55%, transparent);
   box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.22),
-    0 4px 10px rgba(0, 0, 0, 0.1),
+    0 12px 32px rgba(91, 74, 55, 0.16),
+    0 4px 10px rgba(91, 74, 55, 0.08),
     inset 0 0 0 1px rgba(255, 255, 255, 0.45),
     inset 0 -18px 24px color-mix(in srgb, var(--env-ui-accent) 6%, transparent);
   overflow: hidden;
@@ -697,7 +698,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
-  color: var(--env-shadow);
+  color: var(--env-gold);
   margin: 0.08em 0 0.12em;
   white-space: nowrap;
 }
@@ -725,13 +726,15 @@
 .env-invite-letter-names {
   position: relative;
   display: block;
-  width: min(100%, calc(var(--env-letter-w) * 0.78));
-  aspect-ratio: 1672 / 940;
-  margin: 0.12em 0 1.05em;
+  width: min(100%, calc(var(--env-letter-w) * 0.92));
+  aspect-ratio: 1774 / 887;
+  margin: 0.35em auto 0.55em;
   flex-shrink: 0;
-  background-color: #5c6e46;
-  -webkit-mask-image: url("/Details/coupleName.png");
-  mask-image: url("/Details/coupleName.png");
+  background-color: var(--env-gold);
+  pointer-events: none;
+  user-select: none;
+  -webkit-mask-image: url("/decoration/couple-name.png");
+  mask-image: url("/decoration/couple-name.png");
   -webkit-mask-size: contain;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -746,6 +749,7 @@
   font-weight: 400;
   line-height: 1.05;
   letter-spacing: 0.01em;
+  color: var(--env-gold);
 }
 
 .env-invite-letter-and {
@@ -754,6 +758,7 @@
   font-size: clamp(1.15rem, 4.5vw, 1.55rem);
   line-height: 1;
   opacity: 0.88;
+  color: var(--env-ui-brand);
 }
 
 .env-invite-letter-names-image {
@@ -777,8 +782,8 @@
     linear-gradient(145deg, rgba(255, 255, 255, 0.55) 0%, transparent 42%),
     linear-gradient(180deg, var(--color-motif-silver) 0%, var(--color-motif-soft) 52%, var(--color-motif-cream) 100%);
   box-shadow:
-    0 16px 30px rgba(0, 0, 0, 0.2),
-    0 5px 12px rgba(0, 0, 0, 0.08),
+    0 16px 30px rgba(91, 74, 55, 0.14),
+    0 5px 12px rgba(91, 74, 55, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.72),
     inset 0 -2px 4px color-mix(in srgb, var(--env-ui-brand) 6%, transparent);
   transform-origin: bottom center;
@@ -797,8 +802,8 @@
 .env-invite-polaroid:hover:not(:disabled),
 .env-invite-polaroid.is-lifted {
   box-shadow:
-    0 22px 38px rgba(0, 0, 0, 0.28),
-    0 10px 18px rgba(0, 0, 0, 0.12),
+    0 22px 38px rgba(91, 74, 55, 0.2),
+    0 10px 18px rgba(91, 74, 55, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.78),
     inset 0 -2px 4px color-mix(in srgb, var(--env-ui-brand) 6%, transparent);
 }
@@ -925,9 +930,9 @@
   background:
     radial-gradient(ellipse 70% 55% at 18% 22%, color-mix(in srgb, var(--env-highlight) 55%, transparent) 0%, transparent 58%),
     radial-gradient(ellipse 60% 50% at 82% 18%, color-mix(in srgb, var(--env-base) 40%, transparent) 0%, transparent 55%),
-    radial-gradient(ellipse 85% 60% at 50% 0%, rgba(255, 255, 255, 0.14) 0%, transparent 52%),
-    radial-gradient(ellipse 55% 45% at 82% 92%, rgba(0, 0, 0, 0.14) 0%, transparent 52%),
-    radial-gradient(ellipse 40% 35% at 18% 78%, rgba(0, 0, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 85% 60% at 50% 0%, rgba(255, 255, 255, 0.32) 0%, transparent 52%),
+    radial-gradient(ellipse 55% 45% at 82% 92%, rgba(91, 74, 55, 0.1) 0%, transparent 52%),
+    radial-gradient(ellipse 40% 35% at 18% 78%, rgba(91, 74, 55, 0.06) 0%, transparent 50%),
     linear-gradient(175deg, var(--env-highlight) 0%, var(--env-base) 36%, var(--env-fold) 70%, var(--env-shadow) 100%);
   transition: opacity 0.45s ease 0.15s;
   opacity: 1;
@@ -937,17 +942,17 @@
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.22;
+  opacity: 0.45;
   background:
     repeating-linear-gradient(
-      45deg,
-      transparent 0 3px,
-      rgba(255, 255, 255, 0.02) 3px 4px
+      90deg,
+      transparent 0 2px,
+      rgba(180, 154, 104, 0.05) 2px 3px
     ),
     repeating-linear-gradient(
-      -45deg,
-      transparent 0 5px,
-      rgba(0, 0, 0, 0.018) 5px 6px
+      0deg,
+      transparent 0 3px,
+      rgba(91, 74, 55, 0.035) 3px 4px
     );
   pointer-events: none;
 }
@@ -1007,14 +1012,14 @@
 }
 
 .env-invite-creases line {
-  stroke: rgba(0, 0, 0, 0.18);
+  stroke: color-mix(in srgb, var(--env-seal-deep) 26%, transparent);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 
 .env-invite-creases line:nth-child(1),
 .env-invite-creases line:nth-child(2) {
-  stroke: rgba(255, 255, 255, 0.05);
+  stroke: rgba(255, 255, 255, 0.42);
 }
 
 /*
@@ -1134,7 +1139,7 @@
   transform-origin: top center;
   z-index: var(--z-flap-closed);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.28) 0%, transparent 38%),
     linear-gradient(160deg, var(--env-highlight) 0%, var(--env-base) 55%, var(--env-fold) 100%);
   border-bottom: none;
   box-shadow:
@@ -1218,20 +1223,16 @@
   background: transparent;
   box-shadow: none;
   -webkit-tap-highlight-color: transparent;
-  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.38))
-    drop-shadow(0 2px 5px rgba(0, 0, 0, 0.22));
-}
-
-.env-invite-seal-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
   overflow: visible;
+  filter: drop-shadow(0 8px 16px rgba(91, 74, 55, 0.22))
+    drop-shadow(0 2px 5px rgba(154, 126, 74, 0.28));
 }
 
-.env-invite-seal-mono-img {
+.env-invite-seal-img {
+  display: block;
+  object-fit: contain;
   pointer-events: none;
-  filter: brightness(0) invert(1);
+  user-select: none;
 }
 
 .env-invite-seal-letter {
@@ -1262,12 +1263,12 @@
 @keyframes env-seal-breathe {
   0%,
   100% {
-    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.38))
-      drop-shadow(0 2px 5px rgba(0, 0, 0, 0.22));
+    filter: drop-shadow(0 8px 16px rgba(91, 74, 55, 0.22))
+      drop-shadow(0 2px 5px rgba(154, 126, 74, 0.28));
   }
   50% {
-    filter: drop-shadow(0 12px 22px rgba(155, 169, 150, 0.35))
-      drop-shadow(0 4px 10px rgba(0, 0, 0, 0.28));
+    filter: drop-shadow(0 12px 22px rgba(180, 154, 104, 0.38))
+      drop-shadow(0 4px 10px rgba(91, 74, 55, 0.22));
   }
 }
 
@@ -1323,8 +1324,8 @@
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #F7F3E9;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  color: var(--env-gold);
+  text-shadow: none;
   transition:
     opacity 0.35s ease,
     max-height 0.35s ease,
@@ -1345,8 +1346,8 @@
   letter-spacing: 0.12em;
   line-height: 1.4;
   text-transform: uppercase;
-  color: #F7F3E9;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  color: var(--env-gold);
+  text-shadow: none;
   pointer-events: none;
 }
 
@@ -1390,17 +1391,17 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   line-height: 1.75;
-  color: #F7F3E9;
+  color: var(--env-gold);
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  text-shadow: none;
 }
 
 .env-invite-reveal-copy p {
   margin-top: 0.45rem;
   font-family: "SortsMillGoudy", serif;
   font-size: 0.88rem;
-  color: color-mix(in srgb, #F7F3E9 82%, transparent);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+  color: var(--env-text-soft);
+  text-shadow: none;
 }
 
 .env-invite-reveal-copy .script {
@@ -1408,8 +1409,8 @@
   margin-top: 0.45rem;
   font-style: normal;
   font-size: clamp(1.55rem, 4.4vw, 2.05rem);
-  color: #F7F3E9;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  color: var(--env-ui-brand);
+  text-shadow: none;
 }
 
 .env-invite-enter-btn {
@@ -1430,23 +1431,24 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: #2a2218;
+  color: var(--env-gold);
   -webkit-font-smoothing: antialiased;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
-  background: var(--env-gold);
-  border: 1px solid color-mix(in srgb, var(--env-gold) 72%, #8a6a18);
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--env-gold) 28%, transparent);
+  text-shadow: none;
+  background: var(--env-highlight);
+  border: 1px solid color-mix(in srgb, var(--env-gold) 55%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--env-fold) 32%, transparent);
   cursor: pointer;
-  transition: background 0.25s ease, box-shadow 0.25s ease;
+  transition: background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
 }
 
 .env-invite-enter-btn:hover {
-  background: color-mix(in srgb, var(--env-gold) 88%, #8a6a18);
-  box-shadow: 0 10px 26px color-mix(in srgb, var(--env-gold) 36%, transparent);
+  background: var(--env-paper);
+  color: var(--env-seal-deep);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--env-gold) 28%, transparent);
 }
 
 .env-invite-enter-btn:focus-visible {
-  outline: 2px solid #F7F3E9;
+  outline: 2px solid var(--env-gold);
   outline-offset: 3px;
 }
 
@@ -1579,9 +1581,44 @@
     background: transparent;
   }
 
-  .env-invite-screen::before,
+  .env-invite-screen::before {
+    display: block;
+    background: linear-gradient(
+      180deg,
+      rgb(42 34 28 / 52%) 0%,
+      rgb(42 34 28 / 22%) 18%,
+      rgb(42 34 28 / 8%) 42%,
+      rgb(42 34 28 / 20%) 68%,
+      rgb(42 34 28 / 58%) 100%
+    );
+  }
+
   .env-invite-bg-glow {
     display: none;
+  }
+
+  .env-invite-hint,
+  .env-invite-days-to-go,
+  .env-invite-reveal-copy h2,
+  .env-invite-reveal-copy p,
+  .env-invite-reveal-copy .script {
+    color: #fffaf4;
+    text-shadow:
+      0 1px 2px rgb(42 34 28 / 55%),
+      0 8px 20px rgb(42 34 28 / 40%);
+  }
+
+  .env-invite-enter-btn {
+    color: #fffaf4;
+    background: color-mix(in srgb, var(--env-gold) 82%, #5c4724);
+    border-color: color-mix(in srgb, var(--env-gold) 55%, white);
+    text-shadow: 0 1px 8px rgb(42 34 28 / 35%);
+    box-shadow: 0 10px 24px rgb(42 34 28 / 38%);
+  }
+
+  .env-invite-enter-btn:hover {
+    color: #fffaf4;
+    background: color-mix(in srgb, var(--env-gold) 70%, #5c4724);
   }
 
   .env-invite-screen[data-phase="exiting"]::before {
@@ -1786,7 +1823,7 @@
     --env-ratio: 1;
     --env-width: 100%;
     --env-flap-h: 50%;
-    --env-seal-size: clamp(88px, 8vw, 128px);
+    --env-seal-size: clamp(96px, 9vw, 148px);
     --env-letter-w: clamp(220px, 22vw, 360px);
     --env-letter-h: clamp(280px, 28vw, 460px);
     --env-polaroid-w: clamp(100px, 10vw, 150px);
@@ -1822,13 +1859,13 @@
   }
 
   .env-invite-reveal-copy .script {
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+    color: var(--env-ui-brand);
+    text-shadow: none;
   }
 
   .env-invite-reveal-copy p {
-    color: color-mix(in srgb, #F7F3E9 82%, transparent);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    color: var(--env-text-soft);
+    text-shadow: none;
   }
 
   .env-invite-screen,
@@ -1965,8 +2002,8 @@
     height: var(--env-letter-h);
     overflow: visible;
     box-shadow:
-      0 22px 48px rgba(42, 32, 53, 0.22),
-      0 8px 18px rgba(42, 32, 53, 0.1),
+      0 22px 48px rgba(91, 74, 55, 0.16),
+      0 8px 18px rgba(91, 74, 55, 0.08),
       inset 0 0 0 1px rgba(255, 255, 255, 0.5),
       inset 0 -18px 24px color-mix(in srgb, var(--env-ui-accent) 6%, transparent);
   }
@@ -1993,8 +2030,8 @@
   }
 
   .env-invite-letter-names {
-    width: min(100%, calc(var(--env-letter-w) * 0.86));
-    margin: 0.2em 0 0.35em;
+    width: min(100%, calc(var(--env-letter-w) * 0.9));
+    margin: 0.25em auto 0.4em;
   }
 
   .env-invite-screen[data-phase="rising"] .env-invite-emerge-stack,
@@ -2088,7 +2125,7 @@
     --env-ratio: 1.48;
     --env-width: min(62vw, 380px);
     --env-flap-h: 58%;
-    --env-seal-size: clamp(72px, calc(var(--env-width) * 0.18), 110px);
+    --env-seal-size: clamp(80px, calc(var(--env-width) * 0.22), 124px);
     --env-letter-w: clamp(180px, calc(var(--env-width) * 0.38), 280px);
     --env-letter-h: clamp(230px, calc(var(--env-width) * 0.52), 360px);
     --env-polaroid-w: clamp(96px, calc(var(--env-width) * 0.22), 156px);

@@ -146,52 +146,90 @@
   /* Updated serif font to Great Vibes */
   --font-serif: "Great Vibes", "Great Vibes Fallback";
   
-  /* ─── Motif palette — edit here, affects every component ─── */
 /* ==========================================
    MOTIF COLORS
-   Theme: Nested Arch — Forest + Sage + Mustard + Cream
-   (aligned with LoadingScreen palette)
-========================================== */
+   Theme: Warm Linen Garden
+   Ivory + Linen + Sage + Dusty Blush + Champagne
+   ========================================== */
 
-/* Background */
---color-motif-cream:   #F7F3E9; /* Arch cream */
+/* Background / Linen */
+--color-motif-cream:     #E8DED0; /* Warm linen */
+--color-motif-yellow:    #B49A68; /* Champagne gold */
+--color-motif-soft:      #F5F0E7; /* Soft ivory */
 
-/* Primary Highlight */
---color-motif-yellow:  #EEC853; /* Mustard gold */
+/* Botanical Accents */
+--color-motif-accent:    #8A9470; /* Muted sage */
+--color-motif-deep:      #697052; /* Olive leaf */
+--color-motif-medium:    #A4A88F; /* Soft sage */
 
-/* Secondary */
---color-motif-soft:    #FAF7EF; /* Soft cream sections */
---color-motif-accent:  #949981; /* Sage green */
+/* Floral Accent */
+--color-motif-blush:     #C99F91; /* Dusty blush */
 
-/* Primary Brand */
---color-motif-deep:    #5D6F47; /* Forest olive */
---color-motif-medium:  #949981; /* Sage */
+/* Neutral / Paper */
+--color-motif-silver:    #D8CCBB; /* Warm parchment */
 
-/* Neutral */
---color-motif-silver:  #F5F1E6; /* Warm parchment alternate */
 
 /* ==========================================
    WELCOME SECTION
-========================================== */
+   ========================================== */
 
---color-welcome-bg:        color-mix(in srgb, var(--color-motif-cream) 45%, white);
---color-welcome-bg-soft:   color-mix(in srgb, var(--color-motif-cream) 25%, white);
+/* Main background */
+--color-welcome-bg:
+    color-mix(
+        in srgb,
+        var(--color-motif-cream) 70%,
+        white
+    );
 
-/* Paragraphs */
---color-welcome-text:      #3A3128; /* Ink */
---color-welcome-text-soft: color-mix(in srgb, #3A3128 68%, white);
+/* Soft background */
+--color-welcome-bg-soft:
+    color-mix(
+        in srgb,
+        var(--color-motif-cream) 40%,
+        white
+    );
 
-/* Small Headings */
---color-welcome-heading:   #5D6F47; /* Forest */
 
-/* Script Font */
---color-welcome-script:    #EEC853; /* Mustard */
+/* ==========================================
+   TYPOGRAPHY
+   ========================================== */
 
-/* Main Hero Heading */
---color-welcome-navy:      #5D6F47; /* Forest */
+/* Main body text */
+--color-welcome-text: #6B5C4D; /* Warm taupe */
 
-/* Buttons / Decorative Lines / Icons */
---color-welcome-green:     #5D6F47; /* Forest */
+/* Secondary / softer text */
+--color-welcome-text-soft:
+    color-mix(
+        in srgb,
+        #6B5C4D 65%,
+        white
+    );
+
+/* Small headings */
+--color-welcome-heading: #697052; /* Olive sage */
+
+/* Script / romantic accent */
+--color-welcome-script: #B49A68; /* Champagne gold */
+
+/* Main hero heading */
+--color-welcome-navy: #5E5144; /* Warm brown-gray */
+
+
+/* ==========================================
+   BUTTONS / DECORATION
+   ========================================== */
+
+/* Buttons */
+--color-welcome-green: #697052; /* Olive */
+
+/* Decorative botanical lines */
+--color-welcome-botanical: #8A9470; /* Sage */
+
+/* Gold decorative details */
+--color-welcome-gold: #B49A68; /* Champagne */
+
+/* Floral accents */
+--color-welcome-blush: #C99F91; /* Dusty blush */
   /* ─────────────────────────────────────────────────────────── */
   --font-imperial-script: "Imperial Script", cursive;
   --font-anastasia-script: "CoupleAnastasia";

@@ -18,6 +18,7 @@ import { Registry } from "@/components/sections/registry"
 import { FAQ } from "@/components/sections/faq"
 import { GuestInformation } from "@/components/sections/guest-information"
 import { Footer } from "@/components/sections/footer"
+import { SeeYouThere } from "@/components/sections/see-you-there"
 import { LoveStory } from "@/components/sections/love-story"
 import { WeddingPlaylist } from "@/components/sections/wedding-playlist"
 import { Hero as InvitationHero } from "@/components/loader/Hero"
@@ -206,7 +207,7 @@ export default function Home() {
                 transition={cinematicEntry ? undefined : { duration: 0.01 }}
               >
                 <Suspense fallback={<div className="w-full h-full bg-gradient-to-b from-primary/10 to-secondary/5" />}>
-                  <Silk speed={8} scale={0.9} color="#5C6E46" noiseIntensity={0} rotation={0.3} />
+                  <Silk speed={8} scale={0.9} color="#EFDAC1" noiseIntensity={0} rotation={0.3} />
                 </Suspense>
               </motion.div>
             )}
@@ -238,26 +239,31 @@ export default function Home() {
                 animate={cinematicEntry ? "show" : detailsVisible ? "show" : "hidden"}
                 transition={cinematicEntry ? undefined : { duration: 0.01 }}
               >
-              <Welcome />
-               {/* <CoupleVideo />  */}
-              <LoveStory />
-              {/* <Countdown /> */}
-              <Entourage />
+              <GuestList />
               <WeddingTimeline />
-              <Details />
-              <RecommendedHotel />
-              <Gallery />
-              {/* <VideoMessage /> */}
-              <MessageVideo />
               <Messages />       
+              <Details />
+              {/* <Welcome /> */}
+               {/* <CoupleVideo />  */}
+              {/* <LoveStory /> */}
+              {/* <Countdown /> */}
+              <Gallery />
+              <Entourage />
+
+
+              {/* <RecommendedHotel /> */}
+         
+              {/* <VideoMessage /> */}
+              {/* <MessageVideo /> */}
+
               {/* <GuestInformation /> */} 
-              <GuestList /> 
-              {/* <BookOfGuests /> */}
+              <BookOfGuests />
               {/* <PrincipalSponsors /> */}
-              <WeddingPlaylist />
+
               <FAQ />
               <Registry />
               <SnapShare />
+              <SeeYouThere />
               <Footer />
               </motion.div>
             </div>

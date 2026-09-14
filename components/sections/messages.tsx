@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useCallback, useEffect } from "react"
+import { useRef, useState, useCallback, useEffect, type ReactNode } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,12 +11,6 @@ import { Cinzel } from "next/font/google"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
-import {
-  sectionBackground,
-  sectionDividerLineStyle,
-  sectionDividerLineStyleLeft,
-  sectionText,
-} from "@/lib/section-background"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -35,22 +29,60 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
+const IVORY = "#fffaf4"
+const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const BODY = "var(--color-welcome-text)"
+const NAV_GOLD =
+  "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
+
 const palette = {
-  body: sectionText.body,
-  heading: sectionText.heading,
-  label: sectionText.label,
-  accent: sectionText.accent,
+  body: BODY,
+  heading: NAVY,
+  label: GOLD,
+  accent: GOLD,
 } as const
 
-const outsideDividerLineStyle = sectionDividerLineStyle
+const goldDividerStyle = {
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
+} as const
+
+const goldDividerStyleLeft = {
+  background: "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
+} as const
+
+const silkTitleShadow =
+  "0 1px 0 rgb(42 34 28 / 42%), 0 2px 10px rgb(42 34 28 / 38%), 0 8px 28px rgb(42 34 28 / 28%)"
+const silkScriptShadow =
+  "0 1px 0 rgb(42 34 28 / 35%), 0 2px 12px rgb(42 34 28 / 32%), 0 0 18px rgb(232 213 163 / 35%)"
+const silkBodyShadow =
+  "0 1px 1px rgb(42 34 28 / 45%), 0 2px 10px rgb(42 34 28 / 32%)"
+
+const silkGlowStyle = {
+  background:
+    "radial-gradient(ellipse at center, rgb(94 81 68 / 34%) 0%, rgb(94 81 68 / 12%) 46%, transparent 72%)",
+} as const
+
+function SilkTextGlow({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={`relative ${className}`}>
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[140%] w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 blur-2xl"
+        style={silkGlowStyle}
+        aria-hidden
+      />
+      <div className="relative z-10">{children}</div>
+    </div>
+  )
+}
 
 const cardStyle = {
-  background: "var(--color-welcome-bg)",
+  background: IVORY,
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 14%, transparent)",
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)",
   boxShadow:
-    "0 8px 28px color-mix(in srgb, var(--color-motif-deep) 7%, transparent), inset 0 1px 0 color-mix(in srgb, white 70%, transparent)",
+    "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)",
 } as const
 
 interface Message {
@@ -67,9 +99,9 @@ interface MessageFormProps {
 function OutsideDivider() {
   return (
     <div className="flex items-center justify-center gap-1.5">
-      <span className="h-px w-6 sm:w-10" style={outsideDividerLineStyle} />
-      <span className="h-0.5 w-0.5 rounded-full bg-motif-deep/45 sm:h-1 sm:w-1" aria-hidden />
-      <span className="h-px w-6 sm:w-10" style={sectionDividerLineStyleLeft} />
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyle} />
+      <span className="h-0.5 w-0.5 rounded-full sm:h-1 sm:w-1" style={{ background: GOLD }} aria-hidden />
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyleLeft} />
     </div>
   )
 }
@@ -82,29 +114,33 @@ function MessagesTitle() {
         {
           "--title-size": layeredSectionTitleSize.main,
           "--script-size": layeredSectionTitleSize.script,
+          "--script-overlap": layeredSectionTitleSize.overlap,
         } as React.CSSProperties
       }
     >
+      <span className="sr-only">Love Notes and Prayers — Share your love with us</span>
       <span
-        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em] pb-1 sm:pb-1.5`}
+        aria-hidden
+        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: sectionText.title,
+          color: IVORY,
+          textShadow: silkTitleShadow,
         }}
       >
-        Love Notes and Prayers
+        Love Notes
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] mt-2 sm:mt-2.5 md:mt-3`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
-          color: sectionText.script,
+          color: "#F3E6C0",
+          textShadow: silkScriptShadow,
         }}
       >
-        Share your love with us
+        and prayers
       </span>
-      <span className="sr-only">Share your love with us</span>
     </h2>
   )
 }
@@ -172,11 +208,11 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
   const inputBorder = (field: string) =>
     focusedField === field
       ? palette.accent
-      : "color-mix(in srgb, var(--color-motif-deep) 22%, transparent)"
+      : "color-mix(in srgb, var(--color-welcome-gold) 32%, transparent)"
 
   const inputClass = (field: string) =>
-    `message-form-input w-full rounded-xl border-2 px-3 py-2 ${sectionType.text} shadow-sm transition-all duration-300 placeholder:italic hover:shadow-md focus:shadow-lg sm:px-4 sm:py-2.5 md:py-3 ${
-      focusedField === field ? "shadow-lg" : ""
+    `message-form-input w-full rounded-lg border bg-[#fffaf4] px-3 py-2 font-goudy-italic ${sectionType.text} transition-all duration-300 focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-welcome-gold)_28%,transparent)] sm:px-4 sm:py-2.5 md:py-3 ${
+      focusedField === field ? "shadow-md" : ""
     }`
 
   return (
@@ -184,13 +220,13 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
       <style>{`
         .message-form-input::placeholder,
         .message-form-textarea::placeholder {
-          color: #9CA3AF !important;
+          color: color-mix(in srgb, var(--color-welcome-text) 55%, transparent) !important;
           opacity: 1 !important;
         }
       `}</style>
 
       <Card
-        className={`relative w-full overflow-hidden rounded-xl border backdrop-blur-xl transition-all duration-500 sm:rounded-2xl sm:backdrop-blur-2xl ${
+        className={`relative w-full overflow-hidden rounded-[1.85rem] border transition-all duration-500 ${
           isFocused ? "scale-[1.01]" : ""
         } ${isSubmitted ? "animate-bounce" : ""}`}
         style={cardStyle}
@@ -203,7 +239,7 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
         {isSubmitted && (
           <div
             className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
-            style={{ backgroundColor: "var(--color-welcome-bg-soft)" }}
+            style={{ backgroundColor: IVORY }}
           >
             <p
               className={`${cinzel.className} font-semibold ${sectionType.subheader}`}
@@ -217,12 +253,12 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
         <CardContent className="relative p-4 sm:p-5 md:p-6 lg:p-8">
           <div className="mb-4 text-center sm:mb-5 md:mb-6">
             <h3
-              className={`${cinzel.className} ${sectionType.subheader} mb-1.5 font-semibold`}
-              style={{ color: palette.heading }}
+              className={`${theSeasons.className} ${sectionType.subheader} mb-1.5 font-semibold tracking-[0.08em] uppercase`}
+              style={{ color: NAVY }}
             >
               Share Your Love
             </h3>
-            <p className={`font-goudy-italic ${sectionType.text}`} style={{ color: palette.body }}>
+            <p className={`font-goudy-italic ${sectionType.text}`} style={{ color: BODY }}>
               Leave a note for {coupleDisplayName} to read and keep.
             </p>
           </div>
@@ -236,8 +272,8 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
           >
             <div className="space-y-1.5 sm:space-y-2">
               <label
-                className={`${cinzel.className} ${sectionType.text} font-medium`}
-                style={{ color: palette.label }}
+                className={`${cinzel.className} ${sectionType.label} font-semibold uppercase tracking-[0.16em]`}
+                style={{ color: GOLD }}
               >
                 Your Name
               </label>
@@ -251,8 +287,8 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
                 placeholder="Full name"
                 className={inputClass("name")}
                 style={{
-                  color: palette.body,
-                  backgroundColor: "white",
+                  color: NAVY,
+                  backgroundColor: IVORY,
                   borderColor: inputBorder("name"),
                 }}
               />
@@ -261,8 +297,8 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
             <div className="space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <label
-                  className={`${cinzel.className} ${sectionType.text} font-medium`}
-                  style={{ color: palette.label }}
+                  className={`${cinzel.className} ${sectionType.label} font-semibold uppercase tracking-[0.16em]`}
+                  style={{ color: GOLD }}
                 >
                   Your Message
                 </label>
@@ -289,8 +325,8 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
                 placeholder={`Write your wishes, prayer, or kind words for ${coupleDisplayName}...`}
                 className={`message-form-textarea ${inputClass("message")} min-h-[90px] resize-none placeholder:leading-relaxed sm:min-h-[110px] md:min-h-[130px]`}
                 style={{
-                  color: palette.body,
-                  backgroundColor: "white",
+                  color: NAVY,
+                  backgroundColor: IVORY,
                   borderColor: inputBorder("message"),
                 }}
               />
@@ -299,22 +335,11 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
             <Button
               type="submit"
               disabled={isSubmitting || !nameValue.trim() || !messageValue.trim()}
-              className={`${cinzel.className} group relative w-full rounded-sm border px-5 py-2.5 ${sectionType.label} font-semibold uppercase tracking-[0.2em] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:transform-none sm:py-3 sm:tracking-[0.24em] md:tracking-[0.28em]`}
+              className={`${cinzel.className} group relative w-full rounded-full border px-5 py-2.5 ${sectionType.label} font-semibold uppercase tracking-[0.16em] shadow-[0_8px_18px_color-mix(in_srgb,var(--color-welcome-gold)_22%,transparent)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:transform-none sm:py-3 sm:tracking-[0.18em]`}
               style={{
-                backgroundColor: "var(--color-welcome-green)",
-                borderColor: "color-mix(in srgb, var(--color-welcome-navy) 35%, transparent)",
-                color: "var(--color-welcome-bg)",
-              }}
-              onMouseEnter={(e) => {
-                if (!e.currentTarget.disabled) {
-                  e.currentTarget.style.backgroundColor = "var(--color-welcome-navy)"
-                  e.currentTarget.style.borderColor = "var(--color-welcome-green)"
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "var(--color-welcome-green)"
-                e.currentTarget.style.borderColor =
-                  "color-mix(in srgb, var(--color-welcome-navy) 35%, transparent)"
+                background: NAV_GOLD,
+                borderColor: "transparent",
+                color: IVORY,
               }}
             >
               {isSubmitting ? (
@@ -374,7 +399,6 @@ export function Messages() {
   return (
     <div
       className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}
-      style={{ background: sectionBackground }}
     >
     <section
       id="messages"
@@ -382,7 +406,7 @@ export function Messages() {
     >
       <div className="relative z-10 mx-auto max-w-6xl px-3 @container/messages sm:px-4 md:px-6 lg:px-8">
         {/* Header — outside container */}
-        <div className="mb-6 text-center sm:mb-8 md:mb-10">
+        <SilkTextGlow className="mb-6 text-center sm:mb-8 md:mb-10">
           <div className="mx-auto mb-5 sm:mb-6 md:mb-7">
             <OutsideDivider />
           </div>
@@ -391,14 +415,14 @@ export function Messages() {
           </div>
           <p
             className={`font-goudy-italic mx-auto mt-4 max-w-2xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
-            style={{ color: sectionText.body }}
+            style={{ color: IVORY, textShadow: silkBodyShadow }}
           >
-            Share a short note, wish, or prayer for {coupleDisplayName}. Every message becomes part of our story
+            Share a short note, wish, or prayer for {coupleDisplayName}. Every message becomes part of our story.
           </p>
-          <div className="flex items-center justify-center pt-3 sm:pt-4">
-            <span className="h-px w-16 sm:w-24 md:w-32 bg-motif-deep/35" />
+          <div className="mt-4 flex items-center justify-center sm:mt-5">
+            <span className="h-px w-16 sm:w-24 md:w-32" style={goldDividerStyle} />
           </div>
-        </div>
+        </SilkTextGlow>
 
         {/* Form container */}
         <div className="mb-6 flex justify-center sm:mb-8 md:mb-10">
@@ -408,24 +432,27 @@ export function Messages() {
         </div>
 
      
-        {/* <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
-          <div className="mb-4 text-center sm:mb-6 md:mb-8">
+         <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
+          <SilkTextGlow className="mb-4 text-center sm:mb-6 md:mb-8">
             <h3
-              className={`${cinzel.className} mb-1.5 font-semibold sm:mb-2 ${sectionType.subheader}`}
-              style={{ color: sectionText.heading }}
+              className={`${theSeasons.className} mb-1.5 font-semibold tracking-[0.08em] uppercase sm:mb-2 ${sectionType.subheader}`}
+              style={{ color: IVORY, textShadow: silkTitleShadow }}
             >
               Messages from Loved Ones
             </h3>
-            <p className={`font-goudy-italic ${sectionType.text}`} style={{ color: sectionText.body }}>
+            <p
+              className={`font-goudy-italic ${sectionType.text}`}
+              style={{ color: "#F3E6C0", textShadow: silkBodyShadow }}
+            >
               Warm words from family and friends
             </p>
-            <div className="flex items-center justify-center pt-3 sm:pt-4">
-              <span className="h-px w-16 sm:w-24 md:w-32 bg-motif-deep/35" />
+            <div className="mt-4 flex items-center justify-center sm:mt-5">
+              <span className="h-px w-16 sm:w-24 md:w-32" style={goldDividerStyle} />
             </div>
-          </div>
+          </SilkTextGlow>
 
           <MessageWallDisplay messages={messages} loading={loading} />
-        </div> */}
+        </div> 
       </div>
     </section>
     </div>

@@ -1,18 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import './loading-screen.css';
 
+const MOBILE_BG_PHOTO_COUNT = 77;
+const DESKTOP_BG_PHOTO_COUNT = 38;
+const MARQUEE_SAMPLE_SIZE = 24;
+
 export const MOBILE_BG_PHOTOS = Array.from(
-  { length: 24 },
-  (_, index) => encodeURI(`/mobile-background/couple (${index + 1}).webp`),
+  { length: MOBILE_BG_PHOTO_COUNT },
+  (_, index) => encodeURI(`/mobile-background/couples (${index + 1}).webp`),
 );
 
 export const DESKTOP_BG_PHOTOS = Array.from(
-  { length: 29 },
-  (_, index) => encodeURI(`/desktop-background/couple (${index + 1}).webp`),
+  { length: DESKTOP_BG_PHOTO_COUNT },
+  (_, index) => encodeURI(`/desktop-background/couples (${index + 1}).webp`),
 );
+
+function pickRandomPhotos(photos: readonly string[], count: number) {
+  const next = [...photos];
+  for (let i = next.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [next[i], next[j]] = [next[j], next[i]];
+  }
+  return next.slice(0, Math.min(count, next.length));
+}
 
 function splitMarqueeRows(photos: readonly string[]) {
   const top: string[] = [];
@@ -68,7 +81,15 @@ export function PhotoMarquee({
   copies: number;
   variant: 'mobile' | 'desktop';
 }) {
-  const [top, bottom] = splitMarqueeRows(photos);
+  const [selected, setSelected] = useState(() =>
+    photos.slice(0, MARQUEE_SAMPLE_SIZE),
+  );
+
+  useEffect(() => {
+    setSelected(pickRandomPhotos(photos, MARQUEE_SAMPLE_SIZE));
+  }, [photos]);
+
+  const [top, bottom] = splitMarqueeRows(selected);
 
   return (
     <div className={`loading-screen__marquee loading-screen__marquee--${variant}`}>

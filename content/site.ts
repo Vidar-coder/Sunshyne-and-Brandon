@@ -5,11 +5,11 @@ import {
 
 export const siteConfig = {
   couple: {
-    bride: "Ana Margarita Benigno", //Noenyl Bryle M. Gonzaga
-    brideNickname: "Ana", //Ltryl
-    groom: "Marion Paul Serrano", //Ltryl B. Benitez
-    groomNickname: "Paul",
-    monogram:"/monogram/new-monogram.png" ,//Ltryl
+    bride: "Jonna Lynne D. Capacete", //Noenyl Bryle M. Gonzaga
+    brideNickname: "Jonna", //Ltryl
+    groom: "Ricky A. Balila II", //Ltryl B. Benitez
+    groomNickname: "Ricky",
+    monogram:"/monogram/monogram-new.png" ,//Ltryl
     backgroundMusic:"/background_music/Mike Mains & The Branches - I Love You Always Forever (Lyric Video).mp3"
   },
   googleAPI:{
@@ -27,12 +27,12 @@ export const siteConfig = {
       "https://docs.google.com/forms/d/e/1FAIpQLSfeGlEl4CMXWefdvCw6AOPHFS1ROku_rs-Gbofa2LkVJ0sLGQ/viewform", 
   },
   wedding: {
-    date: "November 6, 2026",
-    time: "9:00 AM",
+    date: "November 19, 2026",
+    time: "9:30 AM",
     venue: "St. Benedict Parish",
     tagline: "are getting married!!!!!",
-    theme: "Our wedding palette is inspired by timeless elegance and warmth.Motif Colors: Champagne Gold, Soft Beige, Warm Soft Brown",
-    motif: "#BBCED5, #B9C3A8, #F3D8C5, #D1C4D4, #ECD8BA, #F4E8D8, #E1DCCF",
+    theme: "Whimsical Spring Minimalist",
+    motif: "#FFCA8B, #FFB383, #F6CEC8, #E99997, #C8C29E",
   },
   proposal: {
     // Use "Maid of Honor" for unmarried, "Matron of Honor" for married
@@ -42,8 +42,8 @@ export const siteConfig = {
   },
   details: {
     rsvp: {
-      deadline: "October 6, 2026",
-      coordinator: "Ana / Paul",
+      deadline: "October 19, 2026",
+      coordinator: "Jonna / Ricky",
       phone: "to be announced",
     },
   },
@@ -77,24 +77,24 @@ export const siteConfig = {
     location: "St. Benedict Parish",
     venue: "Ayala Westgrove Heights, South Blvd, Silang, 4118 Cavite, Philippines",
     map: "https://maps.app.goo.gl/yRMLmsfaZwjEWzy36",
-    date: "November 6, 2026",
-    day: "Friday",
-    time: "9:00 AM",
+    date: "November 19, 2026",
+    day: "Thursday",
+    time: "9:30 AM",
     entourageTime: "8:00 AM",
-    guestsTime: "8:30 AM",
-    image: ["/Details/ceremony.png", "/Details/ceremony2.png","/Details/ceremony3.png"],
+    guestsTime: "9:00 AM",
+    image: ["/Details/ceremony (1).jpg", "/Details/ceremony (2).jpg","/Details/ceremony3.webp"],
   },
   reception: {
-    location: "Jardin de Milagros Events Place",
-    venue: "Purok 1, 9981 Santa Rosa. Tagaytay Rd, Silang, 4118 Cavite, Philippines",
-    map: "https://maps.app.goo.gl/EbRsPP7DbNo2bJ1k8",
-    date: "November 6, 2026",
-    day: "Friday",
-    time: "12:00 PM",
-    image: ["/Details/reception.png", "/Details/reception1.png","/Details/reception3.png"],
+    location: "Hillbarn Tagaytay",
+    venue: "Hillbarn Tagaytay, Daang Luma, Tagaytay City, 4120 Cavite",
+    map: "https://maps.app.goo.gl/5ydREXRam4A1zcyT9",
+    date: "November 19, 2026",
+    day: "Thursday",
+    time: "12:00 noon",
+    image: ["/Details/ceremony.jfif", "/Details/ceremony-1.jfif","/Details/ceremony-2.jfif"],
   },
   dressCode: {
-    theme: "STRICTLY FORMAL",
+    theme: "Whimsical Spring Minimalist",
     sponsors: {
       title: "Sponsors",
       ninang: {
@@ -128,15 +128,15 @@ export const siteConfig = {
     guests: {
       title: "Guests",
       label: "Guests",
-      description: "Formal attire and formal dress.",
-      image: "/Details/guest.png",
-      palette: ["#D9B8F5", "#A37CD2", "#E6DDD2", "#E4C5B2", "#727E40"],
+      description: "Casual attire: Whimsical Spring.",
+      image: "/Details/Guest.png",
+      palette: ["#FFCA8B", "#FFB383", "#F6CEC8", "#E99997", "#C8C29E"],
     },
     paletteNote:
-      "To create a cohesive and elegant celebration, we kindly encourage our guests to follow the suggested color palette above. To allow our wedding party to be easily distinguished, we respectfully ask that guests refrain from wearing white or black, as these colors are reserved for the couple and the wedding party.",
+      "Our theme is Whimsical Spring Minimalist. Entourage: women, a flowy spring sage green dress, strictly floor length; gentlemen, a black and white suit, a white and gray suit, or sage green long sleeves with gray or brown pants — strictly no rubber shoes. Guests: casual attire, Whimsical Spring.",
     closing:
       "Thank you for helping us bring our wedding vision to life. We can't wait to celebrate with you!",
-    note: "We kindly request our guests to dress in attire following our wedding palette.",
+    note: "We kindly request our guests to dress in attire following our Whimsical Spring Minimalist palette.",
   },
   narratives: {
     ourStory: `Once upon a signature…
@@ -178,12 +178,12 @@ Now, as they prepare to say yes before God and the people they love most, Cather
     googleDriveLink:
       "https://drive.google.com/drive/folders/1BE5gjldtokJI4ba5narJmLgzIkXhfrA_?usp=sharing",
     albumQR: "/QR/AlbumQR.png",
-    hashtag: ["#PaulandAnaWedding"],
+    hashtag: ["#JonnaandRickyWedding"],
     instructions: "Please scan this QR Code and upload the photos and videos you have taken during our wedding reception. We are delighted to see your snaps too!",
   },
   accommodation: {
     coordinator: {
-      name: "Paul / Ana",
+      name: "Jonna / Ricky",
       phone: "to be announced",
     },
     hotels: [

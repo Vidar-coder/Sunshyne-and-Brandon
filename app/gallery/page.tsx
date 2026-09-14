@@ -89,35 +89,35 @@ export default async function GalleryPage() {
     >
       <div className="pointer-events-none absolute left-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* <img
           src="/decoration/left-top-corner.png"
           alt=""
           className={CORNER_DECO_CLASS}
-        />
+        /> */}
       </div>
       <div className="pointer-events-none absolute right-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* <img
           src="/decoration/right-top-corner.png"
           alt=""
           className={CORNER_DECO_CLASS}
-        />
+        /> */}
       </div>
       <div className="pointer-events-none absolute bottom-0 left-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* <img
           src="/decoration/left-bottom-corner.png"
           alt=""
           className={CORNER_DECO_CLASS}
-        />
+        /> */}
       </div>
       <div className="pointer-events-none absolute bottom-0 right-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* <img
           src="/decoration/right-bottom-corner.png"
           alt=""
           className={CORNER_DECO_CLASS}
-        />
+        /> */}
       </div>
 
       <section className="relative z-20 mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">

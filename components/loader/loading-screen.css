@@ -11,16 +11,20 @@
 
 .loading-screen,
 .invite-photo-backdrop {
-  --ls-forest: var(--color-motif-deep, #5d6f47);
-  --ls-sage: var(--color-motif-accent, #949981);
-  --ls-mustard: var(--color-motif-yellow, #eec853);
-  --ls-butter: #f4dd97;
-  --ls-cream: var(--color-motif-cream, #f7f3e9);
-  --ls-ink: var(--color-welcome-text, #3a3128);
+  --ls-warm-base: var(--color-welcome-navy, #5e5144);
+  --ls-warm-mid: var(--color-motif-blush, #c99f91);
+  --ls-warm-glow: var(--color-welcome-gold, #b49a68);
+  /* Legacy aliases — warm linen palette (no sage/forest green) */
+  --ls-forest: var(--color-motif-cream, #e8ded0);
+  --ls-sage: var(--color-motif-blush, #c99f91);
+  --ls-mustard: var(--color-motif-yellow, #b49a68);
+  --ls-butter: #f0dfa8;
+  --ls-cream: var(--color-motif-soft, #f5f0e7);
+  --ls-ink: var(--color-welcome-text, #6b5c4d);
 }
 
 .loading-screen {
-  background: var(--ls-forest);
+  background: var(--ls-cream);
 }
 
 .loading-screen__backdrop {
@@ -29,7 +33,7 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background-color: var(--ls-forest);
+  background-color: var(--ls-cream);
 }
 
 .loading-screen__marquee {
@@ -84,7 +88,7 @@
   width: 82vw;
   object-fit: cover;
   object-position: center 28%;
-  background: color-mix(in srgb, var(--ls-forest) 72%, black);
+  background: color-mix(in srgb, var(--color-motif-cream) 70%, white);
 }
 
 .loading-screen__backdrop-veil {
@@ -95,18 +99,23 @@
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--ls-forest) 58%, transparent) 0%,
-      color-mix(in srgb, var(--ls-forest) 22%, transparent) 18%,
-      color-mix(in srgb, var(--ls-forest) 36%, transparent) 46%,
-      color-mix(in srgb, var(--ls-sage) 16%, transparent) 58%,
-      color-mix(in srgb, var(--ls-forest) 32%, transparent) 74%,
-      color-mix(in srgb, var(--ls-forest) 62%, transparent) 100%
+      rgb(42 34 28 / 52%) 0%,
+      rgb(42 34 28 / 22%) 18%,
+      rgb(42 34 28 / 8%) 42%,
+      rgb(42 34 28 / 18%) 68%,
+      rgb(42 34 28 / 58%) 100%
     ),
     radial-gradient(
       ellipse 92% 52% at 50% 46%,
-      color-mix(in srgb, var(--ls-forest) 38%, transparent) 0%,
+      color-mix(in srgb, var(--ls-warm-glow) 10%, transparent) 0%,
       transparent 72%
     );
+}
+
+.loading-screen--invitation .loading-screen__slide-photo,
+.invite-photo-backdrop .loading-screen__slide-photo {
+  background: color-mix(in srgb, var(--color-motif-cream) 45%, white);
+  filter: sepia(0.04) saturate(0.92) brightness(1.08) contrast(1.02) hue-rotate(-8deg);
 }
 
 @keyframes ls-slide-left {
@@ -125,6 +134,241 @@
   to {
     transform: translate3d(0, 0, 0);
   }
+}
+
+.loading-screen__save-date {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  pointer-events: none;
+}
+
+/* Mediterranean invitation — ivory, champagne, blush (no green) */
+.loading-screen--invitation {
+  background: var(--color-motif-soft, #f5f0e7);
+}
+
+.loading-screen--invitation .loading-screen__backdrop {
+  background-color: var(--color-motif-soft, #f5f0e7);
+}
+
+.loading-screen--invitation .loading-screen__save-date::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgb(42 34 28 / 38%) 0%,
+      rgb(42 34 28 / 8%) 22%,
+      transparent 42%,
+      rgb(42 34 28 / 16%) 72%,
+      rgb(42 34 28 / 48%) 100%
+    );
+}
+
+.loading-screen__std-headline {
+  font-family: var(--font-brittany);
+  color: #fffaf4;
+  font-size: clamp(2.8rem, 10vw, 5.5rem);
+  line-height: 1.05;
+  font-weight: 400;
+  text-shadow:
+    0 1px 2px rgb(42 34 28 / 55%),
+    0 8px 22px rgb(42 34 28 / 45%);
+}
+
+.loading-screen__std-kicker {
+  margin-top: 0.85rem;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  color: #fff8f0;
+  font-size: clamp(0.82rem, 3.8vw, 1.35rem);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 10px rgb(42 34 28 / 55%);
+}
+
+.loading-screen__std-box {
+  border: 1px solid rgb(255 251 247 / 45%);
+  box-shadow:
+    0 0 0 1px rgb(255 251 247 / 18%),
+    0 16px 36px rgb(42 34 28 / 12%),
+    inset 0 1px 0 rgb(255 251 247 / 35%);
+  background: rgb(255 251 247 / 18%);
+  backdrop-filter: blur(6px);
+}
+
+.loading-screen__std-box-overlay {
+  background: linear-gradient(
+    180deg,
+    rgb(42 34 28 / 18%) 0%,
+    rgb(42 34 28 / 6%) 38%,
+    rgb(42 34 28 / 72%) 100%
+  );
+}
+
+.loading-screen__std-box-num {
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-weight: 500;
+  color: #fffaf4;
+  text-shadow: 0 1px 10px rgb(42 34 28 / 70%);
+}
+
+.loading-screen__std-box-label {
+  color: rgb(255 248 240 / 92%);
+  letter-spacing: 0.2em;
+  text-shadow: 0 1px 8px rgb(42 34 28 / 60%);
+}
+
+.loading-screen__std-eyebrow {
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-size: clamp(0.62rem, 2.8vw, 0.78rem);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #fff8f0;
+  text-shadow: 0 1px 10px rgb(42 34 28 / 55%);
+}
+
+.loading-screen__std-copy {
+  margin: 0.35rem 0 0;
+  max-width: 22rem;
+  text-align: center;
+  font-family: "SortsMillGoudy", Georgia, "Times New Roman", serif;
+  font-size: clamp(0.95rem, 3.4vw, 1.2rem);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #fffaf4;
+  text-shadow: 0 1px 10px rgb(42 34 28 / 55%);
+}
+
+.loading-screen__std-names-slot {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  padding: 0.25rem 1rem 0.5rem;
+}
+
+.loading-screen__std-names-slot::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: min(96%, 30rem);
+  height: min(92%, 11rem);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 72% 62% at 50% 50%,
+    rgb(42 34 28 / 58%) 0%,
+    rgb(42 34 28 / 32%) 42%,
+    rgb(42 34 28 / 10%) 68%,
+    transparent 82%
+  );
+}
+
+.loading-screen__std-names {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(88%, 24rem);
+  aspect-ratio: 1774 / 887;
+  margin: 0 auto;
+  pointer-events: none;
+  user-select: none;
+  filter:
+    drop-shadow(0 0 1px rgb(255 250 244 / 80%))
+    drop-shadow(0 1px 1px rgb(42 34 28 / 90%))
+    drop-shadow(0 3px 8px rgb(42 34 28 / 70%))
+    drop-shadow(0 10px 28px rgb(42 34 28 / 45%));
+}
+
+.loading-screen__std-names-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #fffaf4;
+  -webkit-mask-image: url("/decoration/couple-name.png");
+  mask-image: url("/decoration/couple-name.png");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.loading-screen__std-rule {
+  position: relative;
+  width: 3.25rem;
+  height: 1px;
+  margin: 0.55rem 0 0.65rem;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 251 247 / 55%) 50%,
+    transparent 100%
+  );
+}
+
+.loading-screen__std-rule::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgb(255 248 240 / 70%);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 2px rgb(255 251 247 / 25%);
+}
+
+.loading-screen__std-status {
+  margin-bottom: 0.45rem;
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-size: clamp(0.58rem, 2.5vw, 0.68rem);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #fff8f0;
+  text-shadow: 0 1px 10px rgb(42 34 28 / 55%);
+}
+
+.loading-screen__std-track {
+  height: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-motif-silver) 55%, white);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent);
+}
+
+.loading-screen__std-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease-out;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-motif-yellow) 85%, white) 0%,
+    var(--color-welcome-gold) 55%,
+    color-mix(in srgb, var(--color-motif-blush) 35%, var(--color-welcome-gold)) 100%
+  );
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-welcome-gold) 45%, transparent);
 }
 
 .loading-screen__overlay {
@@ -615,7 +859,7 @@
   z-index: 20;
   overflow: hidden;
   pointer-events: none;
-  background-color: var(--ls-forest);
+  background-color: var(--ls-cream);
 }
 
 .invite-photo-backdrop--page {

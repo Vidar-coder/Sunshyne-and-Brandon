@@ -1,27 +1,18 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, type ReactNode } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import localFont from "next/font/local"
 import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react"
 import { Cinzel } from "next/font/google"
 import { Section } from "@/components/section"
-import { useSiteConfig } from "@/hooks/use-site-config"
 import { sectionType, welcomeTitleSize } from "@/lib/section-typography"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
 })
-
-const C = {
-  forest: "#5d6f47",
-  sage: "#949981",
-  mustard: "#eec853",
-  butter: "#f4dd97",
-  cream: "#f7f3e9",
-} as const
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -35,6 +26,54 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
+const IVORY = "#fffaf4"
+const GOLD = "var(--color-welcome-gold)"
+const NAV_GOLD =
+  "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
+
+const goldDividerStyle = {
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
+} as const
+
+const goldDividerStyleLeft = {
+  background: "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
+} as const
+
+const silkTitleShadow =
+  "0 1px 0 rgb(42 34 28 / 42%), 0 2px 10px rgb(42 34 28 / 38%), 0 8px 28px rgb(42 34 28 / 28%)"
+const silkScriptShadow =
+  "0 1px 0 rgb(42 34 28 / 35%), 0 2px 12px rgb(42 34 28 / 32%), 0 0 18px rgb(232 213 163 / 35%)"
+const silkBodyShadow =
+  "0 1px 1px rgb(42 34 28 / 45%), 0 2px 10px rgb(42 34 28 / 32%)"
+
+const silkGlowStyle = {
+  background:
+    "radial-gradient(ellipse at center, rgb(94 81 68 / 34%) 0%, rgb(94 81 68 / 12%) 46%, transparent 72%)",
+} as const
+
+function SilkTextGlow({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={`relative ${className}`}>
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[140%] w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 blur-2xl"
+        style={silkGlowStyle}
+        aria-hidden
+      />
+      <div className="relative z-10">{children}</div>
+    </div>
+  )
+}
+
+function OutsideDivider() {
+  return (
+    <div className="flex items-center justify-center gap-1.5">
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyle} />
+      <span className="h-0.5 w-0.5 rounded-full sm:h-1 sm:w-1" style={{ background: GOLD }} aria-hidden />
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyleLeft} />
+    </div>
+  )
+}
+
 function GalleryTitle() {
   return (
     <h2
@@ -43,50 +82,52 @@ function GalleryTitle() {
         {
           "--title-size": welcomeTitleSize.main,
           "--script-size": welcomeTitleSize.script,
+          "--script-overlap": welcomeTitleSize.overlap,
         } as React.CSSProperties
       }
     >
+      <span className="sr-only">Gallery — our favorite moments</span>
       <span
-        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em] pb-1 sm:pb-1.5`}
+        aria-hidden
+        className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: "var(--color-welcome-navy)",
+          color: IVORY,
+          textShadow: silkTitleShadow,
         }}
       >
         Gallery
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] mt-2 sm:mt-2.5 md:mt-3`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
-          color: "var(--color-welcome-green)",
+          color: "#F3E6C0",
+          textShadow: silkScriptShadow,
         }}
       >
         our favorite moments
       </span>
-      <span className="sr-only">our favorite moments</span>
     </h2>
   )
 }
 
 const galleryItems = [
-  { image: "/mobile-background/couple (10).webp", text: " " },
-  { image: "/mobile-background/couple (11).webp", text: " " },
-  { image: "/mobile-background/couple (12).webp", text: " " },
-  { image: "/mobile-background/couple (13).webp", text: " " },
-  { image: "/mobile-background/couple (14).webp", text: " " },
-  { image: "/mobile-background/couple (15).webp", text: " " },
-  { image: "/mobile-background/couple (16).webp", text: " " },
-  { image: "/mobile-background/couple (17).webp", text: " " },
-  { image: "/mobile-background/couple (18).webp", text: " " },
-  { image: "/mobile-background/couple (19).webp", text: " " },
-  { image: "/mobile-background/couple (20).webp", text: " " },
+  { image: "/mobile-background/couples (23).webp", text: " " },
+  { image: "/mobile-background/couples (8).webp", text: " " },
+  { image: "/mobile-background/couples (26).webp", text: " " },
+  { image: "/mobile-background/couples (22).webp", text: " " },
+  { image: "/mobile-background/couples (7).webp", text: " " },
+  { image: "/mobile-background/couples (31).webp", text: " " },
+  { image: "/mobile-background/couples (36).webp", text: " " },
+  { image: "/mobile-background/couples (73).webp", text: " " },
+  { image: "/mobile-background/couples (74).webp", text: " " },
+  { image: "/mobile-background/couples (70).webp", text: " " },
 
 ]
 
 export function Gallery() {
-  const siteConfig = useSiteConfig()
 
   const [selectedImage, setSelectedImage] = useState<(typeof galleryItems)[0] | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -164,54 +205,37 @@ export function Gallery() {
   return (
     <div
       className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}
-      style={{
-        background: `
-          radial-gradient(920px 520px at 50% 8%, color-mix(in srgb, ${C.butter} 35%, transparent) 0%, transparent 55%),
-          radial-gradient(640px 420px at 12% 88%, color-mix(in srgb, ${C.sage} 16%, transparent) 0%, transparent 58%),
-          radial-gradient(560px 380px at 92% 78%, color-mix(in srgb, ${C.mustard} 14%, transparent) 0%, transparent 55%),
-          linear-gradient(180deg, ${C.cream} 0%, #faf7ef 48%, ${C.cream} 100%)
-        `,
-      }}
     >
       <Section
         id="gallery"
         className="relative z-10 pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14"
       >
       {/* Header */}
-      <div className="relative z-20 mx-auto mb-6 max-w-5xl px-6 text-center @container/gallery sm:mb-8 sm:px-10 md:mb-10 md:px-12">
-        <div className="mt-8 mb-4 sm:mt-10 sm:mb-5 md:mt-12 md:mb-6">
+      <SilkTextGlow className="relative z-20 mx-auto mb-6 max-w-5xl px-6 text-center @container/gallery sm:mb-8 sm:px-10 md:mb-10 md:px-12">
+        <div className="mx-auto mb-4 sm:mb-5 md:mb-6">
+          <OutsideDivider />
+        </div>
+        <div className="mx-auto mt-2 sm:mt-3 md:mt-4">
           <GalleryTitle />
         </div>
         <p
-          className={`font-goudy-italic mx-auto max-w-2xl px-2 ${sectionType.textRelaxed}`}
-          style={{ color: "var(--color-welcome-text)" }}
+          className={`font-goudy-italic mx-auto mt-4 max-w-2xl px-2 sm:mt-5 ${sectionType.textRelaxed}`}
+          style={{ color: IVORY, textShadow: silkBodyShadow }}
         >
           From our first chapter to this beautiful season of commitment — every moment has been a
           testament to love, faith, and grace.
         </p>
 
-        <div className="flex items-center justify-center gap-2 pt-3 sm:pt-4">
-          <span
-            className="h-px w-8 sm:w-12 md:w-16"
-            style={{
-              background:
-                "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-welcome-navy) 38%, transparent))",
-            }}
-          />
+        <div className="mt-4 flex items-center justify-center gap-1.5 sm:mt-5">
+          <span className="h-px w-8 sm:w-12 md:w-16" style={goldDividerStyle} />
           <Camera
             className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-            style={{ color: "var(--color-welcome-green)" }}
+            style={{ color: GOLD, filter: "drop-shadow(0 1px 4px rgb(42 34 28 / 45%))" }}
             aria-hidden
           />
-          <span
-            className="h-px w-8 sm:w-12 md:w-16"
-            style={{
-              background:
-                "linear-gradient(to left, transparent, color-mix(in srgb, var(--color-welcome-navy) 38%, transparent))",
-            }}
-          />
+          <span className="h-px w-8 sm:w-12 md:w-16" style={goldDividerStyleLeft} />
         </div>
-      </div>
+      </SilkTextGlow>
 
       {/* Gallery content — images outside container */}
       <div className="relative z-20 w-full max-w-6xl mx-auto px-6 sm:px-10 md:px-12 pb-2 sm:pb-3">
@@ -220,8 +244,8 @@ export function Gallery() {
             <div
               className="h-12 w-12 animate-spin rounded-full border-[3px]"
               style={{
-                borderColor: "color-mix(in srgb, var(--color-welcome-green) 30%, transparent)",
-                borderTopColor: "var(--color-welcome-green)",
+                borderColor: "color-mix(in srgb, var(--color-welcome-gold) 30%, transparent)",
+                borderTopColor: GOLD,
               }}
             />
           </div>
@@ -248,7 +272,7 @@ export function Gallery() {
                       className="absolute -inset-0.5 rounded-lg opacity-0 blur-sm transition-opacity duration-300 group-active:opacity-100"
                       style={{
                         background:
-                          "color-mix(in srgb, var(--color-welcome-green) 25%, transparent)",
+                          "color-mix(in srgb, var(--color-welcome-gold) 32%, transparent)",
                       }}
                     />
 
@@ -282,8 +306,8 @@ export function Gallery() {
               </div>
 
               <p
-                className={`font-goudy-italic mt-2 text-center tracking-wide ${sectionType.label}`}
-                style={{ color: "var(--color-welcome-heading)" }}
+                className={`${cinzel.className} mt-2 text-center tracking-[0.16em] uppercase ${sectionType.label}`}
+                style={{ color: "#F3E6C0", textShadow: silkBodyShadow }}
               >
                 Swipe to explore
               </p>
@@ -306,7 +330,7 @@ export function Gallery() {
                     className="absolute -inset-0.5 rounded-xl opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100"
                     style={{
                       background:
-                        "color-mix(in srgb, var(--color-welcome-green) 22%, transparent)",
+                        "color-mix(in srgb, var(--color-welcome-gold) 28%, transparent)",
                     }}
                   />
 
@@ -342,22 +366,11 @@ export function Gallery() {
             <div className="mt-10 sm:mt-12 md:mt-14 flex justify-center">
               <Link
                 href="/gallery"
-                className={`${cinzel.className} inline-flex items-center justify-center rounded-full border px-8 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.18em] transition-all duration-300 hover:scale-[1.02] sm:text-[0.6875rem] sm:tracking-[0.22em]`}
+                className={`${cinzel.className} inline-flex items-center justify-center rounded-full border px-8 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.18em] shadow-[0_8px_18px_color-mix(in_srgb,var(--color-welcome-gold)_22%,transparent)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] sm:text-[0.6875rem] sm:tracking-[0.22em]`}
                 style={{
-                  backgroundColor: "var(--color-welcome-green)",
-                  borderColor: "color-mix(in srgb, var(--color-welcome-navy) 35%, transparent)",
-                  color: "var(--color-welcome-bg)",
-                  boxShadow:
-                    "0 6px 20px color-mix(in srgb, var(--color-welcome-green) 35%, transparent)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--color-welcome-navy)"
-                  e.currentTarget.style.borderColor = "var(--color-welcome-green)"
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--color-welcome-green)"
-                  e.currentTarget.style.borderColor =
-                    "color-mix(in srgb, var(--color-welcome-navy) 35%, transparent)"
+                  background: NAV_GOLD,
+                  borderColor: "transparent",
+                  color: IVORY,
                 }}
               >
                 View Full Gallery
@@ -437,7 +450,7 @@ export function Gallery() {
                 style={{
                   backgroundColor: "rgba(0,0,0,0.4)",
                   borderColor:
-                    "color-mix(in srgb, var(--color-welcome-green) 50%, transparent)",
+                    "color-mix(in srgb, var(--color-welcome-gold) 50%, transparent)",
                 }}
               >
                 <span
