@@ -138,7 +138,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
         <div className="flex flex-col items-center justify-center w-full pt-8 sm:pt-12 md:pt-16 px-4 sm:px-6 flex-shrink-0">
           <div className="w-full max-w-lg mx-auto">
             <div className="flex flex-col items-center">
-              <span className="loading-screen__std-headline">Save the Date</span>
+              <span className="loading-screen__std-headline mt-4 sm:mt-6">Save the Date</span>
               <span className="loading-screen__std-kicker">
                 {countdown.days} more days to go
               </span>

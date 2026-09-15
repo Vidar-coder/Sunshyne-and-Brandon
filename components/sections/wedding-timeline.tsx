@@ -3,7 +3,6 @@
 import type React from "react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import type { SiteConfig } from "@/lib/site-config"
-import { sectionType } from "@/lib/section-typography"
 import { sectionBackground } from "@/lib/section-background"
 import { motion } from "motion/react"
 import { Cinzel } from "next/font/google"
@@ -26,6 +25,9 @@ const aboveTheBeyond = localFont({
   display: "swap",
   variable: "--font-above-beyond",
 })
+
+const CORNER_DECO_CLASS =
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 const IVORY = "#fffaf4"
 const GOLD = "var(--color-welcome-gold)"
@@ -65,16 +67,22 @@ function OutsideDivider() {
   )
 }
 
+const timelineType = {
+  label: "text-[0.5625rem] sm:text-[0.6875rem] md:text-xs",
+  text: "text-[0.75rem] sm:text-[0.875rem] md:text-[0.9375rem]",
+  textRelaxed: "text-[0.75rem] sm:text-[0.875rem] md:text-[0.9375rem] leading-[1.55] sm:leading-[1.65]",
+} as const
+
 const timelineTitleSize = {
-  main: "clamp(3.15rem, 16.5vw, 5.85rem)",
-  script: "clamp(1.65rem, 8.2vw, 3.05rem)",
-  overlap: "clamp(-0.95rem, -3.9vw, -2rem)",
+  main: "clamp(2.15rem, 11.5vw, 4.95rem)",
+  script: "clamp(1.15rem, 5.8vw, 2.55rem)",
+  overlap: "clamp(-0.62rem, -2.7vw, -1.7rem)",
 } as const
 
 function TimelineKicker() {
   return (
     <p
-      className={`${cinzel.className} mx-auto max-w-[20rem] px-2 text-[0.8125rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.875rem] min-[400px]:tracking-[0.16em] sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
+      className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-6 sm:text-[0.875rem] sm:tracking-[0.2em] md:text-[0.9375rem] md:tracking-[0.22em]`}
       style={{ color: GOLD }}
     >
       Join us as we tie the knot!
@@ -184,9 +192,46 @@ export function WeddingTimeline() {
       id="wedding-timeline"
       className="relative z-10 overflow-hidden py-10 sm:py-12 md:py-16 lg:py-20"
     >
+      {/* Corner decorations */}
+      <div className="pointer-events-none absolute left-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/left-top-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute right-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/right-top-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/left-bottom-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/right-bottom-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
 
       {/* Header */}
-      <div className="relative z-10 mx-auto mb-8 max-w-5xl px-3 text-center @container/timeline sm:mb-10 sm:px-4 md:mb-12">
+      <div className="relative z-20 mx-auto mb-8 max-w-5xl px-3 text-center @container/timeline sm:mb-10 sm:px-4 md:mb-12">
         <div className="mx-auto mb-4 sm:mb-5 md:mb-6">
           <OutsideDivider />
         </div>
@@ -197,7 +242,7 @@ export function WeddingTimeline() {
           <TimelineTitle />
         </div>
         <p
-          className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
+          className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${timelineType.textRelaxed}`}
           style={{ color: BODY }}
         >
           From the first arrival to the last farewell, here is how we will spend this day together.
@@ -208,7 +253,7 @@ export function WeddingTimeline() {
       </div>
 
       {/* Timeline */}
-      <div className="relative z-10 mx-auto max-w-6xl px-3 sm:px-5 lg:px-8">
+      <div className="relative z-20 mx-auto max-w-6xl px-3 sm:px-5 lg:px-8">
         <motion.div
           className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-px origin-top -translate-x-1/2"
           initial={{ scaleY: 0, opacity: 0 }}
@@ -226,6 +271,26 @@ export function WeddingTimeline() {
             <TimelineItem key={`${event.title}-${event.time}-${index}`} event={event} index={index} />
           ))}
         </div>
+      </div>
+
+      <div className="relative z-20 mx-auto mt-8 max-w-xl px-3 text-center sm:mt-10 md:mt-12">
+        <div className="mb-5 flex items-center justify-center sm:mb-6">
+          <span className="h-px w-16 sm:w-24 md:w-32" style={goldDividerStyle} />
+        </div>
+        <blockquote>
+          <p
+            className={`font-goudy-italic ${timelineType.textRelaxed} italic leading-relaxed`}
+            style={{ color: BODY }}
+          >
+            &ldquo;At the right time, I, the Lord, will make it happen.&rdquo;
+          </p>
+          <footer
+            className={`font-goudy-italic mt-2 sm:mt-3 ${timelineType.label} not-italic tracking-wide`}
+            style={{ color: SCRIPT }}
+          >
+            — Isaiah 60:22
+          </footer>
+        </blockquote>
       </div>
     </section>
     </div>
@@ -348,13 +413,13 @@ function TimelineText({
   return (
     <div className={`max-w-md ${textAlign} ${align === "right" ? "ml-auto" : "mr-auto"}`}>
       <p
-        className={`${cinzel.className} ${sectionType.label} font-semibold tracking-[0.2em] uppercase`}
+        className={`${cinzel.className} ${timelineType.label} font-semibold tracking-[0.2em] uppercase`}
         style={{ color: GOLD }}
       >
         {event.time}
       </p>
       <p
-        className={`${theSeasons.className} mt-1 text-[1.15rem] leading-tight tracking-[0.04em] sm:text-[1.3rem]`}
+        className={`${theSeasons.className} mt-1 text-[0.95rem] leading-tight tracking-[0.04em] sm:text-[1.175rem]`}
         style={{ color: NAVY }}
       >
         {event.title}
@@ -362,7 +427,7 @@ function TimelineText({
 
       {event.description && (
         <p
-          className={`font-goudy-italic ${sectionType.textRelaxed} mt-1.5`}
+          className={`font-goudy-italic ${timelineType.textRelaxed} mt-1.5`}
           style={{ color: BODY }}
         >
           {event.description}
@@ -371,7 +436,7 @@ function TimelineText({
 
       {event.location && (
         <p
-          className={`font-goudy-italic ${sectionType.text} mt-1.5 leading-relaxed`}
+          className={`font-goudy-italic ${timelineType.text} mt-1.5 leading-relaxed`}
           style={{ color: BODY }}
         >
           {event.location}

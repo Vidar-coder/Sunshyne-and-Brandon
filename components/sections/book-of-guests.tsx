@@ -39,11 +39,20 @@ const creamWash = `
   linear-gradient(180deg, ${C.cream} 0%, #faf7ef 48%, ${C.cream} 100%)
 `
 
+const IVORY = "#fffaf4"
+const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const BODY = "var(--color-welcome-text)"
+const NAV_GOLD =
+  "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
+const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
+const GOLD_BORDER_SOFT = "color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)"
+
 const palette = {
-  body: "var(--color-welcome-text)",
-  heading: "var(--color-welcome-navy)",
-  label: "var(--color-welcome-heading)",
-  accent: "var(--color-welcome-green)",
+  body: BODY,
+  heading: NAVY,
+  label: GOLD,
+  accent: GOLD,
 } as const
 
 const cardStyle = {
@@ -65,6 +74,9 @@ const dividerLineStyle = {
     "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-deep) 38%, transparent), transparent)",
 } as const
 
+const CORNER_DECO_CLASS =
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
+
 const refreshButtonStyle = {
   borderColor: "color-mix(in srgb, var(--color-motif-deep) 14%, transparent)",
   backgroundColor: "var(--color-welcome-bg-soft)",
@@ -73,15 +85,15 @@ const refreshButtonStyle = {
 } as const
 
 const chipPrimaryStyle = {
-  color: "var(--color-welcome-navy)",
-  borderColor: "color-mix(in srgb, var(--color-welcome-green) 30%, transparent)",
-  backgroundColor: "color-mix(in srgb, var(--color-welcome-green) 12%, transparent)",
+  color: NAVY,
+  borderColor: GOLD_BORDER,
+  backgroundColor: "color-mix(in srgb, var(--color-welcome-gold) 12%, white)",
 } as const
 
 const chipSecondaryStyle = {
-  color: "var(--color-welcome-navy)",
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 22%, transparent)",
-  backgroundColor: "color-mix(in srgb, var(--color-motif-deep) 10%, transparent)",
+  color: NAVY,
+  borderColor: GOLD_BORDER_SOFT,
+  backgroundColor: "color-mix(in srgb, var(--color-welcome-gold) 8%, white)",
 } as const
 
 const ct = {
@@ -294,6 +306,44 @@ export function BookOfGuests() {
       className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative isolate z-10 overflow-hidden pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14`}
       style={{ background: creamWash }}
     >
+      {/* Corner decorations */}
+      <div className="pointer-events-none absolute left-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/left-top-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute right-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/right-top-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/left-bottom-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/right-bottom-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+
       {/* Section Header */}
       <div className="relative z-20 mx-auto mb-6 max-w-5xl px-6 text-center @container/book-of-guests sm:mb-8 sm:px-10 md:mb-10 md:px-12">
         <div className="mt-8 mb-4 sm:mt-10 sm:mb-5 md:mt-12 md:mb-6">
@@ -343,7 +393,7 @@ export function BookOfGuests() {
               >
                 <RefreshCw
                   className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-500 ${isRefreshing ? "animate-spin" : "group-hover:rotate-180"}`}
-                  style={{ color: "var(--color-welcome-green)" }}
+                  style={{ color: GOLD }}
                   aria-hidden
                 />
               </button>
@@ -449,13 +499,17 @@ export function BookOfGuests() {
                   <div className="relative z-[1] flex items-start gap-3 sm:gap-4">
                     <div className="relative flex-shrink-0">
                       <div
-                        className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-md ring-2 ring-white/80"
+                        className="flex h-11 w-11 items-center justify-center rounded-full ring-2 ring-white/80 sm:h-12 sm:w-12 md:h-14 md:w-14"
                         style={{
-                          background:
-                            "linear-gradient(145deg, var(--color-welcome-green) 0%, var(--color-welcome-navy) 100%)",
+                          background: NAV_GOLD,
+                          boxShadow:
+                            "0 6px 14px color-mix(in srgb, var(--color-welcome-gold) 28%, transparent)",
                         }}
                       >
-                        <span className={`${cinzel.className} text-white font-semibold ${sectionType.text}`}>
+                        <span
+                          className={`${cinzel.className} font-semibold ${sectionType.text}`}
+                          style={{ color: IVORY }}
+                        >
                           {getInitials(guest.name)}
                         </span>
                       </div>
@@ -482,8 +536,12 @@ export function BookOfGuests() {
                         </div>
                         {guest.isVip && (
                           <span
-                            className={`${cinzel.className} shrink-0 ${ct.meta} px-2 py-0.5 rounded-full font-semibold uppercase tracking-[0.12em] text-white border border-white/80`}
-                            style={{ backgroundColor: "var(--color-welcome-green)" }}
+                            className={`${cinzel.className} shrink-0 ${ct.meta} px-2 py-0.5 rounded-full font-semibold uppercase tracking-[0.12em] border`}
+                            style={{
+                              background: NAV_GOLD,
+                              color: IVORY,
+                              borderColor: GOLD_BORDER,
+                            }}
                           >
                             VIP
                           </span>

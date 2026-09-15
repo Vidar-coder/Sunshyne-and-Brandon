@@ -40,7 +40,7 @@ const aboveTheBeyond = localFont({
 })
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px]"
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 const IVORY = "#fffaf4"
 const GOLD = "var(--color-welcome-gold)"
@@ -95,6 +95,28 @@ function SectionIconDivider({ icon }: { icon: React.ReactNode }) {
   )
 }
 
+function StyledAddress({ text }: { text: string }) {
+  const parts = text.split(/([0-9]+|[^\p{L}\s]+)/u)
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (!part) return null
+        const isSpecial = /^[0-9]+$/.test(part) || /^[^\p{L}\s]+$/u.test(part)
+        if (!isSpecial) return <span key={`${part}-${index}`}>{part}</span>
+        return (
+          <span
+            key={`${part}-${index}`}
+            className={`${cinzel.className} inline font-medium not-italic tracking-normal`}
+          >
+            {part}
+          </span>
+        )
+      })}
+    </>
+  )
+}
+
 function OutsideDivider() {
   return (
     <div className="flex items-center justify-center gap-1.5">
@@ -106,9 +128,9 @@ function OutsideDivider() {
 }
 
 const detailsTitleSize = {
-  main: "clamp(2.35rem, 11.5vw, 4.5rem)",
-  script: "clamp(1.45rem, 7vw, 2.7rem)",
-  overlap: "clamp(-0.9rem, -3.6vw, -1.75rem)",
+  main: "clamp(1.65rem, 8.5vw, 4.5rem)",
+  script: "clamp(0.95rem, 4.8vw, 2.7rem)",
+  overlap: "clamp(-0.55rem, -2.4vw, -1.75rem)",
 } as const
 
 function DetailsTitle() {
@@ -154,23 +176,23 @@ function DetailsTitle() {
 const ct = {
   label: "text-[11px] sm:text-xs md:text-sm",
   labelSm: "text-[10px] sm:text-[11px] md:text-xs",
-  body: "text-xs sm:text-sm md:text-base",
-  bodyMd: "text-xs sm:text-sm md:text-base lg:text-lg",
+  body: "text-sm sm:text-sm md:text-base",
+  bodyMd: "text-sm sm:text-sm md:text-base lg:text-lg",
   bodyLg: "text-sm sm:text-base md:text-lg",
-  subhead: "text-xs sm:text-sm md:text-base lg:text-lg",
-  time: "text-xs sm:text-sm md:text-base lg:text-xl",
+  subhead: "text-sm sm:text-sm md:text-base lg:text-lg",
+  time: "text-sm sm:text-sm md:text-base lg:text-xl",
   cardTitle: "text-sm sm:text-lg md:text-xl lg:text-2xl",
   overlayTitle: "text-sm sm:text-lg md:text-xl lg:text-2xl",
   overlaySub: "text-xs sm:text-sm md:text-base",
   month: "text-base sm:text-xl md:text-2xl lg:text-3xl",
   dayNum: "text-2xl sm:text-4xl md:text-5xl lg:text-6xl",
   year: "text-base sm:text-xl md:text-2xl lg:text-3xl",
-  sectionTitle: "text-sm sm:text-lg md:text-xl lg:text-2xl",
+  sectionTitle: "text-base sm:text-lg md:text-xl lg:text-2xl",
   attireCardTitle: "text-sm sm:text-lg md:text-xl lg:text-2xl",
   btn: "text-xs sm:text-sm md:text-base",
   noteTitle: "text-xl sm:text-2xl md:text-3xl",
   reminderHead: "text-base sm:text-lg md:text-xl",
-  reminderBody: "text-xs sm:text-sm md:text-base lg:text-lg",
+  reminderBody: "text-sm sm:text-base md:text-base lg:text-lg",
 } as const
 
 const MOTIF_COLORS = ["#FFCA8B", "#FFB383", "#F6CEC8", "#E99997", "#C8C29E"] as const
@@ -307,7 +329,7 @@ function MotifLook({
         sizes="(max-width: 768px) 100vw, 768px"
       />
       <ColorPalette colors={colors} className="max-w-sm sm:max-w-md" />
-      {children ? <div className="space-y-4 pt-1 sm:space-y-5">{children}</div> : null}
+      {children ? <div className="mx-auto max-w-sm space-y-3 pt-1 sm:space-y-3.5">{children}</div> : null}
     </div>
   )
 }
@@ -325,13 +347,13 @@ function DressCodePalette() {
     >
       <div className="px-5 pb-4 pt-6 text-center sm:px-8 sm:pb-5 sm:pt-8">
         <p
-          className={`${cinzel.className} text-[0.55rem] font-semibold uppercase tracking-[0.28em] sm:text-[0.6rem] sm:tracking-[0.36em]`}
+          className={`${cinzel.className} text-[0.625rem] font-semibold uppercase tracking-[0.28em] sm:text-[0.6rem] sm:tracking-[0.36em]`}
           style={{ color: GOLD }}
         >
           Theme / Color Motif
         </p>
         <h3
-          className={`${aboveTheBeyond.className} mt-1 block px-1 text-[1.55rem] leading-tight sm:text-[1.95rem]`}
+          className={`${aboveTheBeyond.className} mt-1 block px-1 text-[1.5rem] leading-tight sm:text-[1.95rem]`}
           style={{ color: SCRIPT }}
         >
           Whimsical Spring Minimalist
@@ -355,7 +377,7 @@ function DressCodePalette() {
           alt="Entourage attire"
           colors={SAGE_COLORS}
         >
-          <div className="space-y-2">
+          <div className="space-y-1">
             <p
               className={`${cinzel.className} ${ct.labelSm} font-semibold uppercase tracking-[0.18em]`}
               style={{ color: detailText.label }}
@@ -363,13 +385,13 @@ function DressCodePalette() {
               Women
             </p>
             <p
-              className={`font-goudy-italic ${ct.body} leading-relaxed`}
+              className={`font-goudy-italic ${ct.body} mx-auto max-w-[18rem] leading-snug`}
               style={{ color: detailText.body }}
             >
               Flowy / Spring Sage Green Dress — strictly floor length.
             </p>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             <p
               className={`${cinzel.className} ${ct.labelSm} font-semibold uppercase tracking-[0.18em]`}
               style={{ color: detailText.label }}
@@ -377,13 +399,13 @@ function DressCodePalette() {
               Gentlemen&apos;s Attire
             </p>
             <p
-              className={`font-goudy-italic ${ct.body} leading-relaxed`}
+              className={`font-goudy-italic ${ct.body} leading-snug`}
               style={{ color: detailText.body }}
             >
               Strictly no rubber shoes.
             </p>
             <ul
-              className={`font-goudy-italic ${ct.body} mx-auto max-w-[16rem] space-y-1 text-left leading-relaxed`}
+              className={`font-goudy-italic ${ct.body} mx-auto list-none space-y-0.5 p-0 text-center leading-snug`}
               style={{ color: detailText.body }}
             >
               <li>Black and white suit</li>
@@ -518,8 +540,8 @@ function EventVenueCard({
             <h3 className={`${theSeasons.className} text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white mb-1 sm:mb-1.5 drop-shadow-lg uppercase tracking-[0.12em] leading-tight`}>
               {locationName}
             </h3>
-            <p className={`${theSeasons.className} text-[10px] sm:text-xs md:text-sm lg:text-base text-white/95 drop-shadow-md tracking-[0.06em] leading-snug`}>
-              {venueAddress}
+            <p className={`${theSeasons.className} text-xs sm:text-xs md:text-sm lg:text-base text-white/95 drop-shadow-md tracking-[0.06em] leading-snug`}>
+              <StyledAddress text={venueAddress} />
             </p>
           </div>
         </div>
@@ -587,7 +609,7 @@ function EventVenueCard({
                   </p>
                 )}
                 <p className={`${theSeasons.className} ${ct.body} leading-relaxed mt-1 tracking-[0.04em]`} style={{ color: detailText.body }}>
-                  {venueAddress}
+                  <StyledAddress text={venueAddress} />
                 </p>
               </div>
               <div className="flex flex-col items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -760,32 +782,36 @@ export function Details() {
         <div className="pointer-events-none absolute left-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/left-top-deco.png"
+            src="/decoration/left-top-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
         <div className="pointer-events-none absolute right-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/right-top-deco.png"
+            src="/decoration/right-top-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/left-bottom-deco.png"
+            src="/decoration/left-bottom-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/right-bottom-deco.png"
+            src="/decoration/right-bottom-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
@@ -796,7 +822,7 @@ export function Details() {
             <OutsideDivider />
           </div>
           <p
-            className={`${cinzel.className} mx-auto max-w-[20rem] px-2 text-[0.8125rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.875rem] min-[400px]:tracking-[0.16em] sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
+            className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-6 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
             style={{ color: GOLD }}
           >
             Our Celebration
@@ -1079,7 +1105,7 @@ export function Details() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="space-y-2">
                     <h3
-                      className={`${cinzel.className} text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-3`}
+                      className={`${cinzel.className} text-lg sm:text-2xl md:text-3xl font-bold flex items-center gap-3`}
                       style={{ color: "#E8D5A3" }}
                     >
                       {showImageModal === "ceremony" ? (
@@ -1087,7 +1113,9 @@ export function Details() {
                       ) : (
                         <Utensils className="w-6 h-6 text-[#E8D5A3]" />
                       )}
-                      {showImageModal === "ceremony" ? siteConfig.ceremony.venue : siteConfig.reception.venue}
+                      {showImageModal === "ceremony"
+                        ? <StyledAddress text={siteConfig.ceremony.venue} />
+                        : <StyledAddress text={siteConfig.reception.venue} />}
                     </h3>
                     <div className="flex items-center gap-2 text-sm opacity-70 text-[#E8D5A3]">
                       <MapPin className="w-4 h-4 text-[#E8D5A3]" />

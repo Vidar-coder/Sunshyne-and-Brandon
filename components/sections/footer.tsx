@@ -6,7 +6,9 @@ import localFont from "next/font/local"
 import { Instagram, Twitter, Facebook, Music2 } from "lucide-react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { sectionType } from "@/lib/section-typography"
+import { sectionBackground } from "@/lib/section-background"
 import { Cinzel } from "next/font/google"
+import Image from "next/image"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -36,6 +38,9 @@ const dividerLineStyle = {
   background:
     "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-deep) 38%, transparent), transparent)",
 } as const
+
+const CORNER_DECO_CLASS =
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 const ct = {
   label: sectionType.label,
@@ -215,9 +220,47 @@ export function Footer() {
   return (
     <div
       className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
-      style={{ background: "var(--color-welcome-bg)" }}
+      style={{ background: sectionBackground }}
     >
-      <footer className="relative z-10 pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14">
+      {/* Corner decorations */}
+      <div className="pointer-events-none absolute left-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/left-top-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute right-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/right-top-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/left-bottom-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/decoration/right-bottom-corner.png"
+          alt=""
+          aria-hidden="true"
+          className={CORNER_DECO_CLASS}
+        />
+      </div>
+
+      <footer className="relative z-20 pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14">
         {/* Monogram + couple header */}
         <div className="relative z-10 flex flex-col items-center mb-6 sm:mb-8 md:mb-10 px-6 sm:px-10">
           <motion.div
@@ -226,22 +269,14 @@ export function Footer() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex flex-col items-center"
           >
-            <div
-              className="relative w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72"
-              role="img"
-              aria-label={`${coupleDisplayName} monogram`}
-              style={{
-                backgroundColor: "var(--color-welcome-green)",
-                WebkitMaskImage: `url(${siteConfig.couple.monogram})`,
-                maskImage: `url(${siteConfig.couple.monogram})`,
-                WebkitMaskSize: "contain",
-                maskSize: "contain",
-                WebkitMaskRepeat: "no-repeat",
-                maskRepeat: "no-repeat",
-                WebkitMaskPosition: "center",
-                maskPosition: "center",
-              }}
-            />
+            <div className="relative w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72">
+              <Image
+                src={siteConfig.couple.monogram}
+                alt={`${coupleDisplayName} monogram`}
+                fill
+                className="object-contain"
+              />
+            </div>
           </motion.div>
 
           <div className="mt-4 max-w-md text-center sm:mt-5 md:mt-6">

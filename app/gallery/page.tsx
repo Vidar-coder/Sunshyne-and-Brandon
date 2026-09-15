@@ -1,8 +1,15 @@
 import MasonryGallery from "@/components/masonry-gallery"
-import { getSiteConfig } from "@/lib/site-config"
 import { fetchGalleryImages } from "@/lib/fetch-gallery-images"
+import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
+import { sectionBackground } from "@/lib/section-background"
 import localFont from "next/font/local"
+import { Cinzel } from "next/font/google"
 import { Camera } from "lucide-react"
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -16,143 +23,160 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
+const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const SCRIPT = "var(--color-welcome-green)"
+const BODY = "var(--color-welcome-text)"
+
+const goldDividerStyle = {
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
+} as const
+
+const goldDividerStyleLeft = {
+  background: "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
+} as const
+
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[72px] sm:max-w-[96px] md:max-w-[120px] lg:max-w-[140px] xl:max-w-[160px]"
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 export const dynamic = "force-static"
+
+function OutsideDivider() {
+  return (
+    <div className="flex items-center justify-center gap-1.5">
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyle} />
+      <span className="h-0.5 w-0.5 rounded-full sm:h-1 sm:w-1" style={{ background: GOLD }} aria-hidden />
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyleLeft} />
+    </div>
+  )
+}
 
 function GalleryTitle() {
   return (
     <h1
-      className="relative mx-auto w-full max-w-full text-center"
+      className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
       style={
         {
-          "--title-size": "clamp(2.15rem, 11vw, 4.5rem)",
-          "--script-size": "clamp(1.1rem, 4.5vw, 2.25rem)",
-          "--script-overlap": "clamp(-0.65rem, -2.8vw, -1.5rem)",
+          "--title-size": layeredSectionTitleSize.main,
+          "--script-size": layeredSectionTitleSize.script,
+          "--script-overlap": layeredSectionTitleSize.overlap,
         } as React.CSSProperties
       }
     >
+      <span className="sr-only">Gallery — our favorite moments</span>
       <span
-        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.15em] md:tracking-[0.18em]`}
+        aria-hidden
+        className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: "var(--color-welcome-navy)",
+          color: NAVY,
         }}
       >
         Gallery
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} relative z-10 mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
         style={{
-          marginTop: "var(--script-overlap)",
           fontSize: "var(--script-size)",
-          color: "var(--color-welcome-green)",
+          color: SCRIPT,
           textShadow:
             "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)",
         }}
       >
         our favorite moments
       </span>
-      <span className="sr-only">our favorite moments</span>
     </h1>
   )
 }
 
-function toGalleryItems(
-  srcs: string[],
-  category: "desktop" | "mobile",
-) {
-  const isMobile = category === "mobile"
-  return srcs.map((src) => ({
-    src,
-    category,
-    width: isMobile ? 900 : 1600,
-    height: isMobile ? 1200 : 900,
-    orientation: (isMobile ? "portrait" : "landscape") as "portrait" | "landscape",
-  }))
-}
-
 export default async function GalleryPage() {
-  const siteConfig = await getSiteConfig()
   const { desktop, mobile } = await fetchGalleryImages()
   const images = [
-    ...toGalleryItems(desktop, "desktop"),
-    ...toGalleryItems(mobile, "mobile"),
+    ...desktop.map((image) => ({
+      ...image,
+      category: "desktop" as const,
+      orientation: (image.width >= image.height ? "landscape" : "portrait") as "portrait" | "landscape",
+    })),
+    ...mobile.map((image) => ({
+      ...image,
+      category: "mobile" as const,
+      orientation: (image.width >= image.height ? "landscape" : "portrait") as "portrait" | "landscape",
+    })),
   ]
 
   return (
     <main
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen overflow-hidden`}
-      style={{ background: "var(--color-welcome-bg)" }}
+      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen overflow-x-hidden`}
+      style={{ background: sectionBackground }}
     >
       <div className="pointer-events-none absolute left-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {/* <img
+        <img
           src="/decoration/left-top-corner.png"
           alt=""
+          aria-hidden="true"
           className={CORNER_DECO_CLASS}
-        /> */}
+        />
       </div>
       <div className="pointer-events-none absolute right-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {/* <img
+        <img
           src="/decoration/right-top-corner.png"
           alt=""
+          aria-hidden="true"
           className={CORNER_DECO_CLASS}
-        /> */}
+        />
       </div>
       <div className="pointer-events-none absolute bottom-0 left-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {/* <img
+        <img
           src="/decoration/left-bottom-corner.png"
           alt=""
+          aria-hidden="true"
           className={CORNER_DECO_CLASS}
-        /> */}
+        />
       </div>
       <div className="pointer-events-none absolute bottom-0 right-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {/* <img
+        <img
           src="/decoration/right-bottom-corner.png"
           alt=""
+          aria-hidden="true"
           className={CORNER_DECO_CLASS}
-        /> */}
+        />
       </div>
 
       <section className="relative z-20 mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-        <div className="mb-6 px-3 text-center sm:mb-8 sm:px-4 md:mb-10">
-          <div className="my-4 sm:my-5 md:my-6">
+        <div className="relative z-20 mb-8 px-3 text-center sm:mb-10 sm:px-4 md:mb-12">
+          <div className="mx-auto mb-4 sm:mb-5 md:mb-6">
+            <OutsideDivider />
+          </div>
+          <p
+            className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-6 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
+            style={{ color: GOLD }}
+          >
+            Our Moments
+          </p>
+          <div className="mx-auto mt-3 sm:mt-4 md:mt-5">
             <GalleryTitle />
           </div>
           <p
-            className="font-goudy-italic mx-auto max-w-2xl px-2 text-[0.75rem] leading-[1.62] sm:text-[0.8125rem] sm:leading-[1.65] md:text-[0.84375rem]"
-            style={{ color: "var(--color-welcome-text)" }}
+            className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
+            style={{ color: BODY }}
           >
             From our first chapter to this beautiful season of commitment — every moment has been a
             testament to love, faith, and grace.
           </p>
 
-          <div className="flex items-center justify-center gap-2 pt-3 sm:pt-4">
-            <span
-              className="h-px w-8 sm:w-12 md:w-16"
-              style={{
-                background:
-                  "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-welcome-navy) 38%, transparent))",
-              }}
-            />
+          <div className="mt-4 flex items-center justify-center gap-1.5 sm:mt-5">
+            <span className="h-px w-8 sm:w-12 md:w-16" style={goldDividerStyle} />
             <Camera
               className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-              style={{ color: "var(--color-welcome-green)" }}
+              style={{ color: GOLD }}
               aria-hidden
             />
-            <span
-              className="h-px w-8 sm:w-12 md:w-16"
-              style={{
-                background:
-                  "linear-gradient(to left, transparent, color-mix(in srgb, var(--color-welcome-navy) 38%, transparent))",
-              }}
-            />
+            <span className="h-px w-8 sm:w-12 md:w-16" style={goldDividerStyleLeft} />
           </div>
         </div>
 
@@ -160,8 +184,8 @@ export default async function GalleryPage() {
           <MasonryGallery images={images} />
         ) : (
           <p
-            className="text-center font-sans text-sm"
-            style={{ color: "var(--color-welcome-text)" }}
+            className={`text-center font-goudy-italic ${sectionType.text}`}
+            style={{ color: BODY }}
           >
             No images to display.
           </p>

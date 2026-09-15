@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect, useCallback, type ReactNode } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import localFont from "next/font/local"
 import { X, ChevronLeft, ChevronRight, Camera } from "lucide-react"
 import { Cinzel } from "next/font/google"
 import { Section } from "@/components/section"
-import { sectionType, welcomeTitleSize } from "@/lib/section-typography"
+import { sectionType } from "@/lib/section-typography"
+import { sectionBackground } from "@/lib/section-background"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -28,8 +29,12 @@ const aboveTheBeyond = localFont({
 
 const IVORY = "#fffaf4"
 const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const SCRIPT = "var(--color-welcome-green)"
+const BODY = "var(--color-welcome-text)"
 const NAV_GOLD =
   "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
+const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
 
 const goldDividerStyle = {
   background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
@@ -39,30 +44,8 @@ const goldDividerStyleLeft = {
   background: "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
-const silkTitleShadow =
-  "0 1px 0 rgb(42 34 28 / 42%), 0 2px 10px rgb(42 34 28 / 38%), 0 8px 28px rgb(42 34 28 / 28%)"
-const silkScriptShadow =
-  "0 1px 0 rgb(42 34 28 / 35%), 0 2px 12px rgb(42 34 28 / 32%), 0 0 18px rgb(232 213 163 / 35%)"
-const silkBodyShadow =
-  "0 1px 1px rgb(42 34 28 / 45%), 0 2px 10px rgb(42 34 28 / 32%)"
-
-const silkGlowStyle = {
-  background:
-    "radial-gradient(ellipse at center, rgb(94 81 68 / 34%) 0%, rgb(94 81 68 / 12%) 46%, transparent 72%)",
-} as const
-
-function SilkTextGlow({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={`relative ${className}`}>
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[140%] w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 blur-2xl"
-        style={silkGlowStyle}
-        aria-hidden
-      />
-      <div className="relative z-10">{children}</div>
-    </div>
-  )
-}
+const CORNER_DECO_CLASS =
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 function OutsideDivider() {
   return (
@@ -74,15 +57,21 @@ function OutsideDivider() {
   )
 }
 
+const galleryTitleSize = {
+  main: "clamp(1.65rem, 8.5vw, 4.5rem)",
+  script: "clamp(0.95rem, 4.8vw, 2.7rem)",
+  overlap: "clamp(-0.55rem, -2.4vw, -1.75rem)",
+} as const
+
 function GalleryTitle() {
   return (
     <h2
       className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
       style={
         {
-          "--title-size": welcomeTitleSize.main,
-          "--script-size": welcomeTitleSize.script,
-          "--script-overlap": welcomeTitleSize.overlap,
+          "--title-size": galleryTitleSize.main,
+          "--script-size": galleryTitleSize.script,
+          "--script-overlap": galleryTitleSize.overlap,
         } as React.CSSProperties
       }
     >
@@ -92,8 +81,7 @@ function GalleryTitle() {
         className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: IVORY,
-          textShadow: silkTitleShadow,
+          color: NAVY,
         }}
       >
         Gallery
@@ -103,8 +91,9 @@ function GalleryTitle() {
         className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
-          color: "#F3E6C0",
-          textShadow: silkScriptShadow,
+          color: SCRIPT,
+          textShadow:
+            "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)",
         }}
       >
         our favorite moments
@@ -205,22 +194,67 @@ export function Gallery() {
   return (
     <div
       className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}
+      style={{ background: sectionBackground }}
     >
       <Section
         id="gallery"
-        className="relative z-10 pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14"
+        className="relative z-10 overflow-hidden pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14"
       >
+        {/* Corner decorations */}
+        <div className="pointer-events-none absolute left-0 top-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/left-top-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
+          />
+        </div>
+        <div className="pointer-events-none absolute right-0 top-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/right-top-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
+          />
+        </div>
+        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/left-bottom-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
+          />
+        </div>
+        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/right-bottom-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
+          />
+        </div>
+
       {/* Header */}
-      <SilkTextGlow className="relative z-20 mx-auto mb-6 max-w-5xl px-6 text-center @container/gallery sm:mb-8 sm:px-10 md:mb-10 md:px-12">
+      <div className="relative z-20 mx-auto mb-8 max-w-5xl px-3 text-center sm:mb-10 sm:px-4 md:mb-12">
         <div className="mx-auto mb-4 sm:mb-5 md:mb-6">
           <OutsideDivider />
         </div>
-        <div className="mx-auto mt-2 sm:mt-3 md:mt-4">
+        <p
+          className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-6 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
+          style={{ color: GOLD }}
+        >
+          Our Moments
+        </p>
+        <div className="mx-auto mt-3 sm:mt-4 md:mt-5">
           <GalleryTitle />
         </div>
         <p
-          className={`font-goudy-italic mx-auto mt-4 max-w-2xl px-2 sm:mt-5 ${sectionType.textRelaxed}`}
-          style={{ color: IVORY, textShadow: silkBodyShadow }}
+          className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
+          style={{ color: BODY }}
         >
           From our first chapter to this beautiful season of commitment — every moment has been a
           testament to love, faith, and grace.
@@ -230,12 +264,12 @@ export function Gallery() {
           <span className="h-px w-8 sm:w-12 md:w-16" style={goldDividerStyle} />
           <Camera
             className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-            style={{ color: GOLD, filter: "drop-shadow(0 1px 4px rgb(42 34 28 / 45%))" }}
+            style={{ color: GOLD }}
             aria-hidden
           />
           <span className="h-px w-8 sm:w-12 md:w-16" style={goldDividerStyleLeft} />
         </div>
-      </SilkTextGlow>
+      </div>
 
       {/* Gallery content — images outside container */}
       <div className="relative z-20 w-full max-w-6xl mx-auto px-6 sm:px-10 md:px-12 pb-2 sm:pb-3">
@@ -307,7 +341,7 @@ export function Gallery() {
 
               <p
                 className={`${cinzel.className} mt-2 text-center tracking-[0.16em] uppercase ${sectionType.label}`}
-                style={{ color: "#F3E6C0", textShadow: silkBodyShadow }}
+                style={{ color: GOLD }}
               >
                 Swipe to explore
               </p>
@@ -369,7 +403,7 @@ export function Gallery() {
                 className={`${cinzel.className} inline-flex items-center justify-center rounded-full border px-8 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.18em] shadow-[0_8px_18px_color-mix(in_srgb,var(--color-welcome-gold)_22%,transparent)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] sm:text-[0.6875rem] sm:tracking-[0.22em]`}
                 style={{
                   background: NAV_GOLD,
-                  borderColor: "transparent",
+                  borderColor: GOLD_BORDER,
                   color: IVORY,
                 }}
               >

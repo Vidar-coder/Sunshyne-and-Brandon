@@ -2,6 +2,19 @@
 
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
+import { Cinzel } from "next/font/google"
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+})
+
+const IVORY = "#fffaf4"
+const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
+const NAV_GOLD =
+  "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
 
 type ImageItem = {
   src: string
@@ -26,86 +39,113 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
     return () => window.removeEventListener("keydown", onKey)
   }, [images.length, lightboxIdx])
 
-  const getCardAspect = (image: ImageItem) => {
-    if (image.orientation === "portrait" || image.category === "mobile") {
-      return "aspect-[4/5]"
-    }
-    return "aspect-[4/3]"
-  }
-
   return (
     <div ref={topRef} className="relative">
-      {/* Header (buttons removed per request) */}
       <div className="mb-6 flex justify-end">
-        <div className="text-[#606C60]/90 text-sm font-sans">
+        <div
+          className={`${cinzel.className} text-[0.6875rem] font-semibold uppercase tracking-[0.18em] sm:text-xs`}
+          style={{ color: GOLD }}
+        >
           {images.length} photos
         </div>
       </div>
 
-      {/* Masonry grid */}
       {images.length === 0 ? (
-        <div className="text-center text-[#606C60]/80 font-sans">No images to display.</div>
+        <div className="font-goudy-italic text-center" style={{ color: "var(--color-welcome-text)" }}>
+          No images to display.
+        </div>
       ) : (
-        <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 gap-3 sm:gap-4">
+        <div className="columns-2 gap-3 sm:columns-2 sm:gap-4 md:columns-3 lg:columns-4">
           {images.map((img, idx) => (
-          <button
-            key={img.src}
-            type="button"
-            className="group mb-3 sm:mb-4 block break-inside-avoid w-full text-left"
-            onClick={() => setLightboxIdx(idx)}
-            aria-label="Open image"
-          >
-            <div className="relative w-full overflow-hidden rounded-xl border border-[#606C60]/40 bg-white/5 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:border-[#606C60]/60">
-              <div className={`relative w-full ${getCardAspect(img)}`}>
+            <button
+              key={img.src}
+              type="button"
+              className="group mb-3 block w-full break-inside-avoid text-left sm:mb-4"
+              onClick={() => setLightboxIdx(idx)}
+              aria-label={`Open photo ${idx + 1}`}
+            >
+              <div
+                className="relative w-full overflow-hidden rounded-xl border shadow-lg transition-all duration-300 hover:shadow-xl"
+                style={{
+                  borderColor: GOLD_BORDER,
+                  backgroundColor: IVORY,
+                }}
+              >
                 <Image
                   src={img.src}
                   alt=""
-                  fill
-                  unoptimized
+                  width={img.width}
+                  height={img.height}
+                  quality={90}
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="rounded-xl object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
-                  loading="lazy"
+                  className="h-auto w-full rounded-xl object-contain"
+                  style={{ imageOrientation: "from-image" }}
+                  loading={idx < 4 ? "eager" : "lazy"}
+                  priority={idx < 4}
                 />
               </div>
-              <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-[#606C60]/40 via-transparent to-transparent z-10" />
-            </div>
-          </button>
+            </button>
           ))}
         </div>
       )}
 
-      {/* Lightbox */}
       {lightboxIdx != null && images[lightboxIdx] && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
           onClick={() => setLightboxIdx(null)}
         >
-          <div className="relative max-w-6xl w-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="relative flex w-full max-w-6xl items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-[#E1D5C7] bg-[#606C60]/80 hover:bg-[#606C60] border border-[#606C60]/50 hover:border-[#606C60] rounded-full px-4 py-2.5 transition-all duration-200 shadow-lg hover:scale-110"
+              type="button"
+              className={`${cinzel.className} absolute left-2 top-1/2 -translate-y-1/2 rounded-full border px-4 py-2.5 text-lg shadow-lg transition-all duration-200 hover:scale-110 sm:left-4`}
+              style={{
+                background: NAV_GOLD,
+                borderColor: GOLD_BORDER,
+                color: IVORY,
+              }}
               onClick={() => setLightboxIdx((i) => (i == null ? null : (i - 1 + images.length) % images.length))}
+              aria-label="Previous photo"
             >
               ‹
             </button>
-            <div className="relative max-h-[80vh] w-auto">
-              <Image
-                src={images[lightboxIdx].src}
-                alt=""
-                width={images[lightboxIdx].width}
-                height={images[lightboxIdx].height}
-                unoptimized
-                className="max-h-[80vh] w-auto rounded-xl shadow-2xl border border-[#606C60]/30 object-contain"
-                priority
-              />
-            </div>
+            <Image
+              src={images[lightboxIdx].src}
+              alt=""
+              width={images[lightboxIdx].width}
+              height={images[lightboxIdx].height}
+              quality={95}
+              sizes="100vw"
+              className="h-auto max-h-[85vh] w-auto max-w-full rounded-xl object-contain shadow-2xl"
+              style={{
+                border: `1px solid ${GOLD_BORDER}`,
+                imageOrientation: "from-image",
+              }}
+              priority
+            />
             <button
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-[#E1D5C7] bg-[#606C60]/80 hover:bg-[#606C60] border border-[#606C60]/50 hover:border-[#606C60] rounded-full px-4 py-2.5 transition-all duration-200 shadow-lg hover:scale-110"
+              type="button"
+              className={`${cinzel.className} absolute right-2 top-1/2 -translate-y-1/2 rounded-full border px-4 py-2.5 text-lg shadow-lg transition-all duration-200 hover:scale-110 sm:right-4`}
+              style={{
+                background: NAV_GOLD,
+                borderColor: GOLD_BORDER,
+                color: IVORY,
+              }}
               onClick={() => setLightboxIdx((i) => (i == null ? null : (i + 1) % images.length))}
+              aria-label="Next photo"
             >
               ›
             </button>
             <button
-              className="absolute top-3 right-3 text-[#E1D5C7] bg-[#606C60]/80 hover:bg-[#606C60] border border-[#606C60]/50 hover:border-[#606C60] rounded-full px-4 py-2 transition-all duration-200 shadow-lg hover:scale-105 font-sans text-sm"
+              type="button"
+              className={`${cinzel.className} absolute right-3 top-3 rounded-full border px-4 py-2 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] shadow-lg transition-all duration-200 hover:scale-105`}
+              style={{
+                backgroundColor: NAVY,
+                borderColor: GOLD_BORDER,
+                color: IVORY,
+              }}
               onClick={() => setLightboxIdx(null)}
             >
               Close
@@ -114,11 +154,15 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
         </div>
       )}
 
-      {/* Back to top */}
       <div className="mt-8 flex justify-center">
         <button
           type="button"
-          className="px-6 py-3 rounded-full bg-gradient-to-r from-[#E1D5C7] to-[#E1D5C7]/90 text-[#606C60] font-semibold border border-[#606C60] hover:from-[#E1D5C7]/90 hover:to-[#E1D5C7] hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl font-sans"
+          className={`${cinzel.className} rounded-full border px-6 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.18em] shadow-lg transition-all duration-200 hover:scale-105 sm:text-[0.6875rem] sm:tracking-[0.2em]`}
+          style={{
+            background: NAV_GOLD,
+            borderColor: GOLD_BORDER,
+            color: IVORY,
+          }}
           onClick={() => topRef.current?.scrollIntoView({ behavior: "smooth" })}
         >
           Back to top
@@ -127,5 +171,3 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
     </div>
   )
 }
-
-

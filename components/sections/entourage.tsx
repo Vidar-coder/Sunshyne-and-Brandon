@@ -60,7 +60,7 @@ const cardStyle = {
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px]"
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 function OutsideDivider() {
   return (
@@ -506,32 +506,36 @@ export function Entourage() {
         <div className="pointer-events-none absolute left-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/left-top-deco.png"
+            src="/decoration/left-top-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
         <div className="pointer-events-none absolute right-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/right-top-deco.png"
+            src="/decoration/right-top-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/left-bottom-deco.png"
+            src="/decoration/left-bottom-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/right-bottom-deco.png"
+            src="/decoration/right-bottom-corner.png"
             alt=""
+            aria-hidden="true"
             className={CORNER_DECO_CLASS}
           />
         </div>
@@ -542,7 +546,7 @@ export function Entourage() {
           <OutsideDivider />
         </div>
         <p
-          className={`${cinzel.className} mx-auto max-w-[20rem] px-2 text-[0.8125rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.875rem] min-[400px]:tracking-[0.16em] sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
+          className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-6 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
           style={{ color: GOLD }}
         >
           Our People

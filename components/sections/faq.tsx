@@ -1,12 +1,13 @@
 "use client"
 
-import { useMemo, useState, type ReactNode } from "react"
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react"
 import type { SiteConfig } from "@/lib/site-config"
 import { ChevronDown } from "lucide-react"
 import { Cinzel } from "next/font/google"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
+import { sectionBackground } from "@/lib/section-background"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -25,39 +26,24 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-const C = {
-  forest: "#5d6f47",
-  sage: "#949981",
-  mustard: "#eec853",
-  butter: "#f4dd97",
-  cream: "#f7f3e9",
+const IVORY = "#fffaf4"
+const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const SCRIPT = "var(--color-welcome-green)"
+const BODY = "var(--color-welcome-text)"
+const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
+const GOLD_BORDER_SOFT = "color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)"
+
+const goldDividerStyle = {
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
-const creamWash = `
-  radial-gradient(920px 520px at 50% 8%, color-mix(in srgb, ${C.butter} 35%, transparent) 0%, transparent 55%),
-  radial-gradient(640px 420px at 12% 88%, color-mix(in srgb, ${C.sage} 16%, transparent) 0%, transparent 58%),
-  radial-gradient(560px 380px at 92% 78%, color-mix(in srgb, ${C.mustard} 14%, transparent) 0%, transparent 55%),
-  linear-gradient(180deg, ${C.cream} 0%, #faf7ef 48%, ${C.cream} 100%)
-`
-
-const palette = {
-  body: "var(--color-welcome-text)",
-  heading: "var(--color-welcome-navy)",
-  label: "var(--color-welcome-heading)",
-  accent: "var(--color-welcome-green)",
+const goldDividerStyleLeft = {
+  background: "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
-const faqPalette = {
-  body: "#F8F5EC",
-  heading: "#FFFFFF",
-  label: "rgba(248, 245, 236, 0.82)",
-  accent: "#f4dd97",
-} as const
-
-const dividerLineStyle = {
-  background:
-    "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-deep) 38%, transparent), transparent)",
-} as const
+const CORNER_DECO_CLASS =
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 const ct = {
   label: sectionType.label,
@@ -70,11 +56,12 @@ const linkClass =
   "underline font-semibold transition-colors hover:opacity-80"
 
 const cardStyle = {
-  background: C.forest,
+  background: IVORY,
+  borderColor: GOLD_BORDER,
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "rgba(255, 255, 255, 0.28)",
-  boxShadow: `0 18px 48px color-mix(in srgb, ${C.forest} 28%, transparent)`,
+  boxShadow:
+    "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)",
 } as const
 
 interface FAQItem {
@@ -82,18 +69,12 @@ interface FAQItem {
   answer: string | ReactNode
 }
 
-function OrnamentalDivider() {
+function OutsideDivider() {
   return (
     <div className="flex items-center justify-center gap-1.5">
-      <span className="h-px w-6 sm:w-10" style={dividerLineStyle} />
-      <span className="h-0.5 w-0.5 rounded-full bg-motif-deep/45 sm:h-1 sm:w-1" aria-hidden />
-      <span
-        className="h-px w-6 sm:w-10"
-        style={{
-          background:
-            "linear-gradient(to left, transparent, color-mix(in srgb, var(--color-motif-deep) 38%, transparent))",
-        }}
-      />
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyle} />
+      <span className="h-0.5 w-0.5 rounded-full sm:h-1 sm:w-1" style={{ background: GOLD }} aria-hidden />
+      <span className="h-px w-6 sm:w-10" style={goldDividerStyleLeft} />
     </div>
   )
 }
@@ -101,34 +82,38 @@ function OrnamentalDivider() {
 function FaqTitle() {
   return (
     <h2
-      className="welcome-title-lockup relative mx-auto w-full max-w-full text-center mt-8 sm:mt-10 md:mt-12"
+      className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
       style={
         {
           "--title-size": layeredSectionTitleSize.main,
           "--script-size": layeredSectionTitleSize.script,
-        } as React.CSSProperties
+          "--script-overlap": layeredSectionTitleSize.overlap,
+        } as CSSProperties
       }
     >
+      <span className="sr-only">Frequently Asked Questions — everything you need to know</span>
       <span
-        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em] mt-4 pb-1 sm:mt-5 sm:pb-1.5 md:mt-6`}
+        aria-hidden
+        className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: "var(--color-welcome-navy)",
+          color: NAVY,
         }}
       >
         Frequently Asked Questions
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] mt-2 sm:mt-2.5 md:mt-3`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
-          color: "var(--color-welcome-green)",
+          color: SCRIPT,
+          textShadow:
+            "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)",
         }}
       >
-        Everything you need to know
+        everything you need to know
       </span>
-      <span className="sr-only">Everything you need to know</span>
     </h2>
   )
 }
@@ -158,7 +143,7 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
             target="_blank"
             rel="noopener noreferrer"
             className={linkClass}
-            style={{ color: faqPalette.accent }}
+            style={{ color: GOLD }}
           >
             Open in Google Maps
           </a>
@@ -177,7 +162,7 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
             target="_blank"
             rel="noopener noreferrer"
             className={linkClass}
-            style={{ color: faqPalette.accent }}
+            style={{ color: GOLD }}
           >
             Open in Google Maps
           </a>
@@ -194,7 +179,7 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
           <a
             href="#hotel"
             className={linkClass}
-            style={{ color: faqPalette.accent }}
+            style={{ color: GOLD }}
             onClick={(e) => {
               e.preventDefault()
               document.getElementById("hotel")?.scrollIntoView({ behavior: "smooth" })
@@ -208,7 +193,7 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
             target="_blank"
             rel="noopener noreferrer"
             className={linkClass}
-            style={{ color: faqPalette.accent }}
+            style={{ color: GOLD }}
           >
             open in Google Maps
           </a>
@@ -224,7 +209,7 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
           <a
             href="#guest-list"
             className={linkClass}
-            style={{ color: faqPalette.accent }}
+            style={{ color: GOLD }}
             onClick={(e) => {
               e.preventDefault()
               document.getElementById("guest-list")?.scrollIntoView({ behavior: "smooth" })
@@ -315,7 +300,7 @@ function FaqAnswer({ answer }: { answer: string | ReactNode }) {
     return (
       <div
         className={`font-goudy-italic ${ct.body} whitespace-pre-line`}
-        style={{ color: faqPalette.body }}
+        style={{ color: BODY }}
       >
         {answer}
       </div>
@@ -325,7 +310,7 @@ function FaqAnswer({ answer }: { answer: string | ReactNode }) {
   return (
     <p
       className={`font-goudy-italic ${ct.body} whitespace-pre-line`}
-      style={{ color: faqPalette.body }}
+      style={{ color: BODY }}
     >
       {answer}
     </p>
@@ -342,106 +327,143 @@ export function FAQ() {
   }
 
   return (
-    <section
-      id="faq"
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative z-10 isolate overflow-hidden pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14`}
-      style={{ background: creamWash }}
+    <div
+      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}
+      style={{ background: sectionBackground }}
     >
-      {/* Header */}
-      <div className="relative z-20 mx-auto max-w-5xl px-6 text-center @container/faq sm:px-10 md:px-12">
-        <div className="mx-auto mb-5 sm:mb-6 md:mb-7">
-          <OrnamentalDivider />
-        </div>
-        <div className="mx-auto">
-          <FaqTitle />
-        </div>
-        <p
-          className={`font-goudy-italic mx-auto mt-4 max-w-2xl px-2 sm:mt-5 md:mt-6 ${ct.bodyLg}`}
-          style={{ color: palette.body }}
-        >
-          Helpful notes so you can simply arrive, celebrate, and enjoy this new chapter with us.
-        </p>
-        <div className="flex items-center justify-center pt-3 sm:pt-4">
-          <span className="h-px w-16 sm:w-24 md:w-32" style={dividerLineStyle} />
-        </div>
-      </div>
-
-      {/* FAQ accordion */}
-      <div className="relative z-20 mx-auto my-6 mb-12 max-w-3xl px-4 sm:my-8 sm:px-6 md:my-10 md:mb-20 md:px-8">
-        <div
-          className="relative overflow-hidden rounded-xl border backdrop-blur-xl sm:rounded-2xl sm:backdrop-blur-2xl"
-          style={cardStyle}
-        >
-          <div
-            className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/10 via-transparent to-transparent"
-            aria-hidden
+      <section
+        id="faq"
+        className="relative z-10 overflow-hidden pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14"
+      >
+        {/* Corner decorations */}
+        <div className="pointer-events-none absolute left-0 top-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/left-top-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
           />
+        </div>
+        <div className="pointer-events-none absolute right-0 top-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/right-top-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
+          />
+        </div>
+        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/left-bottom-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
+          />
+        </div>
+        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/decoration/right-bottom-corner.png"
+            alt=""
+            aria-hidden="true"
+            className={CORNER_DECO_CLASS}
+          />
+        </div>
 
-          <div className="relative z-20 space-y-2 p-3 sm:space-y-2.5 sm:p-4 md:p-5">
-            {faqItems.map((item, index) => {
-              const isOpen = openIndex === index
-              const contentId = `faq-item-${index}`
-              return (
-                <div
-                  key={index}
-                  className="relative z-20 rounded-xl border transition-all duration-300"
-                  style={{
-                    borderColor: isOpen
-                      ? "rgba(255, 255, 255, 0.42)"
-                      : "rgba(255, 255, 255, 0.16)",
-                    backgroundColor: isOpen
-                      ? "rgba(255, 255, 255, 0.12)"
-                      : "rgba(255, 255, 255, 0.06)",
-                    boxShadow: isOpen
-                      ? "0 4px 16px rgba(0, 0, 0, 0.12)"
-                      : "none",
-                  }}
-                >
-                  <button
-                    onClick={() => toggleItem(index)}
-                    className="group flex w-full items-center justify-between px-3 py-2.5 text-left outline-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:px-4 sm:py-3 md:px-5"
-                    style={{ outlineColor: faqPalette.accent }}
-                    aria-expanded={isOpen}
-                    aria-controls={contentId}
-                  >
-                    <span
-                      className={`${cinzel.className} ${ct.question} pr-3 font-semibold leading-snug transition-colors duration-200`}
-                      style={{ color: isOpen ? faqPalette.accent : faqPalette.heading }}
-                    >
-                      {item.question}
-                    </span>
-                    <ChevronDown
-                      size={18}
-                      className={`h-4 w-4 flex-shrink-0 transition-transform duration-300 sm:h-5 sm:w-5 ${isOpen ? "rotate-180" : ""}`}
-                      style={{ color: isOpen ? faqPalette.accent : faqPalette.label }}
-                      aria-hidden
-                    />
-                  </button>
+        <div className="relative z-20 mx-auto mb-8 max-w-5xl px-3 text-center @container/faq sm:mb-10 sm:px-4 md:mb-12">
+          <div className="mx-auto mb-4 sm:mb-5 md:mb-6">
+            <OutsideDivider />
+          </div>
+          <p
+            className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-6 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
+            style={{ color: GOLD }}
+          >
+            A Few Notes
+          </p>
+          <div className="mx-auto mt-3 sm:mt-4 md:mt-5">
+            <FaqTitle />
+          </div>
+          <p
+            className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${ct.bodyLg}`}
+            style={{ color: BODY }}
+          >
+            Helpful notes so you can simply arrive, celebrate, and enjoy this new chapter with us.
+          </p>
+          <div className="mt-4 flex items-center justify-center sm:mt-5">
+            <span className="h-px w-16 sm:w-24 md:w-32" style={goldDividerStyle} />
+          </div>
+        </div>
 
+        <div className="relative z-20 mx-auto max-w-3xl px-4 pb-8 sm:px-6 md:px-8 md:pb-12">
+          <div
+            className="relative overflow-hidden rounded-xl border sm:rounded-2xl"
+            style={cardStyle}
+          >
+            <div className="relative z-20 space-y-2 p-3 sm:space-y-2.5 sm:p-4 md:p-5">
+              {faqItems.map((item, index) => {
+                const isOpen = openIndex === index
+                const contentId = `faq-item-${index}`
+                return (
                   <div
-                    id={contentId}
-                    role="region"
-                    className={`grid transition-all duration-300 ease-out ${
-                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    }`}
+                    key={index}
+                    className="relative z-20 rounded-xl border transition-all duration-300"
+                    style={{
+                      borderColor: isOpen ? GOLD_BORDER : GOLD_BORDER_SOFT,
+                      backgroundColor: isOpen
+                        ? "color-mix(in srgb, var(--color-welcome-gold) 10%, #fffaf4)"
+                        : "color-mix(in srgb, var(--color-welcome-gold) 4%, #fffaf4)",
+                      boxShadow: isOpen
+                        ? "0 8px 20px color-mix(in srgb, var(--color-welcome-gold) 14%, transparent)"
+                        : "none",
+                    }}
                   >
-                    <div className="overflow-hidden">
-                      <div
-                        className="border-t px-3 pb-3 pt-0 sm:px-4 sm:pb-4 md:px-5"
-                        style={{
-                          borderColor: "rgba(255, 255, 255, 0.18)",
-                        }}
+                    <button
+                      onClick={() => toggleItem(index)}
+                      className="group flex w-full items-center justify-between px-3 py-2.5 text-left outline-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:px-4 sm:py-3 md:px-5"
+                      style={{ outlineColor: GOLD }}
+                      aria-expanded={isOpen}
+                      aria-controls={contentId}
+                    >
+                      <span
+                        className={`${cinzel.className} ${ct.question} pr-3 font-semibold leading-snug transition-colors duration-200`}
+                        style={{ color: isOpen ? GOLD : NAVY }}
                       >
-                        <FaqAnswer answer={item.answer} />
+                        {item.question}
+                      </span>
+                      <ChevronDown
+                        size={18}
+                        className={`h-4 w-4 flex-shrink-0 transition-transform duration-300 sm:h-5 sm:w-5 ${isOpen ? "rotate-180" : ""}`}
+                        style={{ color: GOLD }}
+                        aria-hidden
+                      />
+                    </button>
+
+                    <div
+                      id={contentId}
+                      role="region"
+                      className={`grid transition-all duration-300 ease-out ${
+                        isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <div
+                          className="border-t px-3 pb-3 pt-0 sm:px-4 sm:pb-4 md:px-5"
+                          style={{ borderColor: GOLD_BORDER_SOFT }}
+                        >
+                          <FaqAnswer answer={item.answer} />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }
