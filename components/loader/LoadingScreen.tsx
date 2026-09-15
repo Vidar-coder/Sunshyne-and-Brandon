@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, useReducedMotion } from 'motion/react';
 import { useSiteConfig } from '@/hooks/use-site-config';
 import {
-  DESKTOP_BG_PHOTOS,
+  LOADING_BG_PHOTOS,
   PhotoMarquee,
 } from '@/components/loader/invite-photo-backdrop';
 import './loading-screen.css';
@@ -130,7 +130,12 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
       style={{ pointerEvents: fadeOut ? 'none' : 'auto' }}
     >
       <div className="loading-screen__backdrop" aria-hidden="true">
-        <PhotoMarquee photos={DESKTOP_BG_PHOTOS} copies={photoCopies} variant="desktop" />
+        <PhotoMarquee
+          photos={LOADING_BG_PHOTOS}
+          copies={photoCopies}
+          variant="loader"
+          shuffle={false}
+        />
         <div className="loading-screen__backdrop-veil" />
       </div>
 

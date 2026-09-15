@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { siteConfig } from "@/content/site"
 import { ClientLayout } from "@/components/client-layout"
+import { LOADING_BG_PHOTOS } from "@/lib/loading-bg-photos"
 import { anastasiaScript } from "@/lib/fonts"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ricky-and-jonna.weddinginvitationrsvp.com/"
@@ -210,36 +211,16 @@ export default function RootLayout({
           type="font/ttf"
           crossOrigin="anonymous"
         />
-        <link
-          rel="preload"
-          as="image"
-          href="/mobile-background/couple%20(1).webp"
-          type="image/webp"
-          media="(max-width: 767px)"
-          fetchPriority="high"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/mobile-background/couple%20(2).webp"
-          type="image/webp"
-          media="(max-width: 767px)"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/desktop-background/couple%20(1).webp"
-          type="image/webp"
-          media="(min-width: 768px)"
-          fetchPriority="high"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/desktop-background/couple%20(2).webp"
-          type="image/webp"
-          media="(min-width: 768px)"
-        />
+        {LOADING_BG_PHOTOS.slice(0, 3).map((href, index) => (
+          <link
+            key={href}
+            rel="preload"
+            as="image"
+            href={href}
+            type="image/webp"
+            {...(index === 0 ? { fetchPriority: "high" as const } : {})}
+          />
+        ))}
         <link rel="preload" as="image" href={mobileHero} media="(max-width: 767px)" />
         <link rel="preload" as="image" href={desktopHero} media="(min-width: 768px)" />
         <link rel="preload" as="image" href="/Details/ceremony.png" />

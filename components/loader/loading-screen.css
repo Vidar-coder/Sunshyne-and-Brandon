@@ -51,6 +51,11 @@
   content-visibility: hidden;
 }
 
+.loading-screen__marquee--loader {
+  display: flex;
+  content-visibility: visible;
+}
+
 .loading-screen__marquee-row {
   position: relative;
   flex: 1 1 50%;
@@ -82,13 +87,18 @@
 }
 
 .loading-screen__slide-photo {
+  position: relative;
   display: block;
   flex: 0 0 auto;
   height: 100%;
   width: 82vw;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-motif-cream) 70%, white);
+}
+
+.loading-screen__slide-photo > img {
   object-fit: cover;
   object-position: center 28%;
-  background: color-mix(in srgb, var(--color-motif-cream) 70%, white);
 }
 
 .loading-screen__backdrop-veil {
@@ -732,6 +742,9 @@
 
   .loading-screen__slide-photo {
     width: 38vw;
+  }
+
+  .loading-screen__slide-photo > img {
     object-position: center 24%;
   }
 

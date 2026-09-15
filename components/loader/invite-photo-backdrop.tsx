@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useReducedMotion } from 'motion/react';
+import { LOADING_BG_PHOTOS } from '@/lib/loading-bg-photos';
 import './loading-screen.css';
+
+export { LOADING_BG_PHOTOS };
 
 const MOBILE_BG_PHOTO_COUNT = 77;
 const DESKTOP_BG_PHOTO_COUNT = 38;
@@ -52,19 +56,25 @@ function MarqueeRow({
       <div className="loading-screen__slide-track">
         {Array.from({ length: copies }, (_, copy) => (
           <div key={copy} className="loading-screen__slide-strip">
-            {photos.map((src, index) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={`${copy}-${src}`}
-                src={src}
-                alt=""
-                draggable={false}
-                decoding="async"
-                fetchPriority={copy === 0 && index < 2 ? 'high' : 'low'}
-                loading={copy === 0 && index < eagerCount ? 'eager' : 'lazy'}
-                className="loading-screen__slide-photo"
-              />
-            ))}
+            {photos.map((src, index) => {
+              const eager = copy === 0 && index < eagerCount;
+              return (
+                <div key={`${copy}-${src}`} className="loading-screen__slide-photo">
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 38vw, 82vw"
+                    quality={55}
+                    priority={eager}
+                    draggable={false}
+                    decoding="async"
+                    fetchPriority={copy === 0 && index < 2 ? 'high' : 'low'}
+                    className="object-cover"
+                  />
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -76,25 +86,35 @@ export function PhotoMarquee({
   photos,
   copies,
   variant,
+  shuffle = true,
 }: {
   photos: readonly string[];
   copies: number;
-  variant: 'mobile' | 'desktop';
+  variant: 'mobile' | 'desktop' | 'loader';
+  shuffle?: boolean;
 }) {
+  const compact = !shuffle || photos.length <= 5;
   const [selected, setSelected] = useState(() =>
-    photos.slice(0, MARQUEE_SAMPLE_SIZE),
+    compact ? [...photos] : photos.slice(0, MARQUEE_SAMPLE_SIZE),
   );
 
   useEffect(() => {
+    if (compact) {
+      setSelected([...photos]);
+      return;
+    }
     setSelected(pickRandomPhotos(photos, MARQUEE_SAMPLE_SIZE));
-  }, [photos]);
+  }, [photos, compact]);
 
-  const [top, bottom] = splitMarqueeRows(selected);
+  const [top, bottom] = compact
+    ? [selected, [...selected].reverse()]
+    : splitMarqueeRows(selected);
+  const eagerCount = compact ? selected.length : 3;
 
   return (
     <div className={`loading-screen__marquee loading-screen__marquee--${variant}`}>
-      <MarqueeRow photos={top} copies={copies} direction="left" eagerCount={4} />
-      <MarqueeRow photos={bottom} copies={copies} direction="right" eagerCount={3} />
+      <MarqueeRow photos={top} copies={copies} direction="left" eagerCount={eagerCount} />
+      <MarqueeRow photos={bottom} copies={copies} direction="right" eagerCount={eagerCount} />
     </div>
   );
 }
