@@ -93,7 +93,7 @@ interface Message {
 
 interface MessageFormProps {
   onSuccess?: () => void
-  onMessageSent?: () => void
+  onMessageSent?: (message: Message) => void
 }
 
 function OutsideDivider() {
@@ -161,11 +161,24 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const name = nameValue.trim()
+    const message = messageValue.trim()
+    if (!name || !message) return
+
     setIsSubmitting(true)
 
-    const formData = new FormData(e.currentTarget)
-    const name = formData.get("name") as string
-    const message = formData.get("message") as string
+    const sentMessage: Message = {
+      timestamp: new Date().toISOString(),
+      name,
+      message,
+    }
+
+    onMessageSent?.(sentMessage)
+    setIsSubmitted(true)
+    setNameValue("")
+    setMessageValue("")
+    formRef.current?.reset()
+    window.setTimeout(() => setIsSubmitted(false), 900)
 
     const googleFormData = new FormData()
     googleFormData.append("entry.405401269", name)
@@ -184,15 +197,7 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
         duration: 3000,
       })
 
-      setIsSubmitted(true)
-      setNameValue("")
-      setMessageValue("")
-      formRef.current?.reset()
-
-      setTimeout(() => setIsSubmitted(false), 1000)
-
-      if (onSuccess) onSuccess()
-      if (onMessageSent) onMessageSent()
+      onSuccess?.()
     } catch {
       toast({
         title: "Unable to send message",
@@ -367,10 +372,14 @@ export function Messages() {
   const coupleDisplayName = `${groomNickname} & ${brideNickname}`
 
   const [messages, setMessages] = useState<Message[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [freshKey, setFreshKey] = useState<string | null>(null)
 
-  const fetchMessages = useCallback(() => {
-    setLoading(true)
+  const messageKey = (m: Message) =>
+    `${m.name.trim().toLowerCase()}|${m.message.trim().toLowerCase()}`
+
+  const fetchMessages = useCallback((silent = false) => {
+    if (!silent) setLoading(true)
     fetch("/api/messages", {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache" },
@@ -378,12 +387,16 @@ export function Messages() {
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data)) {
-          setMessages([])
+          if (!silent) setMessages([])
           setLoading(false)
           return
         }
-        const parsed = data.filter((m) => m.name || m.message || m.timestamp).reverse()
-        setMessages(parsed)
+        const parsed = data.filter((m: Message) => m.name || m.message || m.timestamp).reverse()
+        setMessages((prev) => {
+          const serverKeys = new Set(parsed.map(messageKey))
+          const pending = prev.filter((local) => !serverKeys.has(messageKey(local)))
+          return [...pending, ...parsed]
+        })
         setLoading(false)
       })
       .catch((error) => {
@@ -391,6 +404,16 @@ export function Messages() {
         setLoading(false)
       })
   }, [])
+
+  const handleMessageSent = useCallback((message: Message) => {
+    setMessages((prev) => {
+      if (prev.some((item) => messageKey(item) === messageKey(message))) return prev
+      return [message, ...prev]
+    })
+    setFreshKey(messageKey(message))
+    window.setTimeout(() => setFreshKey(null), 1200)
+    window.setTimeout(() => fetchMessages(true), 2200)
+  }, [fetchMessages])
 
   useEffect(() => {
     fetchMessages()
@@ -427,7 +450,7 @@ export function Messages() {
         {/* Form container */}
         <div className="mb-6 flex justify-center sm:mb-8 md:mb-10">
           <div className="relative w-full max-w-xl">
-            <MessageForm onMessageSent={fetchMessages} />
+            <MessageForm onMessageSent={handleMessageSent} />
           </div>
         </div>
 
@@ -451,7 +474,11 @@ export function Messages() {
             </div>
           </SilkTextGlow>
 
-          <MessageWallDisplay messages={messages} loading={loading} />
+          <MessageWallDisplay
+            messages={messages}
+            loading={loading && messages.length === 0}
+            freshKey={freshKey}
+          />
         </div> 
       </div>
     </section>

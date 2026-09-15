@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Cinzel } from "next/font/google"
 import { sectionType } from "@/lib/section-typography"
 
@@ -45,23 +45,35 @@ interface Message {
 interface MessageWallDisplayProps {
   messages: Message[]
   loading: boolean
+  freshKey?: string | null
 }
 
-export default function MessageWallDisplay({ messages, loading }: MessageWallDisplayProps) {
-  const [visibleMessages, setVisibleMessages] = useState<Message[]>([])
-  const [isAnimating, setIsAnimating] = useState(false)
+function messageKey(msg: Message) {
+  return `${msg.name.trim().toLowerCase()}|${msg.message.trim().toLowerCase()}`
+}
+
+export default function MessageWallDisplay({ messages, loading, freshKey = null }: MessageWallDisplayProps) {
+  const seenKeys = useRef(new Set<string>())
+  const initialized = useRef(false)
+  const [newKeys, setNewKeys] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    if (messages.length > 0) {
-      setIsAnimating(true)
-      const timer = setTimeout(() => {
-        setVisibleMessages(messages)
-        setIsAnimating(false)
-      }, 100)
-      return () => clearTimeout(timer)
+    const keys = messages.map((msg) => messageKey(msg))
+
+    if (!initialized.current) {
+      keys.forEach((key) => seenKeys.current.add(key))
+      initialized.current = messages.length > 0 || !loading
+      return
     }
-    setVisibleMessages([])
-  }, [messages])
+
+    const incoming = keys.filter((key) => !seenKeys.current.has(key))
+    if (incoming.length === 0) return
+
+    incoming.forEach((key) => seenKeys.current.add(key))
+    setNewKeys(new Set(incoming))
+    const timer = window.setTimeout(() => setNewKeys(new Set()), 900)
+    return () => window.clearTimeout(timer)
+  }, [messages, loading])
 
   if (loading) {
     return (
@@ -122,23 +134,32 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
 
   return (
     <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
-      {visibleMessages.map((msg, index) => (
+      {messages.map((msg, index) => {
+        const key = `${messageKey(msg)}-${index}`
+        const isNew = Boolean(freshKey && messageKey(msg) === freshKey) || newKeys.has(messageKey(msg))
+        return (
         <Card
-          key={index}
-          className={`group relative transform overflow-hidden rounded-[1.35rem] border transition-all duration-500 hover:scale-[1.01] sm:rounded-[1.5rem] ${
-            isAnimating ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
+          key={key}
+          className={`group relative transform overflow-hidden rounded-[1.35rem] border transition-shadow duration-300 hover:scale-[1.01] sm:rounded-[1.5rem] ${
+            isNew ? "animate-in fade-in slide-in-from-top-3 zoom-in-95 duration-300 fill-mode-both" : ""
           }`}
           style={{
             ...messageCardStyle,
-            transitionDelay: `${index * 100}ms`,
-            animation: isAnimating ? "none" : "fadeInUp 0.6s ease-out forwards",
+            borderColor: isNew
+              ? "color-mix(in srgb, var(--color-welcome-gold) 70%, transparent)"
+              : messageCardStyle.borderColor,
+            boxShadow: isNew
+              ? "0 12px 28px color-mix(in srgb, var(--color-welcome-gold) 28%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)"
+              : messageCardStyle.boxShadow,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow =
               "0 14px 32px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)"
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = messageCardStyle.boxShadow as string
+            e.currentTarget.style.boxShadow = isNew
+              ? "0 12px 28px color-mix(in srgb, var(--color-welcome-gold) 28%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)"
+              : (messageCardStyle.boxShadow as string)
           }}
         >
           <div
@@ -204,20 +225,8 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
             </div>
           </CardContent>
         </Card>
-      ))}
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+        )
+      })}
     </div>
   )
 }
