@@ -7,6 +7,7 @@ import { Section } from "@/components/section"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { sectionBackground } from "@/lib/section-background"
 import { Cinzel } from "next/font/google"
+import { useSiteConfig } from "@/hooks/use-site-config"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -72,11 +73,76 @@ function OutsideDivider() {
   )
 }
 
-const SECTION_TITLE_CLASS = `${cinzel.className} ${sectionType.label} lg:text-base tracking-[0.1em] sm:tracking-[0.14em] md:tracking-[0.16em] uppercase font-semibold leading-tight`
+const SECTION_TITLE_CLASS = `${theSeasons.className} text-[0.8rem] sm:text-[0.95rem] md:text-[1.1rem] tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em] uppercase leading-tight`
 
 const nameStyle: React.CSSProperties = {
-  fontSize: "clamp(0.8125rem, min(2.85vw, 10cqi), 1.25rem)",
-  lineHeight: 1.35,
+  fontSize: "clamp(0.74rem, min(2.3vw, 5.8cqi), 1.18rem)",
+  lineHeight: 1.2,
+  letterSpacing: "0.02em",
+}
+
+const roleTitleStyle: React.CSSProperties = {
+  fontSize: "clamp(0.58rem, min(1.8vw, 4.2cqi), 0.82rem)",
+  lineHeight: 1.1,
+}
+
+const ROMAN_NUMERAL = /^(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV)$/i
+const SPECIAL_GLYPH = /^(?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|&|[.’'`´-]|—|–)$/i
+const SPECIAL_SPLIT = /(\b(?:I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV)\b|&|[.’'`´-]|—|–)/g
+const DASH_GLYPH = /^[-—–]$/
+
+function toDisplayName(value: string) {
+  return value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) =>
+      word
+        .split("-")
+        .map((part) => {
+          if (!part) return part
+          if (ROMAN_NUMERAL.test(part)) return part.toUpperCase()
+          return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+        })
+        .join("-"),
+    )
+    .join(" ")
+}
+
+function MixedFontText({
+  text,
+  specialClassName,
+}: {
+  text: string
+  specialClassName: string
+}) {
+  const parts = text.split(new RegExp(SPECIAL_SPLIT.source, "g"))
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (!part) return null
+        if (DASH_GLYPH.test(part)) {
+          return (
+            <span
+              key={`${part}-${index}`}
+              className="font-normal not-italic tracking-normal"
+              style={{ fontFamily: '"SortsMillGoudy", Georgia, "Times New Roman", serif' }}
+            >
+              {part}
+            </span>
+          )
+        }
+        if (SPECIAL_GLYPH.test(part)) {
+          return (
+            <span key={`${part}-${index}`} className={specialClassName}>
+              {part}
+            </span>
+          )
+        }
+        return <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>
+      })}
+    </>
+  )
 }
 
 function CoupleRingsMark() {
@@ -246,8 +312,6 @@ function normalizeRoleCategory(category: string): string {
   return normalized
 }
 
-const HIDDEN_ROLE_CATEGORIES = new Set<string>(["The Couple"])
-
 function isCoupleMember(member: EntourageMember): boolean {
   return normalizeRoleCategory(member.roleCategory) === "The Couple"
 }
@@ -273,6 +337,9 @@ function sortBrideParents(members: EntourageMember[]): EntourageMember[] {
 }
 
 export function Entourage() {
+  const siteConfig = useSiteConfig()
+  const groomName = siteConfig.couple.groom
+  const brideName = siteConfig.couple.bride
   const [entourage, setEntourage] = useState<EntourageMember[]>([])
   const [sponsors, setSponsors] = useState<PrincipalSponsor[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -399,10 +466,17 @@ export function Entourage() {
       align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
     return (
       <h3
-        className={`relative ${SECTION_TITLE_CLASS} mb-1.5 sm:mb-2 md:mb-2.5 ${textAlign} ${className} transition-all duration-300 whitespace-nowrap`}
-        style={{ color: palette.label }}
+        className={`relative ${SECTION_TITLE_CLASS} mb-1.5 sm:mb-2 md:mb-2.5 ${textAlign} ${className} transition-all duration-300`}
+        style={{ color: NAVY }}
       >
-        {children}
+        {typeof children === "string" ? (
+          <MixedFontText
+            text={children}
+            specialClassName="font-goudy-italic normal-case tracking-normal"
+          />
+        ) : (
+          children
+        )}
       </h3>
     )
   }
@@ -412,38 +486,57 @@ export function Entourage() {
     member,
     align = "center",
     showRole = true,
+    featured = false,
   }: {
     member: EntourageMember
     align?: "left" | "center" | "right"
     showRole?: boolean
+    featured?: boolean
   }) => {
     const containerAlign =
       align === "right" ? "items-end" : align === "left" ? "items-start" : "items-center"
     const textAlign =
       align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
-    const displayName = member.name.trim()
+    const displayName = toDisplayName(member.name)
+    const displayRole = member.roleTitle ? toDisplayName(member.roleTitle) : ""
     return (
       <div
-        className={`relative flex flex-col ${containerAlign} justify-center py-0.5 sm:py-1 min-w-0 w-full max-w-full group/item transition-all duration-300`}
+        className={`relative flex flex-col ${containerAlign} justify-center py-1 sm:py-1.5 min-w-0 w-full max-w-full group/item transition-all duration-300`}
       >
         <div
           className="absolute inset-0 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 rounded-md"
           style={{ background: `linear-gradient(to right, transparent, color-mix(in srgb, ${GOLD} 18%, transparent), transparent)` }}
         />
         <p
-          className={`font-goudy-italic relative font-medium normal-case ${textAlign} transition-all duration-300 whitespace-nowrap max-w-full overflow-hidden text-ellipsis`}
-          style={{ ...nameStyle, color: palette.heading }}
+          className={`${theSeasons.className} relative ${textAlign} transition-all duration-300 max-w-full break-words`}
+          style={{
+            ...nameStyle,
+            ...(featured
+              ? {
+                  fontSize: "clamp(0.82rem, min(2.5vw, 6.2cqi), 1.3rem)",
+                }
+              : {}),
+            color: NAVY,
+          }}
           title={displayName}
         >
-          {displayName}
+          {displayName ? (
+            <MixedFontText
+              text={displayName}
+              specialClassName="font-goudy-italic tracking-normal"
+            />
+          ) : null}
         </p>
-        {showRole && member.roleTitle && (
+        {showRole && displayRole && (
           <p
-            className={`relative ${SECTION_TITLE_CLASS} mt-0.5 ${textAlign} transition-colors duration-300 whitespace-nowrap max-w-full overflow-hidden text-ellipsis`}
-            style={{ color: palette.label }}
-            title={member.roleTitle}
+            className={`${theSeasons.className} relative mt-0.5 ${textAlign} max-w-full break-words`}
+            style={{ ...roleTitleStyle, color: SCRIPT }}
+            title={displayRole}
           >
-            {member.roleTitle}
+            <MixedFontText
+              text={displayRole}
+              specialClassName="font-goudy-italic tracking-normal"
+            />
           </p>
         )}
       </div>
@@ -609,20 +702,45 @@ export function Entourage() {
                   </button>
                 </div>
               </div>
-            ) : entourage.length === 0 ? (
-              <div className="text-center py-24 sm:py-28 md:py-32">
-                <p className={`font-goudy-italic ${ct.bodyLg}`} style={{ color: palette.body }}>
-                  No entourage members yet
-                </p>
-              </div>
             ) : (
             <>
               <CoupleRingsMark />
+              <div className="mb-2 sm:mb-2.5 md:mb-3">
+                <SectionTitle>The Couple</SectionTitle>
+                <div className="grid grid-cols-2 gap-x-1.5 sm:gap-x-3 md:gap-x-5 gap-y-1 sm:gap-y-1.5">
+                  <div className="px-0.5 sm:px-1 md:px-1.5 min-w-0">
+                    <NameItem
+                      member={{
+                        name: groomName,
+                        roleCategory: "The Couple",
+                        roleTitle: "Groom",
+                        email: "",
+                      }}
+                      align="right"
+                      featured
+                    />
+                  </div>
+                  <div className="px-0.5 sm:px-1 md:px-1.5 min-w-0">
+                    <NameItem
+                      member={{
+                        name: brideName,
+                        roleCategory: "The Couple",
+                        roleTitle: "Bride",
+                        email: "",
+                      }}
+                      align="left"
+                      featured
+                    />
+                  </div>
+                </div>
+              </div>
               {ROLE_CATEGORY_ORDER.map((category, categoryIndex) => {
                 const members = grouped[category] || []
                 const bridalPartyHasMembers =
                   (grouped["Groomsmen"]?.length ?? 0) > 0 ||
                   (grouped["Bridesmaids"]?.length ?? 0) > 0
+
+                if (category === "The Couple") return null
                 
                 if (
                   members.length === 0 &&
@@ -630,7 +748,6 @@ export function Entourage() {
                 ) {
                   return null
                 }
-                if (HIDDEN_ROLE_CATEGORIES.has(category)) return null
                 if (category === "Peer Sponsors") return null
 
                 // Render OFFICIATING MINISTER directly above Principal Sponsors (in Parents block)
