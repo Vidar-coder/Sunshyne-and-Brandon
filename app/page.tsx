@@ -241,25 +241,11 @@ export default function Home() {
               >
               <GuestList />
               <WeddingTimeline />
-              <Messages />       
+              <Messages />
               <Details />
-              {/* <Welcome /> */}
-               {/* <CoupleVideo />  */}
-              {/* <LoveStory /> */}
-              {/* <Countdown /> */}
               <Gallery />
               <Entourage />
-
-
-              {/* <RecommendedHotel /> */}
-         
-              {/* <VideoMessage /> */}
-              {/* <MessageVideo /> */}
-
-              {/* <GuestInformation /> */} 
               <BookOfGuests />
-              {/* <PrincipalSponsors /> */}
-
               <FAQ />
               <Registry />
               <SnapShare />

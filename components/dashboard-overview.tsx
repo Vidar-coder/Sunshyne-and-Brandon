@@ -2,6 +2,7 @@
 
 import { Users, Table, Mail, UserPlus, Plane, CheckCircle, XCircle, Crown, UserCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { TableFinderQrCard } from "@/components/table-finder-qr-card"
 
 interface DashboardOverviewProps {
   stats: {
@@ -123,6 +124,8 @@ export function DashboardOverview({ stats, weddingBrief }: DashboardOverviewProp
           iconColor="text-[#6366F1]"
         />
       </div>
+
+      <TableFinderQrCard />
 
       {/* Wedding Brief Card */}
       <div className="bg-gradient-to-br from-[#8B6F47] to-[#6B5335] rounded-2xl p-8 shadow-lg">

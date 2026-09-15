@@ -402,7 +402,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         >
           <div className="sm-panel-inner flex-1 flex flex-col gap-6">
             <ul
-              className="sm-panel-list list-none m-0 p-0 flex flex-col gap-3"
+              className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
               role="list"
             >
               {items && items.length ? (
@@ -486,7 +486,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-prelayers { position: absolute; top: 0; right: 0; bottom: 0; width: clamp(260px, 38vw, 420px); pointer-events: none; z-index: 5; }
 .sm-scope [data-position='left'] .sm-prelayers { right: auto; left: 0; }
 .sm-scope .sm-prelayer { position: absolute; top: 0; right: 0; height: 100%; width: 100%; transform: translateX(0); }
-.sm-scope .sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
+.sm-scope .sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 0.85rem; }
 .sm-scope .sm-socials { margin-top: auto; padding-top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
 .sm-scope .sm-socials-title { margin: 0; font-size: 1.05rem; font-weight: 500; color: var(--sm-accent, var(--color-welcome-gold)); }
 .sm-scope .sm-socials-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
@@ -502,11 +502,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 @media (min-width: 1024px) { .sm-scope .sm-socials-link { font-size: 1.25rem; } }
 .sm-scope .sm-socials-link:hover { color: var(--sm-accent, var(--color-welcome-gold)); }
 .sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--color-welcome-navy); text-transform: uppercase; }
-.sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
-.sm-scope .sm-panel-item { position: relative; color: var(--color-welcome-navy); font-weight: 600; font-size: 2.1rem; cursor: pointer; line-height: 1.1; letter-spacing: -1px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
-@media (min-width: 640px) { .sm-scope .sm-panel-item { font-size: 2.6rem; letter-spacing: -1.2px; } }
-@media (min-width: 768px) { .sm-scope .sm-panel-item { font-size: 3.1rem; letter-spacing: -1.5px; } }
-@media (min-width: 1024px) { .sm-scope .sm-panel-item { font-size: 4.1rem; letter-spacing: -2px; } }
+.sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.sm-scope .sm-panel-item { position: relative; color: var(--color-welcome-navy); font-weight: 600; font-size: 1.55rem; cursor: pointer; line-height: 1.15; letter-spacing: -0.6px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
+@media (min-width: 640px) { .sm-scope .sm-panel-item { font-size: 1.85rem; letter-spacing: -0.8px; } }
+@media (min-width: 768px) { .sm-scope .sm-panel-item { font-size: 2.15rem; letter-spacing: -1px; } }
+@media (min-width: 1024px) { .sm-scope .sm-panel-item { font-size: 2.45rem; letter-spacing: -1.2px; } }
 .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
 .sm-scope .sm-panel-item:hover { color: var(--sm-accent, var(--color-welcome-gold)); }
 @media (max-width: 1024px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } .sm-scope .staggered-menu-wrapper[data-open] .sm-logo-img { filter: invert(100%); } }

@@ -18,6 +18,7 @@ import { LoadingScreen } from "@/components/loader/LoadingScreen"
 import { getRoleSingular } from "@/lib/proposal-roles"
 import { parseWeddingDate } from "@/lib/wedding-date"
 import { sectionType, welcomeTitleSize } from "@/lib/section-typography"
+import { sectionBackground } from "@/lib/section-background"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
 import type { ProposalRole, ProposalResponse } from "@/lib/proposal-types"
 
@@ -40,37 +41,45 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
+const IVORY = "#fffaf4"
+const GOLD = "var(--color-welcome-gold)"
+const NAVY = "var(--color-welcome-navy)"
+const SCRIPT = "var(--color-welcome-green)"
+const BODY = "var(--color-welcome-text)"
+const NAV_GOLD = "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
+const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
+const GOLD_BORDER_SOFT = "color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)"
+const CHAMPAGNE = "#E8D5A3"
+
 const palette = {
-  body: "var(--color-welcome-text)",
+  body: BODY,
   bodySoft: "var(--color-welcome-text-soft)",
-  heading: "var(--color-welcome-navy)",
-  label: "var(--color-welcome-heading)",
-  accent: "var(--color-welcome-green)",
-  script: "var(--color-welcome-script)",
+  heading: NAVY,
+  label: GOLD,
+  accent: SCRIPT,
+  script: GOLD,
 } as const
 
 const NAME_SHADOW =
   "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)"
 
-const BORDER_SOFT = "color-mix(in srgb, var(--color-motif-deep) 10%, transparent)"
-const INNER_SURFACE = "var(--color-welcome-bg-soft)"
+const BORDER_SOFT = GOLD_BORDER_SOFT
+const INNER_SURFACE = `color-mix(in srgb, ${IVORY} 82%, ${CHAMPAGNE})`
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px]"
+  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 const ambientGlowStyle = {
   background:
-    "linear-gradient(135deg, color-mix(in srgb, var(--color-motif-deep) 18%, transparent) 0%, color-mix(in srgb, var(--color-welcome-green) 12%, transparent) 48%, color-mix(in srgb, var(--color-motif-deep) 10%, transparent) 100%)",
+    "linear-gradient(135deg, color-mix(in srgb, var(--color-welcome-gold) 18%, transparent) 0%, color-mix(in srgb, var(--color-welcome-green) 10%, transparent) 48%, color-mix(in srgb, var(--color-welcome-gold) 10%, transparent) 100%)",
 } as const
 
 const dividerLineStyle = {
-  background:
-    "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-deep) 38%, transparent), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const coupleLabelLineStyle = {
-  background:
-    "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-welcome-navy) 35%, transparent))",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold))",
 } as const
 
 const nameStyle: CSSProperties = {
@@ -79,27 +88,27 @@ const nameStyle: CSSProperties = {
 }
 
 const cardStyle: CSSProperties = {
-  background: "var(--color-welcome-bg)",
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 14%, transparent)",
+  background: IVORY,
+  borderColor: GOLD_BORDER,
   borderWidth: "1px",
   borderStyle: "solid",
   boxShadow:
-    "0 8px 28px color-mix(in srgb, var(--color-motif-deep) 7%, transparent), inset 0 1px 0 color-mix(in srgb, white 70%, transparent)",
+    "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)",
 }
 
 const primaryBtnStyle: CSSProperties = {
   fontWeight: 600,
-  backgroundColor: "var(--color-welcome-green)",
-  borderColor: "color-mix(in srgb, var(--color-welcome-navy) 35%, transparent)",
-  color: "var(--color-welcome-bg)",
-  boxShadow: "0 6px 20px color-mix(in srgb, var(--color-motif-deep) 12%, transparent)",
+  background: NAV_GOLD,
+  borderColor: GOLD_BORDER,
+  color: IVORY,
+  boxShadow: "0 8px 18px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)",
 }
 
 const secondaryBtnStyle: CSSProperties = {
   fontWeight: 600,
-  color: "var(--color-welcome-navy)",
-  backgroundColor: "var(--color-welcome-bg-soft)",
-  borderColor: "color-mix(in srgb, var(--color-motif-deep) 18%, transparent)",
+  color: NAVY,
+  backgroundColor: IVORY,
+  borderColor: GOLD_BORDER,
 }
 
 const labelStyle = (color: string, extra?: CSSProperties): CSSProperties => ({
@@ -116,12 +125,12 @@ function OrnamentalDivider({ compact = false }: { compact?: boolean }) {
         className={`h-px ${compact ? "w-6 sm:w-10" : "w-8 sm:w-12"}`}
         style={dividerLineStyle}
       />
-      <span className="h-0.5 w-0.5 rounded-full bg-motif-deep/45 sm:h-1 sm:w-1" aria-hidden />
+      <span className="h-0.5 w-0.5 rounded-full sm:h-1 sm:w-1" style={{ background: GOLD }} aria-hidden />
       <span
         className={`h-px ${compact ? "w-6 sm:w-10" : "w-8 sm:w-12"}`}
         style={{
           background:
-            "linear-gradient(to left, transparent, color-mix(in srgb, var(--color-motif-deep) 38%, transparent))",
+            "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
         }}
       />
     </div>
@@ -134,7 +143,7 @@ function CoupleLabel({ groom, bride }: { groom: string; bride: string }) {
       <span className="h-px w-5 sm:w-7 md:w-9" style={coupleLabelLineStyle} aria-hidden />
       <p
         className={`${cinzel.className} ${sectionType.label} shrink-0 py-0.5 font-semibold uppercase leading-normal tracking-[0.34em] min-[400px]:tracking-[0.38em] sm:tracking-[0.44em]`}
-        style={{ color: palette.heading }}
+        style={{ color: palette.label }}
       >
         {groom}
         <span
@@ -154,7 +163,7 @@ function CoupleLabel({ groom, bride }: { groom: string; bride: string }) {
         className="h-px w-5 sm:w-7 md:w-9"
         style={{
           background:
-            "linear-gradient(to left, transparent, color-mix(in srgb, var(--color-welcome-navy) 35%, transparent))",
+            "linear-gradient(to left, transparent, var(--color-welcome-gold))",
         }}
         aria-hidden
       />
@@ -308,7 +317,7 @@ function ProposalDateBlock({
 }) {
   const dateLineStyle = {
     background:
-      "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-welcome-navy) 28%, transparent), transparent)",
+      "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
   } as const
 
   return (
@@ -343,7 +352,7 @@ function ProposalDateBlock({
               className="absolute inset-0 mx-auto h-[70%] max-h-[180px] w-[100px] rounded-full opacity-80 blur-[28px] sm:w-[140px] md:w-[170px]"
               style={{
                 background:
-                  "linear-gradient(to bottom, color-mix(in srgb, var(--color-welcome-green) 35%, transparent), color-mix(in srgb, var(--color-welcome-green) 18%, transparent), transparent)",
+                  "linear-gradient(to bottom, color-mix(in srgb, var(--color-welcome-gold) 35%, transparent), color-mix(in srgb, var(--color-welcome-gold) 18%, transparent), transparent)",
               }}
             />
             <span
@@ -351,7 +360,7 @@ function ProposalDateBlock({
               style={{
                 color: palette.accent,
                 textShadow:
-                  "0 0 18px color-mix(in srgb, var(--color-welcome-green) 45%, transparent), 0 2px 8px color-mix(in srgb, var(--color-motif-deep) 12%, transparent)",
+                  "0 0 18px color-mix(in srgb, var(--color-welcome-gold) 45%, transparent), 0 2px 8px color-mix(in srgb, var(--color-welcome-navy) 12%, transparent)",
               }}
             >
               {dayNumber}
@@ -450,6 +459,29 @@ function DividerLine({ className = "w-16 sm:w-24 md:w-32" }: { className?: strin
   return <span className={`h-px ${className}`} style={dividerLineStyle} aria-hidden />
 }
 
+function CornerDecorations() {
+  return (
+    <>
+      <div className="pointer-events-none absolute left-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/decoration/left-top-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
+      </div>
+      <div className="pointer-events-none absolute right-0 top-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/decoration/right-top-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/decoration/left-bottom-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
+      </div>
+      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/decoration/right-bottom-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
+      </div>
+    </>
+  )
+}
+
 function ProposalCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div className={`relative w-full ${className}`}>
@@ -460,58 +492,10 @@ function ProposalCard({ children, className = "" }: { children: ReactNode; class
           aria-hidden
         />
         <div
-          className="relative overflow-hidden rounded-xl border backdrop-blur-xl sm:rounded-2xl sm:backdrop-blur-2xl"
+          className="relative overflow-hidden rounded-xl border sm:rounded-2xl"
           style={cardStyle}
         >
-          <div className="pointer-events-none absolute left-0 top-0 z-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/decoration/decorations/top-left-corner.png"
-              alt=""
-              className={CORNER_DECO_CLASS}
-            />
-          </div>
-          <div className="pointer-events-none absolute right-0 top-0 z-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/decoration/decorations/top-right-corner.png"
-              alt=""
-              className={CORNER_DECO_CLASS}
-            />
-          </div>
-          <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/decoration/decorations/bottom-left-corner.png"
-              alt=""
-              className={CORNER_DECO_CLASS}
-            />
-          </div>
-          <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/decoration/decorations/bottom-right-corner.png"
-              alt=""
-              className={CORNER_DECO_CLASS}
-            />
-          </div>
-
-          <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/40 via-white/10 to-transparent"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to top, color-mix(in srgb, var(--color-motif-deep) 8%, transparent), transparent 45%)",
-            }}
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/35 sm:rounded-2xl"
-            aria-hidden
-          />
+          <div className="wedding-frame-inner hidden min-[400px]:block" aria-hidden />
 
           <div className="relative z-20 p-6 text-center sm:p-10 md:p-12 md:py-14 lg:p-14 lg:py-16">
             {children}
@@ -603,10 +587,10 @@ function ProposalIntroSection() {
 }
 
 const primaryBtnClass =
-  `${cinzel.className} cursor-pointer rounded-sm border px-5 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.2em] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50 sm:px-7 sm:py-3.5 sm:text-xs sm:tracking-[0.24em] md:px-8 md:py-4 md:tracking-[0.28em]`
+  `${cinzel.className} cursor-pointer rounded-full border px-5 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.2em] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 sm:px-7 sm:py-3.5 sm:text-xs sm:tracking-[0.24em] md:px-8 md:py-4 md:tracking-[0.28em]`
 
 const secondaryBtnClass =
-  `${cinzel.className} cursor-pointer rounded-sm border px-5 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.2em] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md sm:px-7 sm:py-3.5 sm:text-xs sm:tracking-[0.24em] md:px-8 md:py-4 md:tracking-[0.28em]`
+  `${cinzel.className} cursor-pointer rounded-full border px-5 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.2em] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] sm:px-7 sm:py-3.5 sm:text-xs sm:tracking-[0.24em] md:px-8 md:py-4 md:tracking-[0.28em]`
 
 function ProposalAskSection({
   roleSingular,
@@ -862,14 +846,19 @@ export function ProposalPage({ role }: ProposalPageProps) {
   const roleSingular = getRoleSingular(role.title)
 
   return (
-    <div className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen select-none overflow-x-hidden px-3 py-10 sm:px-6 sm:py-16 md:py-20`}>
+    <div
+      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen select-none overflow-x-hidden px-3 py-10 sm:px-6 sm:py-16 md:py-20`}
+      style={{ background: sectionBackground }}
+    >
       {process.env.NEXT_PUBLIC_ENABLE_DECOR !== "false" && (
         <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
-          <Suspense fallback={<div className="h-full w-full bg-gradient-to-b from-primary/10 to-secondary/5" />}>
-            <Silk speed={5} scale={1.1} color="#FA9A84" noiseIntensity={0.8} rotation={0.3} />
+          <Suspense fallback={<div className="h-full w-full" style={{ background: sectionBackground }} />}>
+            <Silk speed={8} scale={0.9} color="#EFDAC1" noiseIntensity={0} rotation={0.3} />
           </Suspense>
         </div>
       )}
+
+      <CornerDecorations />
 
       {!isReady && <LoadingScreen onComplete={handleLoadingComplete} />}
 
@@ -932,7 +921,7 @@ export function ProposalPage({ role }: ProposalPageProps) {
                     </p>
                     <p
                       className={`${cinzel.className} ${sectionType.label} font-semibold uppercase tracking-[0.1em] sm:tracking-[0.14em] md:tracking-[0.16em]`}
-                      style={{ color: palette.heading }}
+                      style={{ color: palette.label }}
                     >
                       With sincerity and gratitude, we ask — would you stand with us as our:
                     </p>
@@ -963,8 +952,13 @@ export function ProposalPage({ role }: ProposalPageProps) {
               <ProposalCard>
               <div className="relative z-10 w-full space-y-4 py-1 sm:space-y-6 sm:py-3">
                 <ProposalFlowHeader
-                  icon={<Check className="h-6 w-6 text-emerald-600" />}
-                  iconClassName="border border-emerald-200/80 bg-emerald-50/90"
+                  icon={<Check className="h-6 w-6" style={{ color: IVORY }} />}
+                  iconClassName=""
+                  iconStyle={{
+                    border: `1px solid ${GOLD_BORDER}`,
+                    background: NAV_GOLD,
+                    color: IVORY,
+                  }}
                   main="We are Honored"
                   script="you said yes"
                 />
@@ -994,12 +988,12 @@ export function ProposalPage({ role }: ProposalPageProps) {
                     placeholder="e.g. Aunt Maria Clara / Mr. James Bond"
                     value={preferredName}
                     onChange={(e) => setPreferredName(e.target.value)}
-                    className="font-goudy-italic w-full rounded-xl px-4 py-2.5 text-xs transition-all focus:outline-none focus:ring-2 sm:py-3 sm:text-sm"
+                    className="font-goudy-italic w-full rounded-xl px-4 py-2.5 text-xs transition-all focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-welcome-gold)_28%,transparent)] sm:py-3 sm:text-sm"
                     style={{
                       color: palette.body,
                       backgroundColor: INNER_SURFACE,
                       border: `1px solid ${BORDER_SOFT}`,
-                      boxShadow: "inset 0 1px 2px color-mix(in srgb, var(--color-motif-deep) 6%, transparent)",
+                      boxShadow: "inset 0 1px 2px color-mix(in srgb, var(--color-welcome-gold) 10%, transparent)",
                     }}
                   />
                   {validationError && (
@@ -1052,7 +1046,7 @@ export function ProposalPage({ role }: ProposalPageProps) {
                     color: palette.heading,
                     border: `1px solid ${BORDER_SOFT}`,
                     backgroundColor: INNER_SURFACE,
-                    boxShadow: "0 8px 24px rgba(45, 67, 79, 0.08)",
+                    boxShadow: "0 8px 24px color-mix(in srgb, var(--color-welcome-gold) 16%, transparent)",
                   }}
                   main="It's Official"
                   script="thank you"
@@ -1115,8 +1109,12 @@ export function ProposalPage({ role }: ProposalPageProps) {
               <ProposalCard>
               <div className="relative z-10 space-y-4">
                 <ProposalFlowHeader
-                  icon={<X className="h-6 w-6 text-rose-500" />}
-                  iconClassName="border border-rose-200/80 bg-rose-50/90"
+                  icon={<X className="h-6 w-6" style={{ color: "#9b3d3d" }} />}
+                  iconClassName=""
+                  iconStyle={{
+                    border: "1px solid color-mix(in srgb, #C99F91 45%, transparent)",
+                    backgroundColor: "color-mix(in srgb, #C99F91 14%, white)",
+                  }}
                   main="Thank You"
                   script="for responding"
                 />
@@ -1136,7 +1134,12 @@ export function ProposalPage({ role }: ProposalPageProps) {
                   <button
                     onClick={handleNoSubmit}
                     disabled={submitting}
-                    className={`${cinzel.className} flex-1 cursor-pointer rounded-sm border border-rose-500 bg-rose-500 px-8 py-4 text-[11px] font-semibold tracking-[0.18em] text-white uppercase shadow-md transition-all duration-300 hover:border-rose-600 hover:bg-rose-600 disabled:opacity-50`}
+                    className={`${cinzel.className} flex-1 cursor-pointer rounded-full border px-8 py-4 text-[11px] font-semibold tracking-[0.18em] uppercase shadow-md transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50`}
+                    style={{
+                      backgroundColor: "#C99F91",
+                      borderColor: "color-mix(in srgb, #C99F91 70%, transparent)",
+                      color: IVORY,
+                    }}
                   >
                     {submitting ? "Sending..." : "Send Response"}
                   </button>

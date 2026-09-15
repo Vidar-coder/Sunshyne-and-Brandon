@@ -13,16 +13,16 @@ export const siteConfig = {
     backgroundMusic:"/background_music/Mike Mains & The Branches - I Love You Always Forever (Lyric Video).mp3"
   },
   googleAPI:{
-    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLSdKkO4fsBXegi8lri4F0wR9tahjz3XvmkiOeaYogtKE4rFvOA/formResponse",   //done
-    message: "https://script.google.com/macros/s/AKfycbzV64hOYoC6ldCagtU6shw7OVYsyU-tKwZCDx5Cxm0Ms_AlNx1eQUUP35I5bIT_gx7j/exec",  //done
-    guestList: "https://script.google.com/macros/s/AKfycbwdzDK7zzMF_e_Zp8mefJ6OgTUnYM0nyCkte5jxmkiU_C2fAi-GM_hzgR3SF40DsN5F/exec",  //done
-    guestRequest: "https://script.google.com/macros/s/AKfycbxswedD8ytGA-FrJee3WcmUFj83oZw9b3sJt6TfHw-IMhzVQvWQv_y_-mbQoI8uxLrg/exec",   //done
-    entourage: "https://script.google.com/macros/s/AKfycbyeTZKoveZ4oK6MWlD9HRrkVRd_0fd10_WcHPz3pEcMKj836zfh2BB6gAWtnddns5BO/exec",  //done
-    sponsors: "https://script.google.com/macros/s/AKfycbwA7u4bbtmWdYuS-VKNL3vrZdiCnf0s3anp5LS7AgKdWygCvjX_rdqbtKxcUBHpgQP1/exec",  //done 
+    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScd8BvFRvQPqJIKUhSiaimQ2jjnmb3zqAMoYIRBaj6F1QuSWQ/formResponse",   //done
+    message: "https://script.google.com/macros/s/AKfycbwNbmXV6gdpOI88CqM0heCVNTa_uyQaQw88cXmsB9LtjvYJXXusN-a7sBOg7cTXcGHI/exec",  //done
+    guestList: "https://script.google.com/macros/s/AKfycbzlM2GNw_7ueXpsAozs0kU8OCQ02gehC0GMz4xDl4xs_u7Dd8UmV0Vt_naiGUlUrUER/exec",  //done
+    guestRequest: "https://script.google.com/macros/s/AKfycbwsY9UOcNs3CGb6YqpqWDO2ivmONNAf0771XsOY6claCjovh8dXQjdQ2WHBYbP_cxzt/exec",   //done
+    entourage: "https://script.google.com/macros/s/AKfycbzMq4bf26jpdyjiyQVkLO87uJt1h-wHxjUZYPqS_n1ruMh4Qk78sr5Ze6o_6yggR6LA/exec",  //done
+    sponsors: "https://script.google.com/macros/s/AKfycbzsI8cHgdN0g0zuGP7L2ID1TFy4MnsokySv0HNQYyUlWmtSZX5djwW4ytgbUWNYyNH7/exec",  //done 
     proposalResponses: "https://script.google.com/macros/s/AKfycbwIUDKMoMIHVwbmr6KbgmBtlGRpMGj1Z9maeHSEwsFaXNi0dAH8WYhqbtiAfg_p5D4lgw/exec", // uses entourage script with action: proposal
-    weddingDetails: "https://script.google.com/macros/s/AKfycbx7sz1e2uoVjfrSOGuHXwHSbM7Fa4b6_vyMFnBXaZogdw1QzfxIvqrLbQPvoJIsxl7_/exec",   //done
+    weddingDetails: "https://script.google.com/macros/s/AKfycbz7149AyRaR8Vtxf6gF374syfJMeHGzhEE8Sa6ydkcgHNXcJ7atiQdc7rSt_RTaUlhv/exec",   //done
 ////google share 
-    googleShare: "https://docs.google.com/spreadsheets/d/1J7mR98rWgWTUuyznyH2KFltoE2U5n4JrAcf-cVXbqsQ/edit?usp=sharing",
+    googleShare: "https://docs.google.com/spreadsheets/d/16iVp_hSJzdBPzGbuIPK2CeeiW3nde1rd2jk4oJLxZQw/edit?usp=sharing",
     videoMessageForm:
       "https://docs.google.com/forms/d/e/1FAIpQLSfeGlEl4CMXWefdvCw6AOPHFS1ROku_rs-Gbofa2LkVJ0sLGQ/viewform", 
   },
@@ -91,7 +91,7 @@ export const siteConfig = {
     date: "November 19, 2026",
     day: "Thursday",
     time: "12:00 noon",
-    image: ["/Details/ceremony.jfif", "/Details/ceremony-1.jfif","/Details/ceremony-2.jfif"],
+    image: ["/Details/reception.png", "/Details/reception1.png","/Details/reception2.png"],
   },
   dressCode: {
     theme: "Whimsical Spring Minimalist",
@@ -176,7 +176,7 @@ Now, as they prepare to say yes before God and the people they love most, Cather
   },
   snapShare: {
     googleDriveLink:
-      "https://drive.google.com/drive/folders/1BE5gjldtokJI4ba5narJmLgzIkXhfrA_?usp=sharing",
+      "https://drive.google.com/drive/folders/1XWGl7DCog_VTfCOCMz4Sp-7LXTD27ak1?usp=sharing",
     albumQR: "/QR/AlbumQR.png",
     hashtag: ["#JonnaandRickyWedding"],
     instructions: "Please scan this QR Code and upload the photos and videos you have taken during our wedding reception. We are delighted to see your snaps too!",

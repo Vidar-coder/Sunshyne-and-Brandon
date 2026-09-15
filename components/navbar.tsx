@@ -18,16 +18,17 @@ const cormorant = Cormorant_Garamond({
 
 const navLinks = [
   { href: "#home", label: "Home" },
-  { href: "#countdown", label: "Countdown" },
-  { href: "#gallery", label: "Gallery" },
+  { href: "#guest-list", label: "RSVP" },
+  { href: "#wedding-timeline", label: "Timeline" },
   { href: "#messages", label: "Messages" },
   { href: "#details", label: "Details" },
-  { href: "#hotel", label: "Stay" },
+  { href: "#gallery", label: "Gallery" },
   { href: "#entourage", label: "Entourage" },
-  { href: "#sponsors", label: "Sponsors" },
-  { href: "#guest-list", label: "RSVP" },
-  { href: "#registry", label: "Registry" },
+  { href: "#guests", label: "Guests" },
   { href: "#faq", label: "FAQ" },
+  { href: "#registry", label: "Registry" },
+  { href: "#snap-share", label: "Snap Share" },
+  { href: "#see-you-there", label: "See You There" },
 ]
 
 export function Navbar() {
@@ -125,14 +126,14 @@ export function Navbar() {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10" />
           </Link>
 
-          <div className="hidden md:flex gap-1 items-center">
+          <div className="hidden xl:flex gap-0.5 items-center">
             {navLinks.map((link) => {
               const isActive = activeSection === link.href
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 lg:px-4 py-2 text-xs lg:text-sm ${cormorant.className} font-medium rounded-lg transition-all duration-500 relative group ${
+                  className={`whitespace-nowrap px-2 py-2 text-xs lg:px-2.5 lg:text-sm ${cormorant.className} font-medium rounded-lg transition-all duration-500 relative group ${
                     isActive
                       ? "text-[#B49A68] bg-white/95 backdrop-blur-md shadow-[0_6px_18px_rgba(42,34,28,0.16)] border border-white/80"
                       : "text-white hover:text-white hover:bg-white/16 hover:border hover:border-white/35 hover:shadow-[0_6px_18px_rgba(42,34,28,0.12)] hover:scale-105 active:scale-95 bg-transparent border border-transparent"
@@ -155,7 +156,7 @@ export function Navbar() {
             })}
           </div>
 
-          <div className="md:hidden flex items-center justify-end h-full">
+          <div className="xl:hidden flex items-center justify-end h-full">
             <StaggeredMenu
               position="left"
               items={menuItems}
