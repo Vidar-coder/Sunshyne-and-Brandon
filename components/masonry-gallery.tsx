@@ -18,6 +18,7 @@ const NAV_GOLD =
 
 const MAX_IMAGE_RETRIES = 5
 const DISPLAY_RETRY_MS = 6000
+const LAZY_ROOT_MARGIN = "480px 0px"
 
 type ImageItem = {
   src: string
@@ -42,7 +43,7 @@ function RetryableGalleryImage({
   className,
   style,
   priority = false,
-  loading,
+  variant = "grid",
 }: {
   src: string
   width: number
@@ -52,12 +53,14 @@ function RetryableGalleryImage({
   className?: string
   style?: React.CSSProperties
   priority?: boolean
-  loading?: "eager" | "lazy"
+  variant?: "grid" | "lightbox"
 }) {
   const wrapRef = useRef<HTMLDivElement | null>(null)
   const loadedRef = useRef(false)
+  const [inView, setInView] = useState(priority)
   const [attempt, setAttempt] = useState(0)
   const [loaded, setLoaded] = useState(false)
+  const isLightbox = variant === "lightbox"
 
   const retry = useCallback(() => {
     if (loadedRef.current) return
@@ -65,52 +68,74 @@ function RetryableGalleryImage({
   }, [])
 
   useEffect(() => {
+    if (inView) return
     const el = wrapRef.current
-    if (!el || loaded) return
+    if (!el) return
 
-    let timeoutId: number | null = null
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return
-        if (timeoutId != null) window.clearTimeout(timeoutId)
-        timeoutId = window.setTimeout(() => {
-          if (!loadedRef.current) retry()
-        }, DISPLAY_RETRY_MS + attempt * 400)
+        setInView(true)
+        observer.disconnect()
       },
-      { rootMargin: "240px 0px" },
+      { rootMargin: LAZY_ROOT_MARGIN },
     )
 
     observer.observe(el)
-    return () => {
-      observer.disconnect()
-      if (timeoutId != null) window.clearTimeout(timeoutId)
-    }
-  }, [attempt, loaded, retry])
+    return () => observer.disconnect()
+  }, [inView])
+
+  useEffect(() => {
+    if (!inView || loaded) return
+
+    const timeoutId = window.setTimeout(() => {
+      if (!loadedRef.current) retry()
+    }, DISPLAY_RETRY_MS + attempt * 400)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [attempt, inView, loaded, retry])
 
   return (
-    <div ref={wrapRef} className="relative">
-      <Image
-        key={`${src}-${attempt}`}
-        src={cacheBustSrc(src, attempt)}
-        alt={alt}
-        width={width}
-        height={height}
-        sizes={sizes}
-        unoptimized
-        priority={priority}
-        loading={loading}
-        decoding="async"
-        fetchPriority={priority ? "high" : "auto"}
-        className={`${className ?? ""} transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
-        style={style}
-        onLoad={() => {
-          loadedRef.current = true
-          setLoaded(true)
-        }}
-        onError={() => {
-          window.setTimeout(retry, 180)
-        }}
-      />
+    <div
+      ref={wrapRef}
+      className={isLightbox ? "relative flex max-h-[85vh] w-full items-center justify-center" : "relative w-full overflow-hidden"}
+      style={
+        isLightbox
+          ? undefined
+          : {
+              aspectRatio: `${width} / ${height}`,
+              backgroundColor: "color-mix(in srgb, var(--color-welcome-gold) 10%, #fffaf4)",
+            }
+      }
+    >
+      {inView ? (
+        <Image
+          key={`${src}-${attempt}`}
+          src={cacheBustSrc(src, attempt)}
+          alt={alt}
+          width={width}
+          height={height}
+          sizes={sizes}
+          unoptimized
+          priority={priority}
+          loading="eager"
+          decoding="async"
+          fetchPriority={priority ? "high" : "low"}
+          className={`${className ?? ""} transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${
+            isLightbox
+              ? "h-auto max-h-[85vh] w-auto max-w-full shadow-2xl"
+              : "absolute inset-0 h-full w-full"
+          }`}
+          style={style}
+          onLoad={() => {
+            loadedRef.current = true
+            setLoaded(true)
+          }}
+          onError={() => {
+            window.setTimeout(retry, 180)
+          }}
+        />
+      ) : null}
     </div>
   )
 }
@@ -182,10 +207,9 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
                   width={img.width}
                   height={img.height}
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="h-auto w-full rounded-xl object-contain"
+                  className="rounded-xl object-cover"
                   style={{ imageOrientation: "from-image" }}
-                  loading={idx < 8 ? "eager" : "lazy"}
-                  priority={idx < 2}
+                  priority={idx < 4}
                 />
               </div>
             </button>
@@ -221,13 +245,13 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
               width={images[lightboxIdx].width}
               height={images[lightboxIdx].height}
               sizes="100vw"
-              className="h-auto max-h-[85vh] w-auto max-w-full rounded-xl object-contain shadow-2xl"
+              className="rounded-xl object-contain"
               style={{
                 border: `1px solid ${GOLD_BORDER}`,
                 imageOrientation: "from-image",
               }}
               priority
-              loading="eager"
+              variant="lightbox"
             />
             <button
               type="button"

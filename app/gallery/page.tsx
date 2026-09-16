@@ -112,7 +112,7 @@ export default async function GalleryPage() {
       <div className="pointer-events-none absolute left-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/left-top-corner.png"
+          src="/decoration/deco/top-left-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -121,7 +121,7 @@ export default async function GalleryPage() {
       <div className="pointer-events-none absolute right-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/right-top-corner.png"
+          src="/decoration/deco/top-right-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -130,7 +130,7 @@ export default async function GalleryPage() {
       <div className="pointer-events-none absolute bottom-0 left-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/left-bottom-corner.png"
+          src="/decoration/deco/bottom-left-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -139,7 +139,7 @@ export default async function GalleryPage() {
       <div className="pointer-events-none absolute bottom-0 right-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/right-bottom-corner.png"
+          src="/decoration/deco/bottom-right-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
