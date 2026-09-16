@@ -67,9 +67,20 @@ function readWebpSize(buf: Buffer): { width: number; height: number } | null {
   return null
 }
 
+function readFilePrefix(filePath: string, bytes = 65536): Buffer {
+  const fd = fs.openSync(filePath, "r")
+  try {
+    const buf = Buffer.alloc(bytes)
+    const n = fs.readSync(fd, buf, 0, bytes, 0)
+    return buf.subarray(0, n)
+  } finally {
+    fs.closeSync(fd)
+  }
+}
+
 function readImageSize(filePath: string): { width: number; height: number } {
   try {
-    const buf = fs.readFileSync(filePath)
+    const buf = readFilePrefix(filePath)
     const ext = path.extname(filePath).toLowerCase()
     const size =
       ext === ".png"

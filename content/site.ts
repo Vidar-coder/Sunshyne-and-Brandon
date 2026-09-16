@@ -9,8 +9,8 @@ export const siteConfig = {
     brideNickname: "Jonna", //Ltryl
     groom: "Ricky A. Balila II", //Ltryl B. Benitez
     groomNickname: "Ricky",
-    monogram:"/monogram/monogram-new.png" ,//Ltryl
-    backgroundMusic:"/background_music/Mike Mains & The Branches - I Love You Always Forever (Lyric Video).mp3"
+    monogram:"/monogram/mono-image.png" ,//Ltryl
+    backgroundMusic:"/background_music/The 1975 - About You.mp3"
   },
   googleAPI:{
     messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScd8BvFRvQPqJIKUhSiaimQ2jjnmb3zqAMoYIRBaj6F1QuSWQ/formResponse",   //done
@@ -91,7 +91,7 @@ export const siteConfig = {
     date: "November 19, 2026",
     day: "Thursday",
     time: "12:00 noon",
-    image: ["/Details/reception.png", "/Details/reception1.png","/Details/reception2.png"],
+    image: ["/Details/reception.png", "/Details/reception2.png","/Details/reception3.png","/Details/reception4.png","/Details/reception5.png", "/Details/reception6.png"],
   },
   dressCode: {
     theme: "Whimsical Spring Minimalist",
@@ -178,7 +178,7 @@ Now, as they prepare to say yes before God and the people they love most, Cather
     googleDriveLink:
       "https://drive.google.com/drive/folders/1XWGl7DCog_VTfCOCMz4Sp-7LXTD27ak1?usp=sharing",
     albumQR: "/QR/AlbumQR.png",
-    hashtag: ["#JonnaandRickyWedding"],
+    hashtag: ["#Jonna&RickyInTime"],
     instructions: "Please scan this QR Code and upload the photos and videos you have taken during our wedding reception. We are delighted to see your snaps too!",
   },
   accommodation: {

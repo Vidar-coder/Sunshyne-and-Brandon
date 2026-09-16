@@ -16,7 +16,6 @@ import {
 } from 'motion/react';
 import { useSiteConfig } from '@/hooks/use-site-config';
 import { parseWeddingDate } from '@/lib/wedding-date';
-import { anastasiaScript } from '@/lib/fonts';
 import { InviteParticles } from '@/components/loader/InviteParticles';
 import './envelope-invite.css';
 
@@ -28,14 +27,14 @@ interface HeroProps {
 }
 
 const DESKTOP_POLAROID_PHOTOS = [
-  { src: '/envelope/boxes (1).JPG', side: 'left' as const },
+  { src: '/envelope/boxes (5).JPG', side: 'left' as const },
   { src: '/envelope/boxes (2).JPG', side: 'center' as const },
   { src: '/envelope/boxes (3).JPG', side: 'right' as const },
   { src: '/envelope/boxes (4).JPG', side: 'right-inner' as const },
 ];
 
 const MOBILE_ENVELOPE_PHOTOS = [
-  { src: '/envelope/boxes (1).JPG', side: 'left' as const },
+  { src: '/envelope/boxes (4).JPG', side: 'left' as const },
   { src: '/envelope/boxes (3).JPG', side: 'right' as const },
 ] as const;
 
@@ -857,12 +856,6 @@ export const Hero: React.FC<HeroProps> = ({
         <motion.h2 variants={revealCopyItemVariants}>
           We can't wait to celebrate with you!
         </motion.h2>
-        <motion.span
-          className={`script ${anastasiaScript.className}`}
-          variants={revealCopyItemVariants}
-        >
-          With love, {coupleNames}
-        </motion.span>
       </motion.div>
 
       <motion.button

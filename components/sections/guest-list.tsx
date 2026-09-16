@@ -15,6 +15,7 @@ import {
   Heart,
   Sparkles,
   Phone,
+  ShieldCheck,
   UserPlus,
   Users,
   ChevronRight,
@@ -23,6 +24,8 @@ import { Cinzel } from "next/font/google"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { modalTitleSize, sectionType, welcomeTitleSize } from "@/lib/section-typography"
+import { fetchUntilReady, isAbortError } from "@/lib/fetch-until-ready"
+import { fetchInvitationList, invalidateInvitationData } from "@/lib/invitation-data"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -132,6 +135,28 @@ interface Guest {
   Companions?: Array<{ name: string; relationship: string }>
 }
 
+function mapApiGuests(data: ApiGuest[]): Guest[] {
+  return data
+    .filter((guest) => guest.name && guest.name.trim() !== "")
+    .map((guest) => ({
+      id: guest.id,
+      Name: guest.name,
+      Email: guest.email || "",
+      Phone: guest.contact || "",
+      RSVP: guest.status === "confirmed" ? "Yes" : guest.status === "declined" ? "No" : "",
+      Guest: guest.allowedGuests?.toString() || "1",
+      Message: guest.message || "",
+      Status: guest.status || "pending",
+      AllowedGuests: guest.allowedGuests || 1,
+      Companions: Array.isArray(guest.companions) ? guest.companions : [],
+    }))
+}
+
+async function loadGuestsFromApi(signal?: AbortSignal, reload = false): Promise<Guest[]> {
+  const data = await fetchInvitationList<ApiGuest>("/api/guests", { signal, reload })
+  return mapApiGuests(data)
+}
+
 export function GuestList() {
   const siteConfig = useSiteConfig()
   const [guests, setGuests] = useState<Guest[]>([])
@@ -139,6 +164,7 @@ export function GuestList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetchingGuests, setIsFetchingGuests] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [requestSuccess, setRequestSuccess] = useState<string | null>(null)
@@ -171,7 +197,9 @@ export function GuestList() {
   })
 
   const searchRef = useRef<HTMLDivElement>(null)
+  const phoneInputRef = useRef<HTMLInputElement>(null)
   const [isMounted, setIsMounted] = useState(false)
+  const [showPhoneAlert, setShowPhoneAlert] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
@@ -225,9 +253,34 @@ export function GuestList() {
     }
   }, [selectedGuest, formData.RSVP])
 
-  // Fetch all guests on component mount
+  // Fetch guests on mount and retry until the list is ready to display
   useEffect(() => {
-    fetchGuests()
+    const controller = new AbortController()
+
+    const load = async () => {
+      setIsFetchingGuests(true)
+      try {
+        const mappedGuests = await fetchUntilReady({
+          signal: controller.signal,
+          load: loadGuestsFromApi,
+          isReady: (list) => list.length > 0,
+        })
+        setGuests(mappedGuests)
+        setError(null)
+      } catch (error) {
+        if (isAbortError(error)) return
+        console.error("Error fetching guests:", error)
+        setError("Failed to load guest list")
+        setTimeout(() => setError(null), 5000)
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsFetchingGuests(false)
+        }
+      }
+    }
+
+    void load()
+    return () => controller.abort()
   }, [])
 
   // Filter guests based on search query with real-time auto-suggestion
@@ -278,39 +331,14 @@ export function GuestList() {
   }, [searchQuery, guests])
 
   const fetchGuests = async () => {
-    setIsLoading(true)
     try {
-      // Fetch from local API route which connects to Google Sheets
-      const response = await fetch("/api/guests")
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch guests")
+      invalidateInvitationData("/api/guests")
+      const mappedGuests = await loadGuestsFromApi(undefined, true)
+      if (mappedGuests.length > 0) {
+        setGuests(mappedGuests)
       }
-      const data: ApiGuest[] = await response.json()
-      
-      // Map API response to expected Guest format
-      const mappedGuests: Guest[] = data
-        .filter((guest) => guest.name && guest.name.trim() !== "") // Filter out guests without names
-        .map((guest) => ({
-          id: guest.id,
-          Name: guest.name,
-          Email: guest.email || "",
-          Phone: guest.contact || "",
-          RSVP: guest.status === "confirmed" ? "Yes" : guest.status === "declined" ? "No" : "",
-          Guest: guest.allowedGuests?.toString() || "1",
-          Message: guest.message || "",
-          Status: guest.status || "pending",
-          AllowedGuests: guest.allowedGuests || 1,
-          Companions: Array.isArray(guest.companions) ? guest.companions : [],
-        }))
-      
-      setGuests(mappedGuests)
     } catch (error) {
       console.error("Error fetching guests:", error)
-      setError("Failed to load guest list")
-      setTimeout(() => setError(null), 5000)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -359,6 +387,12 @@ export function GuestList() {
       return
     }
 
+    const phoneDigits = formData.Phone.replace(/\D/g, "")
+    if (!formData.Phone.trim() || phoneDigits.length < 7) {
+      setShowPhoneAlert(true)
+      return
+    }
+
     setIsLoading(true)
     setError(null)
     setSuccess(null)
@@ -379,7 +413,7 @@ export function GuestList() {
           id: String(selectedGuest.id),
           name: formData.Name,
           email: formData.Email || "Pending",
-          contact: formData.Phone || "",
+          contact: formData.Phone.trim(),
           status: status,
           allowedGuests: parseInt(guestCount),
           message: formData.Message,
@@ -417,7 +451,26 @@ export function GuestList() {
     setCompanions([])
     setHasResponded(false)
     setError(null)
+    setShowPhoneAlert(false)
   }
+
+  const handleClosePhoneAlert = () => {
+    setShowPhoneAlert(false)
+    requestAnimationFrame(() => phoneInputRef.current?.focus())
+  }
+
+  useEffect(() => {
+    if (!showPhoneAlert) return
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.stopPropagation()
+        handleClosePhoneAlert()
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [showPhoneAlert])
 
   const handleSubmitRequest = async () => {
     if (!requestFormData.Name) {
@@ -498,14 +551,13 @@ export function GuestList() {
             {
               "--welcome-size": welcomeTitleSize.main,
               "--script-size": welcomeTitleSize.script,
-              "--script-overlap": welcomeTitleSize.overlap,
             } as React.CSSProperties
           }
         >
           <span className="sr-only">RSVP. Are you going?</span>
           <span
             aria-hidden
-            className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em]`}
+            className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em]`}
             style={{
               fontSize: "var(--welcome-size)",
               color: "var(--color-welcome-navy)",
@@ -515,9 +567,8 @@ export function GuestList() {
           </span>
           <span
             aria-hidden
-            className={`${aboveTheBeyond.className} relative z-10 mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
+            className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
             style={{
-              marginTop: "var(--script-overlap)",
               fontSize: "var(--script-size)",
               color: "var(--color-welcome-green)",
               textShadow:
@@ -537,6 +588,21 @@ export function GuestList() {
         >
           Kindly confirm your attendance so we may prepare a place for you at our celebration.
         </p>
+
+        {siteConfig.details.rsvp.deadline ? (
+          <p
+            className={`${cinzel.className} ${sectionType.label} mx-auto mt-4 font-semibold uppercase tracking-[0.16em] sm:mt-5 sm:tracking-[0.18em]`}
+            style={{ color: "var(--color-welcome-gold)" }}
+          >
+            RSVP Deadline
+            <span
+              className={`font-goudy-italic mt-1.5 block font-normal normal-case tracking-normal ${sectionType.textSnug}`}
+              style={{ color: "var(--color-welcome-navy)" }}
+            >
+              {siteConfig.details.rsvp.deadline.replace(/\.\s*$/, "")}
+            </span>
+          </p>
+        ) : null}
 
         <button
           type="button"
@@ -655,6 +721,28 @@ export function GuestList() {
                 </div>
               </div>
 
+              {isFetchingGuests && guests.length === 0 && (
+                <div
+                  className="border-t px-5 py-4 text-center sm:px-6 sm:py-5"
+                  style={{
+                    borderColor: "color-mix(in srgb, var(--color-motif-deep) 10%, transparent)",
+                    background: "var(--color-welcome-bg-soft)",
+                  }}
+                >
+                  <RefreshCw
+                    className="mx-auto mb-2 h-4 w-4 animate-spin"
+                    style={{ color: "var(--color-welcome-gold)" }}
+                    aria-hidden
+                  />
+                  <p
+                    className={`font-goudy-italic ${sectionType.textSnug}`}
+                    style={{ color: palette.body }}
+                  >
+                    Preparing the guest list. We&apos;ll keep trying until names appear.
+                  </p>
+                </div>
+              )}
+
               {searchQuery.trim() && filteredGuests.length > 0 && (
                 <div
                   className="border-t"
@@ -713,7 +801,7 @@ export function GuestList() {
                 </div>
               )}
 
-              {searchQuery.trim() && filteredGuests.length === 0 && (
+              {searchQuery.trim() && filteredGuests.length === 0 && !isFetchingGuests && (
                 <div
                   className="border-t px-5 py-4 sm:px-6 sm:py-5"
                   style={{
@@ -1095,60 +1183,38 @@ export function GuestList() {
                     )}
 
                     <div>
-                      <label className={modalLabelClass} style={{ color: palette.heading }}>
-                        <MessageSquare className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: palette.accent }} />
-                        <span>Song Request</span>
-                        <span className={`${sectionType.label} font-normal`} style={{ color: palette.body }}>
-                          (Optional)
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        name="Message"
-                        value={formData.Message}
-                        onChange={handleFormChange}
-                        placeholder="Share a song you'd love to hear on our special day"
-                        className={modalInputClass}
-                        style={modalInputStyle}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={modalLabelClass} style={{ color: palette.heading }}>
-                        <Mail className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: palette.accent }} />
-                        <span>Your Email Address</span>
-                        <span className={`${sectionType.label} font-normal`} style={{ color: palette.body }}>
-                          (Optional)
-                        </span>
-                      </label>
-                      <input
-                        type="email"
-                        name="Email"
-                        value={formData.Email}
-                        onChange={handleFormChange}
-                        placeholder="your.email@example.com"
-                        className={modalInputClass}
-                        style={modalInputStyle}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={modalLabelClass} style={{ color: palette.heading }}>
+                      <label className={modalLabelClass} htmlFor="rsvp-phone" style={{ color: palette.heading }}>
                         <Phone className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: palette.accent }} />
-                        <span>Phone Number</span>
-                        <span className={`${sectionType.label} font-normal`} style={{ color: palette.body }}>
-                          (Optional)
-                        </span>
+                        <span>Phone Number *</span>
                       </label>
                       <input
+                        ref={phoneInputRef}
+                        id="rsvp-phone"
                         type="tel"
                         name="Phone"
                         value={formData.Phone}
                         onChange={handleFormChange}
-                        placeholder="+63 912 345 6789"
+                        autoComplete="tel"
+                        inputMode="tel"
+                        aria-required="true"
+                        placeholder="09XX XXX XXXX"
                         className={modalInputClass}
                         style={modalInputStyle}
                       />
+                      <p
+                        className={`font-goudy-italic mt-1.5 flex items-start gap-1.5 ${sectionType.label} leading-snug`}
+                        style={{ color: palette.body }}
+                      >
+                        <ShieldCheck
+                          className="mt-0.5 h-3 w-3 flex-shrink-0 sm:h-3.5 sm:w-3.5"
+                          style={{ color: palette.accent }}
+                          aria-hidden
+                        />
+                        <span>
+                          For wedding updates only. Your number stays private and will never be shown to
+                          other guests.
+                        </span>
+                      </p>
                     </div>
 
                     <div className="pt-2 sm:pt-3">
@@ -1192,6 +1258,82 @@ export function GuestList() {
               )}
             </div>
           </div>,
+        document.body
+      )}
+
+      {isMounted && showPhoneAlert && createPortal(
+        <div
+          className="fixed inset-0 z-[10050] flex items-center justify-center bg-black/55 p-5 backdrop-blur-md animate-in fade-in duration-200 sm:p-8"
+          onClick={handleClosePhoneAlert}
+          role="presentation"
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="phone-alert-title"
+            aria-describedby="phone-alert-copy"
+            className="w-full max-w-sm animate-in zoom-in-95 duration-200"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="overflow-hidden rounded-2xl" style={modalCardStyle}>
+              <div
+                aria-hidden
+                className="h-[3px] w-full"
+                style={{
+                  background:
+                    "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
+                }}
+              />
+              <div className="px-6 pb-6 pt-6 text-center">
+                <div
+                  className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full"
+                  style={{ backgroundColor: palette.accent }}
+                >
+                  <Phone className="h-6 w-6 text-white" strokeWidth={2} />
+                </div>
+
+                <h4
+                  id="phone-alert-title"
+                  className={`${theSeasons.className} mb-2 text-base uppercase tracking-[0.12em]`}
+                  style={{ color: palette.heading }}
+                >
+                  A phone number is needed
+                </h4>
+
+                <div
+                  id="phone-alert-copy"
+                  className={`font-goudy-italic space-y-2.5 ${sectionType.text} leading-relaxed`}
+                  style={{ color: palette.body }}
+                >
+                  <p>
+                    We ask for your number so we can reach you with important updates — seating,
+                    timing, or anything you may need on the day.
+                  </p>
+                  <p>
+                    Your number will not appear on this invitation, and it will not be shared with
+                    other guests. It is kept private and used only by us and our coordinators to
+                    take care of you.
+                  </p>
+                </div>
+
+                <div className="my-4 flex items-center gap-3">
+                  <span className="h-px flex-1" style={dividerLineStyle} />
+                  <ShieldCheck className="h-3.5 w-3.5 flex-shrink-0" style={{ color: palette.accent }} />
+                  <span className="h-px flex-1" style={dividerLineStyle} />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleClosePhoneAlert}
+                  className={`${cinzel.className} inline-flex min-h-11 w-full items-center justify-center rounded-full px-6 py-2.5 ${sectionType.label} font-semibold uppercase tracking-[0.16em] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+                  style={{ background: NAV_GOLD, color: IVORY }}
+                >
+                  Add my number
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
         document.body
       )}
 

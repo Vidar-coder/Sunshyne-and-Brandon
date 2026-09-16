@@ -30,6 +30,7 @@ import { SnapShare } from "@/components/sections/snap-share"
 import { CoupleVideo } from "@/components/sections/couple-video"
 // import { VideoMessage } from "@/components/sections/video-message"
 import { MessageVideo } from "@/components/sections/message-video"
+import { prefetchInvitationData } from "@/lib/invitation-data"
 
 const Silk = dynamic(() => import("@/components/silk"), { ssr: false })
 const GuestList = dynamic(() => import("@/components/sections/guest-list").then(mod => ({ default: mod.GuestList })), { ssr: false })
@@ -145,6 +146,10 @@ export default function Home() {
   const pageScrollLocked = appState !== AppState.DETAILS
   const cinematicEntry = enteringFromInvite && detailsVisible
 
+  useEffect(() => {
+    prefetchInvitationData()
+  }, [])
+
   return (
       <div className={`relative min-h-screen bg-cloud text-charcoal selection:bg-birch selection:text-nut font-sans ${pageScrollLocked ? "overflow-hidden" : ""}`}>
         {(loadingOverlayVisible || showInvitation || enteringFromInvite) && (
@@ -241,11 +246,10 @@ export default function Home() {
               >
               <GuestList />
               <WeddingTimeline />
-              <Messages />
               <Details />
               <Gallery />
               <Entourage />
-              <BookOfGuests />
+              <Messages />
               <FAQ />
               <Registry />
               <SnapShare />

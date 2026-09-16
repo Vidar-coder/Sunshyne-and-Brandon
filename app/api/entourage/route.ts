@@ -1,5 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { siteConfig } from "@/content/site"
+import {
+  fetchGoogleScriptJson,
+  invalidateSheetsCache,
+  listResponseHeaders,
+  SHEETS_CACHE_KEYS,
+  withSheetsCache,
+} from "@/lib/sheets-cache"
 
 // Replace this with your Entourage Google Apps Script URL
 const ENTOURAGE_SCRIPT_URL = siteConfig.googleAPI.entourage
@@ -15,19 +22,15 @@ export interface Entourage {
 // GET: Fetch all entourage
 export async function GET() {
   try {
-    const response = await fetch(ENTOURAGE_SCRIPT_URL, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const data = await withSheetsCache(SHEETS_CACHE_KEYS.entourage, async () => {
+      const payload = await fetchGoogleScriptJson(ENTOURAGE_SCRIPT_URL)
+      if (!Array.isArray(payload)) {
+        throw new Error("Failed to fetch entourage")
+      }
+      return payload
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch entourage')
-    }
-
-    const data = await response.json()
-    return NextResponse.json(data, { status: 200 })
+    return NextResponse.json(data, { status: 200, headers: listResponseHeaders })
   } catch (error) {
     console.error('Error fetching entourage:', error)
     return NextResponse.json(
@@ -73,6 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.entourage)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     console.error('Error adding entourage member:', error)
@@ -119,6 +123,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await response.json()
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.entourage)
     return NextResponse.json(data, { status: 200 })
   } catch (error) {
     console.error('Error updating entourage member:', error)
@@ -161,6 +166,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const data = await response.json()
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.entourage)
     return NextResponse.json(data, { status: 200 })
   } catch (error) {
     console.error('Error deleting entourage member:', error)

@@ -1,5 +1,12 @@
 import { siteConfig } from "@/content/site"
 import { type NextRequest, NextResponse } from "next/server"
+import {
+  fetchGoogleScriptJson,
+  invalidateSheetsCache,
+  listResponseHeaders,
+  SHEETS_CACHE_KEYS,
+  withSheetsCache,
+} from "@/lib/sheets-cache"
 
 // ⚠️ IMPORTANT: Replace this with your NEW Google Apps Script deployment URL
 // This should be the URL from deploying google-apps-script/guest-management.js
@@ -35,43 +42,34 @@ export interface LegacyGuest {
 // GET: Fetch all guests from Google Sheets
 export async function GET() {
   try {
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const normalizedData = await withSheetsCache(SHEETS_CACHE_KEYS.guests, async () => {
+      const data = await fetchGoogleScriptJson(GOOGLE_SCRIPT_URL)
+
+      if (data && typeof data === "object" && "error" in data && (data as { error?: string }).error) {
+        throw new Error((data as { error: string }).error)
+      }
+
+      return Array.isArray(data)
+        ? data.map((guest: Record<string, unknown>) => ({
+            ...guest,
+            id: String(guest.id),
+            role: guest.role || "Guest",
+            email: guest.email || "",
+            contact: guest.contact || "",
+            message: guest.message || "",
+            allowedGuests: parseInt(String(guest.allowedGuests)) || 1,
+            companions: Array.isArray(guest.companions) ? guest.companions : [],
+            tableNumber: guest.tableNumber || "",
+            isVip: guest.isVip === true || guest.isVip === "TRUE",
+            status: guest.status || "pending",
+            addedBy: guest.addedBy || "",
+            createdAt: guest.createdAt || new Date().toISOString(),
+            updatedAt: guest.updatedAt || new Date().toISOString(),
+          }))
+        : []
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch guests')
-    }
-
-    const data = await response.json()
-    
-    // Handle error response from Google Apps Script
-    if (data.error) {
-      throw new Error(data.error)
-    }
-
-    // Normalize guest data to ensure consistent format
-    const normalizedData = Array.isArray(data) ? data.map((guest: any) => ({
-      ...guest,
-      id: String(guest.id), // Convert numeric IDs to strings for consistency
-      role: guest.role || 'Guest',
-      email: guest.email || '',
-      contact: guest.contact || '',
-      message: guest.message || '',
-      allowedGuests: parseInt(guest.allowedGuests) || 1,
-      companions: Array.isArray(guest.companions) ? guest.companions : [],
-      tableNumber: guest.tableNumber || '',
-      isVip: guest.isVip === true || guest.isVip === 'TRUE',
-      status: guest.status || 'pending',
-      addedBy: guest.addedBy || '',
-      createdAt: guest.createdAt || new Date().toISOString(),
-      updatedAt: guest.updatedAt || new Date().toISOString(),
-    })) : []
-
-    return NextResponse.json(normalizedData, { status: 200 })
+    return NextResponse.json(normalizedData, { status: 200, headers: listResponseHeaders })
   } catch (error) {
     console.error('Error fetching guests:', error)
     return NextResponse.json(
@@ -143,6 +141,7 @@ export async function POST(request: NextRequest) {
       throw new Error(data.error)
     }
 
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.guests)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     console.error('Error adding guest:', error)
@@ -190,6 +189,7 @@ export async function PUT(request: NextRequest) {
       throw new Error(data.error)
     }
 
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.guests)
     return NextResponse.json(data, { status: 200 })
   } catch (error: any) {
     console.error('Error updating guest:', error)
@@ -236,6 +236,7 @@ export async function DELETE(request: NextRequest) {
       throw new Error(data.error)
     }
     
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.guests)
     return NextResponse.json(data, { status: 200 })
   } catch (error) {
     console.error('Error deleting guest:', error)

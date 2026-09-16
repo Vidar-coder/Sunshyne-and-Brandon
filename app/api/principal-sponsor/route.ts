@@ -1,5 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { siteConfig } from "@/content/site"
+import {
+  fetchGoogleScriptJson,
+  invalidateSheetsCache,
+  listResponseHeaders,
+  SHEETS_CACHE_KEYS,
+  withSheetsCache,
+} from "@/lib/sheets-cache"
 
 // You'll need to replace this with your PrincipalSponsor Google Apps Script URL
 const PRINCIPAL_SPONSOR_SCRIPT_URL =  siteConfig.googleAPI.sponsors
@@ -13,19 +20,15 @@ export interface PrincipalSponsor {
 // GET: Fetch all principal sponsors
 export async function GET() {
   try {
-    const response = await fetch(PRINCIPAL_SPONSOR_SCRIPT_URL, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const data = await withSheetsCache(SHEETS_CACHE_KEYS.sponsors, async () => {
+      const payload = await fetchGoogleScriptJson(PRINCIPAL_SPONSOR_SCRIPT_URL)
+      if (!Array.isArray(payload)) {
+        throw new Error("Failed to fetch principal sponsors")
+      }
+      return payload
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch principal sponsors')
-    }
-
-    const data = await response.json()
-    return NextResponse.json(data, { status: 200 })
+    return NextResponse.json(data, { status: 200, headers: listResponseHeaders })
   } catch (error) {
     console.error('Error fetching principal sponsors:', error)
     return NextResponse.json(
@@ -67,6 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.sponsors)
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     console.error('Error adding principal sponsor:', error)
@@ -112,6 +116,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await response.json()
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.sponsors)
     return NextResponse.json(data, { status: 200 })
   } catch (error) {
     console.error('Error updating principal sponsor:', error)
@@ -154,6 +159,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const data = await response.json()
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.sponsors)
     return NextResponse.json(data, { status: 200 })
   } catch (error) {
     console.error('Error deleting principal sponsor:', error)

@@ -130,7 +130,6 @@ function OutsideDivider() {
 const detailsTitleSize = {
   main: "clamp(1.65rem, 8.5vw, 4.5rem)",
   script: "clamp(0.95rem, 4.8vw, 2.7rem)",
-  overlap: "clamp(-0.55rem, -2.4vw, -1.75rem)",
 } as const
 
 function DetailsTitle() {
@@ -141,14 +140,13 @@ function DetailsTitle() {
         {
           "--title-size": detailsTitleSize.main,
           "--script-size": detailsTitleSize.script,
-          "--script-overlap": detailsTitleSize.overlap,
         } as React.CSSProperties
       }
     >
       <span className="sr-only">Event Details — our special day</span>
       <span
         aria-hidden
-        className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
+        className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
           color: NAVY,
@@ -158,7 +156,7 @@ function DetailsTitle() {
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
           color: SCRIPT,
@@ -195,23 +193,50 @@ const ct = {
   reminderBody: "text-sm sm:text-base md:text-base lg:text-lg",
 } as const
 
-const MOTIF_COLORS = ["#FFCA8B", "#FFB383", "#F6CEC8", "#E99997", "#C8C29E"] as const
-const SAGE_COLORS = ["#304A3C", "#6E856A", "#889F87", "#B8C8B6", "#D1DDD0"] as const
+const LADIES_COLORS = [
+  "#6F7E6B",
+  "#7A8A75",
+  "#809078",
+  "#9AA48C",
+  "#A9B39B",
+  "#B4C0AA",
+  "#B3C9B4",
+  "#ADC9B2",
+  "#B0D4BA",
+] as const
+
+const GENTLEMEN_COLORS = [
+  "#232323",
+  "#636260",
+  "#7F7E7A",
+  "#CFBBA3",
+  "#CDBCAB",
+  "#B49B85",
+  "#7F5235",
+] as const
 
 function ColorPalette({
   colors,
-  className = "max-w-xs",
+  className = "",
 }: {
   colors: readonly string[]
   className?: string
 }) {
   return (
     <div
-      className={`mx-auto flex h-7 w-full overflow-hidden rounded-full sm:h-8 ${className}`}
-      style={{ border: `1px solid ${GOLD_BORDER}` }}
+      className={`mx-auto flex w-full flex-wrap items-center justify-center gap-1.5 sm:gap-2 ${className}`}
+      role="img"
+      aria-label="Suggested color palette"
     >
       {colors.map((color, i) => (
-        <div key={color + i} className="min-w-0 flex-1" style={{ backgroundColor: color }} />
+        <span
+          key={color + i}
+          className="h-5 w-5 shrink-0 rounded-full sm:h-6 sm:w-6 md:h-7 md:w-7"
+          style={{
+            backgroundColor: color,
+            boxShadow: "inset 0 0 0 1px color-mix(in srgb, black 10%, transparent)",
+          }}
+        />
       ))}
     </div>
   )
@@ -328,7 +353,7 @@ function MotifLook({
         className="mx-auto h-auto w-full object-contain"
         sizes="(max-width: 768px) 100vw, 768px"
       />
-      <ColorPalette colors={colors} className="max-w-sm sm:max-w-md" />
+      <ColorPalette colors={colors} className="max-w-md sm:max-w-lg" />
       {children ? <div className="mx-auto max-w-sm space-y-3 pt-1 sm:space-y-3.5">{children}</div> : null}
     </div>
   )
@@ -350,7 +375,7 @@ function DressCodePalette() {
           className={`${cinzel.className} text-[0.625rem] font-semibold uppercase tracking-[0.28em] sm:text-[0.6rem] sm:tracking-[0.36em]`}
           style={{ color: GOLD }}
         >
-          Theme / Color Motif
+          Guest Attire
         </p>
         <h3
           className={`${aboveTheBeyond.className} mt-1 block px-1 text-[1.5rem] leading-tight sm:text-[1.95rem]`}
@@ -372,68 +397,32 @@ function DressCodePalette() {
 
       <div className="space-y-10 px-5 pb-8 sm:space-y-12 sm:px-8 sm:pb-10">
         <MotifLook
-          label="Entourage"
-          src="/Details/entourage.png"
-          alt="Entourage attire"
-          colors={SAGE_COLORS}
+          label="Ladies"
+          src="/Details/guest-ladies.png"
+          alt="Ladies guest attire"
+          colors={LADIES_COLORS}
         >
-          <div className="space-y-1">
-            <p
-              className={`${cinzel.className} ${ct.labelSm} font-semibold uppercase tracking-[0.18em]`}
-              style={{ color: detailText.label }}
-            >
-              Women
-            </p>
-            <p
-              className={`font-goudy-italic ${ct.body} mx-auto max-w-[18rem] leading-snug`}
-              style={{ color: detailText.body }}
-            >
-              Flowy / Spring Sage Green Dress — strictly floor length.
-            </p>
-          </div>
-          <div className="space-y-1">
-            <p
-              className={`${cinzel.className} ${ct.labelSm} font-semibold uppercase tracking-[0.18em]`}
-              style={{ color: detailText.label }}
-            >
-              Gentlemen&apos;s Attire
-            </p>
-            <p
-              className={`font-goudy-italic ${ct.body} leading-snug`}
-              style={{ color: detailText.body }}
-            >
-              Strictly no rubber shoes.
-            </p>
-            <ul
-              className={`font-goudy-italic ${ct.body} mx-auto list-none space-y-0.5 p-0 text-center leading-snug`}
-              style={{ color: detailText.body }}
-            >
-              <li>Black and white suit</li>
-              <li>White and gray suit</li>
-              <li>Sage green long sleeves + gray or brown pants</li>
-            </ul>
-          </div>
+          <ul
+            className={`font-goudy-italic ${ct.body} mx-auto list-none space-y-1 p-0 text-center leading-snug`}
+            style={{ color: detailText.body }}
+          >
+            <li>Floor-length dress in pastel green</li>
+          </ul>
         </MotifLook>
         <MotifLook
-          label="Guest"
-          src="/Details/Guest.png"
-          alt="Guest attire"
-          colors={MOTIF_COLORS}
+          label="Gentlemen"
+          src="/Details/guest-gentlemen.png"
+          alt="Gentlemen guest attire"
+          colors={GENTLEMEN_COLORS}
         >
-          <div className="space-y-2">
-            <p
-              className={`${cinzel.className} ${ct.labelSm} font-semibold uppercase tracking-[0.18em]`}
-              style={{ color: detailText.label }}
-            >
-              Casual Attire
-            </p>
-            <p
-              className={`font-goudy-italic ${ct.body} leading-relaxed`}
-              style={{ color: detailText.body }}
-            >
-              Whimsical Spring
-            </p>
-          </div>
+          <ul
+            className={`font-goudy-italic ${ct.body} mx-auto list-none space-y-1 p-0 text-center leading-snug`}
+            style={{ color: detailText.body }}
+          >
+            <li>Black &amp; white or white &amp; gray suit</li>
+            <li>Sage or white long sleeves with neutral pants</li>
+            <li>No rubber shoes</li>
+          </ul>
         </MotifLook>
       </div>
     </div>
@@ -681,7 +670,7 @@ function EventVenueCard({
 // Colors sourced from globals.css @theme inline — edit there to update everywhere
 
 const COUPLE_IMAGES = [
-  "/envelope/boxes (1).JPG",
+  "/envelope/boxes (5).JPG",
   "/envelope/boxes (2).JPG",
   "/envelope/boxes (3).JPG",
   "/envelope/boxes (4).JPG",
@@ -782,7 +771,7 @@ export function Details() {
         <div className="pointer-events-none absolute left-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/left-top-corner.png"
+            src="/decoration/deco/top-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -791,7 +780,7 @@ export function Details() {
         <div className="pointer-events-none absolute right-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/right-top-corner.png"
+            src="/decoration/deco/top-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -800,7 +789,7 @@ export function Details() {
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/left-bottom-corner.png"
+            src="/decoration/deco/bottom-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -809,7 +798,7 @@ export function Details() {
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/right-bottom-corner.png"
+            src="/decoration/deco/bottom-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -834,7 +823,7 @@ export function Details() {
             className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
             style={{ color: BODY }}
           >
-            Everything you need to know about our special day.
+            Everything you need for the day.
           </p>
           <div className="mt-4 flex items-center justify-center sm:mt-5">
             <span className="h-px w-16 sm:w-24 md:w-32" style={goldDividerStyle} />
@@ -906,7 +895,7 @@ export function Details() {
             className={`font-goudy-italic ${ct.bodyLg} mt-3 leading-relaxed sm:mt-4`}
             style={{ color: BODY }}
           >
-            Please dress according to the guidelines below.
+            Kindly follow the look below.
           </p>
         </div>
 
@@ -956,49 +945,32 @@ export function Details() {
                 className={`font-goudy-italic ${ct.body} mx-auto mt-2 max-w-lg leading-relaxed`}
                 style={{ color: detailText.body }}
               >
-                A few thoughtful notes to help everyone enjoy our celebration.
+                A few notes for the day.
               </p>
 
               <div className="mx-auto mt-4 max-w-2xl space-y-3 sm:mt-5 sm:space-y-4">
                 <ReminderCard title="Adults-Only Celebration" variant="accent">
-                  <p>
-                    We kindly request that our wedding be an adults-only occasion. We hope this allows
-                    everyone to relax and fully enjoy the celebration with us.
-                  </p>
+                  <p>This celebration is for adults only. Thank you for understanding.</p>
                 </ReminderCard>
 
                 <ReminderCard title="Unplugged Ceremony">
                   <p>
-                    We&apos;re having a mostly unplugged ceremony. Guests may take photos, but we kindly
-                    ask that it be kept minimal. Please avoid blocking or crowding our official
-                    photographers so they can capture the special moments. We&apos;d love for everyone
-                    to stay present and share the moment with us. Don&apos;t worry—professional photos
-                    will be shared with you after the event. Thank you for your understanding.
+                    Please keep phones away during the ceremony so our photographers can capture the
+                    moment. Photos will be shared after.
                   </p>
                 </ReminderCard>
 
                 <ReminderCard title="Whimsical Spring Minimalist" variant="accent">
-                  <div className="space-y-2.5">
-                    <p>
-                      Kindly follow our suggested attire and color palette above to match our wedding
-                      theme.
-                    </p>
-                    <p>
-                      Entourage: flowy / spring sage green dress, strictly floor length. Gentlemen,
-                      black and white suit, white and gray suit, or sage green long sleeves with gray
-                      or brown pants — strictly no rubber shoes.
-                    </p>
-                    <p>Guests: casual attire, Whimsical Spring.</p>
+                  <div className="space-y-2">
+                    <p>Ladies: floor-length dress in pastel green.</p>
+                    <p>Gentlemen: black &amp; white or white &amp; gray suit, or sage or white long sleeves with neutral pants. No rubber shoes.</p>
                   </div>
                 </ReminderCard>
 
                 <ReminderCard title="Arrival">
                   <p>
-                    To ensure everything runs smoothly, please arrive at least 30 minutes before the
-                    ceremony starts. The program will begin at {siteConfig.ceremony.time}, so we kindly
-                    ask everyone to arrive by {siteConfig.ceremony.guestsTime}. This will give you time
-                    to find your seat, take in the beautiful setup, and be fully present for our special
-                    moment.
+                    Kindly arrive by {siteConfig.ceremony.guestsTime}, 30 minutes before the ceremony
+                    begins at {siteConfig.ceremony.time}.
                   </p>
                 </ReminderCard>
               </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { Cinzel } from "next/font/google"
 
@@ -16,12 +16,103 @@ const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transpare
 const NAV_GOLD =
   "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
 
+const MAX_IMAGE_RETRIES = 5
+const DISPLAY_RETRY_MS = 6000
+
 type ImageItem = {
   src: string
   category: "desktop" | "mobile" | "front" | "gallery"
   width: number
   height: number
   orientation: "portrait" | "landscape"
+}
+
+function cacheBustSrc(src: string, attempt: number) {
+  if (attempt <= 0) return src
+  const joiner = src.includes("?") ? "&" : "?"
+  return `${src}${joiner}retry=${attempt}`
+}
+
+function RetryableGalleryImage({
+  src,
+  width,
+  height,
+  alt,
+  sizes,
+  className,
+  style,
+  priority = false,
+  loading,
+}: {
+  src: string
+  width: number
+  height: number
+  alt: string
+  sizes: string
+  className?: string
+  style?: React.CSSProperties
+  priority?: boolean
+  loading?: "eager" | "lazy"
+}) {
+  const wrapRef = useRef<HTMLDivElement | null>(null)
+  const loadedRef = useRef(false)
+  const [attempt, setAttempt] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+
+  const retry = useCallback(() => {
+    if (loadedRef.current) return
+    setAttempt((current) => (current >= MAX_IMAGE_RETRIES ? current : current + 1))
+  }, [])
+
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el || loaded) return
+
+    let timeoutId: number | null = null
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        if (timeoutId != null) window.clearTimeout(timeoutId)
+        timeoutId = window.setTimeout(() => {
+          if (!loadedRef.current) retry()
+        }, DISPLAY_RETRY_MS + attempt * 400)
+      },
+      { rootMargin: "240px 0px" },
+    )
+
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+      if (timeoutId != null) window.clearTimeout(timeoutId)
+    }
+  }, [attempt, loaded, retry])
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <Image
+        key={`${src}-${attempt}`}
+        src={cacheBustSrc(src, attempt)}
+        alt={alt}
+        width={width}
+        height={height}
+        sizes={sizes}
+        unoptimized
+        priority={priority}
+        loading={loading}
+        decoding="async"
+        fetchPriority={priority ? "high" : "auto"}
+        className={`${className ?? ""} transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+        style={style}
+        onLoad={() => {
+          loadedRef.current = true
+          setLoaded(true)
+        }}
+        onError={() => {
+          window.setTimeout(retry, 180)
+        }}
+      />
+    </div>
+  )
 }
 
 export default function MasonryGallery({ images }: { images: ImageItem[] }) {
@@ -38,6 +129,20 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
   }, [images.length, lightboxIdx])
+
+  useEffect(() => {
+    if (lightboxIdx == null) return
+    const neighbors = [
+      images[(lightboxIdx + 1) % images.length],
+      images[(lightboxIdx - 1 + images.length) % images.length],
+    ]
+    neighbors.forEach((image) => {
+      if (!image) return
+      const preload = new window.Image()
+      preload.decoding = "async"
+      preload.src = image.src
+    })
+  }, [images, lightboxIdx])
 
   return (
     <div ref={topRef} className="relative">
@@ -71,17 +176,16 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
                   backgroundColor: IVORY,
                 }}
               >
-                <Image
+                <RetryableGalleryImage
                   src={img.src}
                   alt=""
                   width={img.width}
                   height={img.height}
-                  quality={90}
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className="h-auto w-full rounded-xl object-contain"
                   style={{ imageOrientation: "from-image" }}
-                  loading={idx < 4 ? "eager" : "lazy"}
-                  priority={idx < 4}
+                  loading={idx < 8 ? "eager" : "lazy"}
+                  priority={idx < 2}
                 />
               </div>
             </button>
@@ -111,12 +215,11 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
             >
               ‹
             </button>
-            <Image
+            <RetryableGalleryImage
               src={images[lightboxIdx].src}
               alt=""
               width={images[lightboxIdx].width}
               height={images[lightboxIdx].height}
-              quality={95}
               sizes="100vw"
               className="h-auto max-h-[85vh] w-auto max-w-full rounded-xl object-contain shadow-2xl"
               style={{
@@ -124,6 +227,7 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
                 imageOrientation: "from-image",
               }}
               priority
+              loading="eager"
             />
             <button
               type="button"

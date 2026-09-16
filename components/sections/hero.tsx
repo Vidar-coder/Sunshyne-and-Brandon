@@ -38,7 +38,7 @@ const SLIDE_MS = 5600
 const MOBILE_HERO_PHOTOS = [
   encodeURI("/mobile-background/couples (9).webp"),
   encodeURI("/mobile-background/couples (14).webp"),
-  encodeURI("/mobile-background/couples (30).webp"),
+  encodeURI("/mobile-background/couples (69).webp"),
   encodeURI("/mobile-background/couples (62).webp"),
   encodeURI("/mobile-background/couples (76).webp"),
 ]

@@ -87,14 +87,13 @@ function FaqTitle() {
         {
           "--title-size": layeredSectionTitleSize.main,
           "--script-size": layeredSectionTitleSize.script,
-          "--script-overlap": layeredSectionTitleSize.overlap,
         } as CSSProperties
       }
     >
       <span className="sr-only">Frequently Asked Questions — everything you need to know</span>
       <span
         aria-hidden
-        className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
+        className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
           color: NAVY,
@@ -104,7 +103,7 @@ function FaqTitle() {
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
           color: SCRIPT,
@@ -119,88 +118,11 @@ function FaqTitle() {
 }
 
 function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
-  const guestArrival = siteConfig.ceremony.guestsTime ?? "9:00 AM"
   const rsvpPhone = siteConfig.details.rsvp.phone.trim()
   const showRsvpPhone =
     rsvpPhone.length > 0 && !/to be announced/i.test(rsvpPhone)
 
   return [
-    {
-      question: "When is the wedding?",
-      answer: `Our wedding will be held on ${siteConfig.ceremony.date}, ${siteConfig.ceremony.day}. The ceremony begins at ${siteConfig.ceremony.time}, and the reception follows at ${siteConfig.reception.time}.`,
-    },
-    {
-      question: "What time should I arrive for the ceremony?",
-      answer: `Please arrive by ${guestArrival} so you have time to find your seat and settle in. The ceremony will begin promptly at ${siteConfig.ceremony.time}. Entourage members are requested to assemble at ${siteConfig.ceremony.entourageTime}.`,
-    },
-    {
-      question: "Where will the ceremony take place?",
-      answer: (
-        <>
-          Our ceremony will be held at {siteConfig.ceremony.location}, {siteConfig.ceremony.venue}.{" "}
-          <a
-            href={siteConfig.ceremony.map}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-            style={{ color: GOLD }}
-          >
-            Open in Google Maps
-          </a>
-          .
-        </>
-      ),
-    },
-    {
-      question: "Where will the reception be held?",
-      answer: (
-        <>
-          The reception will be at {siteConfig.reception.location}, {siteConfig.reception.venue},
-          beginning at {siteConfig.reception.time}.{" "}
-          <a
-            href={siteConfig.reception.map}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-            style={{ color: GOLD }}
-          >
-            Open in Google Maps
-          </a>
-          .
-        </>
-      ),
-    },
-    {
-      question: "Is there a recommended hotel?",
-      answer: (
-        <>
-          Yes. We recommend Microtel by Wyndham South Forbes near Nuvali, a short drive from both
-          the ceremony and reception. Please see the{" "}
-          <a
-            href="#hotel"
-            className={linkClass}
-            style={{ color: GOLD }}
-            onClick={(e) => {
-              e.preventDefault()
-              document.getElementById("hotel")?.scrollIntoView({ behavior: "smooth" })
-            }}
-          >
-            Recommended Hotel
-          </a>{" "}
-          section for the map, or{" "}
-          <a
-            href="https://maps.app.goo.gl/qPai4AGyx3uyMBXX6?g_st=ifm"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-            style={{ color: GOLD }}
-          >
-            open in Google Maps
-          </a>
-          .
-        </>
-      ),
-    },
     {
       question: "How do I RSVP?",
       answer: (
@@ -232,9 +154,9 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
         "Yes, please. We will be needing your formal RSVP to consolidate guest details and finalize the headcount for catering and seating purposes.",
     },
     {
-      question: "Can I sit anywhere at the reception?",
+      question: "May we choose our own seats at the reception?",
       answer:
-        "Please don't. It took us a lot of effort and discussion to finish the seating arrangement, which is planned for everyone's convenience and preference.",
+        "We kindly ask that you take the place reserved for you. Each seat has been arranged with care so everyone may be comfortably seated with those we hoped you would share the evening with.",
     },
     {
       question: 'Can I bring a "Plus One" to the event?',
@@ -263,24 +185,14 @@ function getFaqItems(siteConfig: SiteConfig): FAQItem[] {
         "Yes, parking is available at both the ceremony and reception venues. Please arrive a little early so you have time to park comfortably.",
     },
     {
-      question: "What is the dress code?",
-      answer:
-        "Our theme is Whimsical Spring Minimalist. Entourage: women, a flowy spring sage green dress, strictly floor length; gentlemen, a black and white suit, a white and gray suit, or sage green long sleeves with gray or brown pants — kindly no rubber shoes. Guests: casual attire, Whimsical Spring.",
-    },
-    {
-      question: "Will the ceremony be unplugged?",
-      answer:
-        "Yes. Your presence at our wedding is the greatest gift of all. As we say \"I do,\" we kindly ask that you refrain from taking photos or videos during the ceremony and keep all devices tucked away. Be fully present, share in our joy, and leave the capturing of memories to our professional photographers.",
-    },
-    {
       question: "Can I take photos or videos during the reception?",
       answer:
         "Yes. We would love for you to capture the joy throughout the reception. We prepared this celebration wholeheartedly and we want everyone to enjoy it fully.",
     },
     {
-      question: "When is the appropriate time to leave?",
+      question: "When would it be most thoughtful to take our leave?",
       answer:
-        "It took us some time to plan a heartfelt wedding that everyone would hopefully enjoy. We humbly request that you celebrate with us until the program ends. Let's laugh, take pictures, and have fun!",
+        "It would mean so much if you could stay with us through the end of the program. We have prepared the evening with love, and we hope you will laugh, take photos, and celebrate until the night draws to a close.",
     },
     {
       question: "What if I have dietary restrictions or allergies?",
@@ -339,7 +251,7 @@ export function FAQ() {
         <div className="pointer-events-none absolute left-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/left-top-corner.png"
+            src="/decoration/deco /left-to  p-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -348,7 +260,7 @@ export function FAQ() {
         <div className="pointer-events-none absolute right-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/right-top-corner.png"
+            src="/decoration/deco/top-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -357,7 +269,7 @@ export function FAQ() {
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/left-bottom-corner.png"
+            src="/decoration/deco/bottom-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -366,7 +278,7 @@ export function FAQ() {
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/right-bottom-corner.png"
+            src="/decoration/deco/bottom-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}

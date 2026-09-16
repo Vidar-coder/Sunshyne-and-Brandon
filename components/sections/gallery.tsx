@@ -60,7 +60,6 @@ function OutsideDivider() {
 const galleryTitleSize = {
   main: "clamp(1.65rem, 8.5vw, 4.5rem)",
   script: "clamp(0.95rem, 4.8vw, 2.7rem)",
-  overlap: "clamp(-0.55rem, -2.4vw, -1.75rem)",
 } as const
 
 function GalleryTitle() {
@@ -71,14 +70,13 @@ function GalleryTitle() {
         {
           "--title-size": galleryTitleSize.main,
           "--script-size": galleryTitleSize.script,
-          "--script-overlap": galleryTitleSize.overlap,
         } as React.CSSProperties
       }
     >
       <span className="sr-only">Gallery — our favorite moments</span>
       <span
         aria-hidden
-        className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
+        className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
           color: NAVY,
@@ -88,7 +86,7 @@ function GalleryTitle() {
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
           color: SCRIPT,
@@ -204,7 +202,7 @@ export function Gallery() {
         <div className="pointer-events-none absolute left-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/left-top-corner.png"
+            src="/decoration/deco/top-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -213,7 +211,7 @@ export function Gallery() {
         <div className="pointer-events-none absolute right-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/right-top-corner.png"
+            src="/decoration/deco/top-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -222,7 +220,7 @@ export function Gallery() {
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/left-bottom-corner.png"
+            src="/decoration/deco/bottom-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -231,7 +229,7 @@ export function Gallery() {
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/right-bottom-corner.png"
+            src="/decoration/deco/bottom-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}

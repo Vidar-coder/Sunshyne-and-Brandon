@@ -16,14 +16,14 @@ interface LoadingScreenProps {
 }
 
 const COUNTDOWN_BOXES = [
-  { src: '/envelope/boxes (1).JPG' },
+  { src: '/envelope/boxes (5).JPG' },
   { src: '/envelope/boxes (2).JPG' },
   { src: '/envelope/boxes (3).JPG' },
 ];
 
-const STAGGER_DELAY_MS = 4000;
+const STAGGER_DELAY_MS = 1500;
 const BOX_TRANSITION_MS = 1200;
-const TOTAL_DURATION_MS = COUNTDOWN_BOXES.length * STAGGER_DELAY_MS + 3000;
+const TOTAL_DURATION_MS = 6000;
 const FADE_OUT_MS = 950;
 const entryEase = [0.22, 1, 0.36, 1] as const;
 

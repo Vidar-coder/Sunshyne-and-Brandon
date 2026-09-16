@@ -6,6 +6,7 @@ import localFont from "next/font/local"
 import { Cinzel } from "next/font/google"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
+import { fetchInvitationList } from "@/lib/invitation-data"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -195,16 +196,7 @@ export function BookOfGuests() {
     if (showLoading) setIsRefreshing(true)
     
     try {
-      // Fetch from local API route which connects to Google Sheets
-      const response = await fetch("/api/guests", {
-        cache: "no-store"
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch guest list")
-      }
-
-      const data: Guest[] = await response.json()
+      const data = await fetchInvitationList<Guest>("/api/guests")
 
       // Filter only confirmed/attending guests
       const attendingGuests = data.filter((guest) => guest.status === "confirmed")

@@ -114,14 +114,13 @@ function MessagesTitle() {
         {
           "--title-size": layeredSectionTitleSize.main,
           "--script-size": layeredSectionTitleSize.script,
-          "--script-overlap": layeredSectionTitleSize.overlap,
         } as React.CSSProperties
       }
     >
       <span className="sr-only">Love Notes and Prayers — Share your love with us</span>
       <span
         aria-hidden
-        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
+        className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
           color: IVORY,
@@ -132,7 +131,7 @@ function MessagesTitle() {
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-[var(--script-overlap)] block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
           color: "#F3E6C0",
@@ -455,7 +454,7 @@ export function Messages() {
         </div>
 
      
-         <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
+         {/* <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
           <SilkTextGlow className="mb-4 text-center sm:mb-6 md:mb-8">
             <h3
               className={`${theSeasons.className} mb-1.5 font-semibold tracking-[0.08em] uppercase sm:mb-2 ${sectionType.subheader}`}
@@ -479,7 +478,7 @@ export function Messages() {
             loading={loading && messages.length === 0}
             freshKey={freshKey}
           />
-        </div> 
+        </div>  */}
       </div>
     </section>
     </div>
