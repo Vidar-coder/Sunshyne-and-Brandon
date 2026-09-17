@@ -52,10 +52,14 @@ function messageKey(msg: Message) {
   return `${msg.name.trim().toLowerCase()}|${msg.message.trim().toLowerCase()}`
 }
 
+const INITIAL_VISIBLE = 5
+
 export default function MessageWallDisplay({ messages, loading, freshKey = null }: MessageWallDisplayProps) {
   const seenKeys = useRef(new Set<string>())
   const initialized = useRef(false)
+  const listRef = useRef<HTMLDivElement>(null)
   const [newKeys, setNewKeys] = useState<Set<string>>(new Set())
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     const keys = messages.map((msg) => messageKey(msg))
@@ -132,9 +136,23 @@ export default function MessageWallDisplay({ messages, loading, freshKey = null 
     )
   }
 
+  const hasMore = messages.length > INITIAL_VISIBLE
+  const visibleMessages = expanded ? messages : messages.slice(0, INITIAL_VISIBLE)
+
+  const handleToggleMore = () => {
+    if (expanded) {
+      setExpanded(false)
+      requestAnimationFrame(() => {
+        listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+      })
+      return
+    }
+    setExpanded(true)
+  }
+
   return (
-    <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
-      {messages.map((msg, index) => {
+    <div ref={listRef} className="space-y-2.5 scroll-mt-16 sm:space-y-3 sm:scroll-mt-20 md:space-y-4">
+      {visibleMessages.map((msg, index) => {
         const key = `${messageKey(msg)}-${index}`
         const isNew = Boolean(freshKey && messageKey(msg) === freshKey) || newKeys.has(messageKey(msg))
         return (
@@ -227,6 +245,19 @@ export default function MessageWallDisplay({ messages, loading, freshKey = null 
         </Card>
         )
       })}
+
+      {hasMore && (
+        <div className="flex justify-center pt-2 sm:pt-3">
+          <button
+            type="button"
+            onClick={handleToggleMore}
+            className={`${cinzel.className} ${sectionType.label} inline-flex min-h-11 items-center justify-center rounded-full px-6 py-2.5 font-semibold uppercase tracking-[0.12em] shadow-[0_8px_18px_color-mix(in_srgb,var(--color-welcome-gold)_22%,transparent)] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:tracking-[0.14em]`}
+            style={{ background: NAV_GOLD, color: IVORY }}
+          >
+            {expanded ? "Show less" : "View more"}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

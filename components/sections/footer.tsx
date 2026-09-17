@@ -40,7 +40,7 @@ const dividerLineStyle = {
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
+  "block h-auto w-auto max-w-[80px] sm:max-w-[120px] md:max-w-[170px] lg:max-w-[205px] xl:max-w-[245px] select-none"
 
 const ct = {
   label: sectionType.label,
@@ -226,7 +226,7 @@ export function Footer() {
       <div className="pointer-events-none absolute left-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/top-left-corner.png"
+          src="/decoration/top-left-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -235,7 +235,7 @@ export function Footer() {
       <div className="pointer-events-none absolute right-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/top-right-corner.png"
+          src="/decoration/top-right-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -244,7 +244,7 @@ export function Footer() {
       <div className="pointer-events-none absolute bottom-0 left-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/bottom-left-corner.png"
+          src="/decoration/bottom-left-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -253,7 +253,7 @@ export function Footer() {
       <div className="pointer-events-none absolute bottom-0 right-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/bottom-right-corner.png"
+          src="/decoration/bottom-right-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -366,6 +366,21 @@ export function Footer() {
                   <p className={`font-goudy-italic ${ct.body} opacity-90`} style={{ color: palette.body }}>
                     Please confirm your attendance by this date.
                   </p>
+                  <a
+                    href="#guest-list"
+                    onClick={(event) => {
+                      event.preventDefault()
+                      document.getElementById("guest-list")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                    }}
+                    className={`${cinzel.className} ${ct.label} mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full px-5 py-2.5 font-semibold uppercase tracking-[0.12em] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:tracking-[0.14em]`}
+                    style={{
+                      background: "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)",
+                      color: "#fffaf4",
+                      boxShadow: "0 8px 18px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)",
+                    }}
+                  >
+                    Tap here to respond
+                  </a>
                 </div>
               </FooterCard>
             </motion.div>

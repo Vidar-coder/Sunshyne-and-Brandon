@@ -40,7 +40,7 @@ const aboveTheBeyond = localFont({
 })
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
+  "block h-auto w-auto max-w-[80px] sm:max-w-[120px] md:max-w-[170px] lg:max-w-[205px] xl:max-w-[245px] select-none"
 
 const IVORY = "#fffaf4"
 const GOLD = "var(--color-welcome-gold)"
@@ -416,7 +416,7 @@ function DressCodePalette() {
           colors={GENTLEMEN_COLORS}
         >
           <ul
-            className={`font-goudy-italic ${ct.body} mx-auto list-none space-y-1 p-0 text-center leading-snug`}
+            className={`font-goudy-italic ${ct.body} mx-auto w-fit list-disc space-y-1.5 pl-5 text-left leading-snug marker:text-[color:var(--color-welcome-gold)]`}
             style={{ color: detailText.body }}
           >
             <li>Black &amp; white or white &amp; gray suit</li>
@@ -500,19 +500,17 @@ function EventVenueCard({
               return (
                 <div
                   key={index}
-                  className={`absolute inset-0 transition-[opacity,transform] duration-[1600ms] ease-[cubic-bezier(0.45,0.05,0.55,0.95)] ${
+                  className={`absolute inset-0 transition-opacity duration-[1400ms] ease-in-out ${
                     isActive
-                      ? "opacity-100 scale-100 z-10"
-                      : "opacity-0 scale-[1.06] z-0 pointer-events-none"
+                      ? "opacity-100 z-10"
+                      : "opacity-0 z-0 pointer-events-none"
                   }`}
                 >
                   <Image
                     src={src}
                     alt={locationName}
                     fill
-                    className={`object-cover transition-transform duration-[9000ms] ease-out ${
-                      isActive ? "scale-[1.08] group-hover:scale-[1.12]" : "scale-100"
-                    }`}
+                    className="object-cover"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px"
                     priority={index === 0}
                   />
@@ -771,7 +769,7 @@ export function Details() {
         <div className="pointer-events-none absolute left-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/top-left-corner.png"
+            src="/decoration/top-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -780,7 +778,7 @@ export function Details() {
         <div className="pointer-events-none absolute right-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/top-right-corner.png"
+            src="/decoration/top-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -789,7 +787,7 @@ export function Details() {
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/bottom-left-corner.png"
+            src="/decoration/bottom-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -798,7 +796,7 @@ export function Details() {
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/bottom-right-corner.png"
+            src="/decoration/bottom-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -950,27 +948,27 @@ export function Details() {
 
               <div className="mx-auto mt-4 max-w-2xl space-y-3 sm:mt-5 sm:space-y-4">
                 <ReminderCard title="Adults-Only Celebration" variant="accent">
-                  <p>This celebration is for adults only. Thank you for understanding.</p>
+                  <p>This celebration is for adults only. Thank you for your understanding.</p>
                 </ReminderCard>
 
                 <ReminderCard title="Unplugged Ceremony">
                   <p>
-                    Please keep phones away during the ceremony so our photographers can capture the
-                    moment. Photos will be shared after.
+                    We kindly invite you to keep your phones away and be fully present with us as our
+                    photographers capture the moments. Photos will be shared afterward.
                   </p>
                 </ReminderCard>
 
-                <ReminderCard title="Whimsical Spring Minimalist" variant="accent">
-                  <div className="space-y-2">
-                    <p>Ladies: floor-length dress in pastel green.</p>
-                    <p>Gentlemen: black &amp; white or white &amp; gray suit, or sage or white long sleeves with neutral pants. No rubber shoes.</p>
-                  </div>
+                <ReminderCard title="Whimsical Spring Minimalist Attire" variant="accent">
+                  <p>
+                    Kindly follow our suggested attire and color palette above to match our wedding
+                    theme. Please refrain from wearing rubber shoes.
+                  </p>
                 </ReminderCard>
 
                 <ReminderCard title="Arrival">
                   <p>
-                    Kindly arrive by {siteConfig.ceremony.guestsTime}, 30 minutes before the ceremony
-                    begins at {siteConfig.ceremony.time}.
+                    We kindly invite you to arrive by {siteConfig.ceremony.guestsTime}, so you can
+                    settle in before our ceremony begins at {siteConfig.ceremony.time}.
                   </p>
                 </ReminderCard>
               </div>

@@ -74,7 +74,7 @@ const photoEmergenceEase: Transition = { duration: 2.35, ease: [0.22, 1, 0.18, 1
 const letterEmergenceEase: Transition = { duration: 3.05, ease: [0.5, 0.02, 0.14, 1] };
 const flapEase: Transition = { duration: 1.1, ease: [0.65, 0, 0.35, 1] };
 const inviteExitEase: Transition = { duration: 1.65, ease: [0.22, 1, 0.36, 1], delay: 0.75 };
-const inviteEnterEase: Transition = { duration: 1.15, ease: [0.22, 1, 0.36, 1], delay: 0.06 };
+const inviteEnterEase: Transition = { duration: 1.2, ease: [0.22, 1, 0.36, 1] };
 const letterExitEase: Transition = { duration: 1.55, ease: [0.16, 1, 0.3, 1] };
 const inviteRevealLeadMs = 460;
 const INVITE_EXIT_MS = 2500;
@@ -187,11 +187,7 @@ export const Hero: React.FC<HeroProps> = ({
   }, [visible]);
 
   useEffect(() => {
-    if (!visible || isExiting) {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-      return;
-    }
+    if (!visible || isExiting) return;
 
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
@@ -473,25 +469,23 @@ export const Hero: React.FC<HeroProps> = ({
       className={`env-invite-screen ${visible ? '' : 'is-hidden'}`}
       data-phase={isExiting ? 'exiting' : phase}
       aria-hidden={!visible}
-      initial={
-        enterFromLoading && !reduceMotion
-          ? { opacity: 0 }
-          : false
-      }
+      initial={false}
       animate={
         isExiting
-          ? {
-              opacity: 0,
-            }
-          : {
-              opacity: 1,
-            }
+          ? { opacity: 0, y: 0, scale: 1 }
+          : visible
+            ? { opacity: 1, y: 0, scale: 1 }
+            : { opacity: 0, y: 18, scale: 0.985 }
       }
       transition={
-        isExiting ? inviteExitEase : enterFromLoading ? inviteEnterEase : { duration: 0.01 }
+        isExiting
+          ? inviteExitEase
+          : visible && enterFromLoading && !reduceMotion
+            ? inviteEnterEase
+            : { duration: reduceMotion ? 0.2 : 0.01 }
       }
       style={{
-        pointerEvents: isExiting ? 'none' : undefined,
+        pointerEvents: !visible || isExiting ? 'none' : undefined,
       }}
     >
       {!reduceMotion && (
@@ -576,10 +570,11 @@ export const Hero: React.FC<HeroProps> = ({
           >
           <motion.div
             className="env-invite-scene"
+            initial={false}
             animate={
               isExiting
-                ? { opacity: 0, scale: 0.98 }
-                : { opacity: 1, scale: 1 }
+                ? { opacity: 0, scale: 0.98, y: 0 }
+                : { opacity: 1, scale: 1, y: 0 }
             }
             transition={
               isExiting
@@ -787,7 +782,7 @@ export const Hero: React.FC<HeroProps> = ({
                 aria-label="Break the wax seal to open the invitation"
               >
                 <Image
-                  src="/decoration/seal.png"
+                  src="/decoration/new-seal.png"
                   alt=""
                   fill
                   priority

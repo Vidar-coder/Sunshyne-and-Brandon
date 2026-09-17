@@ -27,7 +27,7 @@ const aboveTheBeyond = localFont({
 })
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
+  "block h-auto w-auto max-w-[80px] sm:max-w-[120px] md:max-w-[170px] lg:max-w-[205px] xl:max-w-[245px] select-none"
 
 const IVORY = "#fffaf4"
 const GOLD = "var(--color-welcome-gold)"
@@ -194,7 +194,7 @@ export function WeddingTimeline() {
       <div className="pointer-events-none absolute left-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/top-left-corner.png"
+          src="/decoration/top-left-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -203,7 +203,7 @@ export function WeddingTimeline() {
       <div className="pointer-events-none absolute right-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/top-right-corner.png"
+          src="/decoration/top-right-corner.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -212,7 +212,7 @@ export function WeddingTimeline() {
       <div className="pointer-events-none absolute bottom-0 left-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/bottom-left-corner.png"
+          src="/decoration/deco/bottom-left.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}
@@ -221,7 +221,7 @@ export function WeddingTimeline() {
       <div className="pointer-events-none absolute bottom-0 right-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/decoration/deco/bottom-right-corner.png"
+          src="/decoration/deco/bottom-right.png"
           alt=""
           aria-hidden="true"
           className={CORNER_DECO_CLASS}

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
 import { useSiteConfig } from '@/hooks/use-site-config';
 import {
   LOADING_BG_PHOTOS,
@@ -23,9 +23,8 @@ const COUNTDOWN_BOXES = [
 
 const STAGGER_DELAY_MS = 1500;
 const BOX_TRANSITION_MS = 1200;
-const TOTAL_DURATION_MS = 6000;
-const FADE_OUT_MS = 950;
-const entryEase = [0.22, 1, 0.36, 1] as const;
+const TOTAL_DURATION_MS = 10000;
+const FADE_OUT_MS = 1400;
 
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFadeStart }) => {
   const siteConfig = useSiteConfig();
@@ -96,37 +95,23 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
       setProgress(100);
       onFadeStart?.();
       setFadeOut(true);
-      setTimeout(onComplete, FADE_OUT_MS);
+      setTimeout(onComplete, reduceMotion ? 200 : FADE_OUT_MS);
     }, TOTAL_DURATION_MS);
 
     return () => {
       clearTimeout(completeTimer);
       clearInterval(progressInterval);
     };
-  }, [onComplete, onFadeStart]);
+  }, [onComplete, onFadeStart, reduceMotion]);
 
   const coupleNames = `${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}`;
 
   return (
-    <motion.div
-      className="loading-screen loading-screen--invitation fixed inset-0 z-50 flex flex-col overflow-hidden overscroll-none h-dvh max-h-dvh w-screen"
+    <div
+      className={`loading-screen loading-screen--invitation fixed inset-0 z-50 flex flex-col overflow-hidden overscroll-none h-dvh max-h-dvh w-screen${fadeOut ? ' is-fading' : ''}`}
       aria-live="polite"
       aria-busy={!fadeOut}
       aria-label="Loading invitation"
-      initial={false}
-      animate={
-        fadeOut
-          ? {
-              opacity: 0,
-              scale: reduceMotion ? 1 : 1.015,
-              filter: reduceMotion ? 'blur(0px)' : 'blur(6px)',
-            }
-          : { opacity: 1, scale: 1, filter: 'blur(0px)' }
-      }
-      transition={{
-        duration: reduceMotion ? 0.2 : FADE_OUT_MS / 1000,
-        ease: entryEase,
-      }}
       style={{ pointerEvents: fadeOut ? 'none' : 'auto' }}
     >
       <div className="loading-screen__backdrop" aria-hidden="true">
@@ -213,6 +198,6 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

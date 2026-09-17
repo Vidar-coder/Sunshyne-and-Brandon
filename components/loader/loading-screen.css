@@ -155,6 +155,8 @@
   width: 100%;
   min-height: 0;
   pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Mediterranean invitation — ivory, champagne, blush (no green) */
@@ -164,6 +166,17 @@
 
 .loading-screen--invitation .loading-screen__backdrop {
   background-color: var(--color-motif-soft, #f5f0e7);
+}
+
+.loading-screen.is-fading .loading-screen__save-date {
+  opacity: 0;
+  transition-duration: 0.55s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-screen__save-date {
+    transition-duration: 0.2s;
+  }
 }
 
 .loading-screen--invitation .loading-screen__save-date::before {

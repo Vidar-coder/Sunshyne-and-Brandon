@@ -177,15 +177,16 @@ export default function Home() {
           />
         )}
 
+        {(loadingOverlayVisible || showInvitation) && (
+          <InvitationHero
+            onOpen={handleOpenInvitation}
+            onTransitionStart={handleTransitionStart}
+            enterFromLoading={heroEnterFromLoading}
+            visible={showInvitation}
+          />
+        )}
+
         <main className="relative w-full h-full">
-          {showInvitation && (
-            <InvitationHero
-              onOpen={handleOpenInvitation}
-              onTransitionStart={handleTransitionStart}
-              enterFromLoading={heroEnterFromLoading}
-              visible
-            />
-          )}
 
           <motion.div
             className={detailsVisible ? "" : "pointer-events-none"}
@@ -247,8 +248,8 @@ export default function Home() {
               <GuestList />
               <WeddingTimeline />
               <Details />
-              <Gallery />
               <Entourage />
+              <Gallery />
               <Messages />
               <FAQ />
               <Registry />

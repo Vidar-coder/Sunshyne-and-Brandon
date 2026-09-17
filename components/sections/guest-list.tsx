@@ -535,7 +535,7 @@ export function GuestList() {
     >
     <section
       id="guest-list"
-      className="relative z-30 overflow-visible px-5 pb-10 pt-12 sm:px-8 sm:pb-12 sm:pt-14"
+      className="relative z-30 scroll-mt-16 overflow-visible px-5 pb-10 pt-12 sm:scroll-mt-20 sm:px-8 sm:pb-12 sm:pt-14 md:scroll-mt-24"
     >
       <fieldset
         className="relative mx-auto w-full max-w-[22.5rem] overflow-visible rounded-[1.85rem] px-5 pb-8 pt-6 text-center @container/rsvp sm:max-w-[24rem] sm:px-7 sm:pb-9 sm:pt-7"
@@ -596,7 +596,7 @@ export function GuestList() {
           >
             RSVP Deadline
             <span
-              className={`font-goudy-italic mt-1.5 block font-normal normal-case tracking-normal ${sectionType.textSnug}`}
+              className={`${theSeasons.className} mt-2 block text-[1.45rem] font-normal normal-case leading-tight tracking-[0.04em] sm:text-[1.75rem] md:text-[1.95rem]`}
               style={{ color: "var(--color-welcome-navy)" }}
             >
               {siteConfig.details.rsvp.deadline.replace(/\.\s*$/, "")}
@@ -610,10 +610,10 @@ export function GuestList() {
             setSearchQuery("")
             setShowSearchModal(true)
           }}
-          className={`${cinzel.className} ${sectionType.label} mt-5 inline-flex min-h-11 w-full max-w-[13.5rem] items-center justify-center rounded-full px-6 py-2.5 font-semibold uppercase tracking-[0.16em] shadow-[0_8px_18px_color-mix(in_srgb,var(--color-welcome-gold)_22%,transparent)] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:mt-6 sm:tracking-[0.18em]`}
+          className={`${cinzel.className} ${sectionType.label} mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-full px-6 py-2.5 font-semibold uppercase tracking-[0.12em] shadow-[0_8px_18px_color-mix(in_srgb,var(--color-welcome-gold)_22%,transparent)] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:mt-6 sm:tracking-[0.14em]`}
           style={{ background: NAV_GOLD, color: IVORY }}
         >
-          Tap here if Yes
+          Tap here to respond
         </button>
       </fieldset>
     </section>

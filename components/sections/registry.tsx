@@ -40,7 +40,7 @@ const goldDividerStyleLeft = {
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
+  "block h-auto w-auto max-w-[80px] sm:max-w-[120px] md:max-w-[170px] lg:max-w-[205px] xl:max-w-[245px] select-none"
 
 const cardStyle = {
   background: IVORY,
@@ -121,7 +121,7 @@ export function Registry() {
         <div className="pointer-events-none absolute left-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/top-left-corner.png"
+            src="/decoration/top-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -130,7 +130,7 @@ export function Registry() {
         <div className="pointer-events-none absolute right-0 top-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/top-right-corner.png"
+            src="/decoration/top-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -139,7 +139,7 @@ export function Registry() {
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/bottom-left-corner.png"
+            src="/decoration/bottom-left-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -148,7 +148,7 @@ export function Registry() {
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/deco/bottom-right-corner.png"
+            src="/decoration/bottom-right-corner.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -172,8 +172,7 @@ export function Registry() {
             className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${ct.bodyLg}`}
             style={{ color: BODY }}
           >
-            Your presence is the greatest gift of all. Should you wish to honor us further, here is a
-            simple guide.
+            Your presence on our wedding day is the best gift we could ask for.
           </p>
           <div className="mt-4 flex items-center justify-center sm:mt-5">
             <span className="h-px w-16 sm:w-24 md:w-32" style={goldDividerStyle} />
@@ -190,11 +189,12 @@ export function Registry() {
               style={{ color: BODY }}
             >
               <p>
-                If you were thinking of giving a gift to help us on our way, a gift of cash towards our
-                house would really make our day.
+                Should you wish to bless us with a gift, we would be grateful for a monetary gift as we
+                begin this new chapter together.
               </p>
               <p>
-                However, if you prefer to purchase a gift, feel free to surprise us in your own way.
+                However, if you prefer to purchase a gift, please feel free to surprise us in your own
+                special way.
               </p>
             </div>
 

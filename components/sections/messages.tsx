@@ -454,7 +454,7 @@ export function Messages() {
         </div>
 
      
-         {/* <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
+         <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
           <SilkTextGlow className="mb-4 text-center sm:mb-6 md:mb-8">
             <h3
               className={`${theSeasons.className} mb-1.5 font-semibold tracking-[0.08em] uppercase sm:mb-2 ${sectionType.subheader}`}
@@ -478,7 +478,7 @@ export function Messages() {
             loading={loading && messages.length === 0}
             freshKey={freshKey}
           />
-        </div>  */}
+        </div>  
       </div>
     </section>
     </div>
