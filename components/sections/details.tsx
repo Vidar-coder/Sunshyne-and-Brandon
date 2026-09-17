@@ -419,10 +419,17 @@ function DressCodePalette() {
             className={`font-goudy-italic ${ct.body} mx-auto w-fit list-disc space-y-1.5 pl-5 text-left leading-snug marker:text-[color:var(--color-welcome-gold)]`}
             style={{ color: detailText.body }}
           >
-            <li>Black &amp; white or white &amp; gray suit</li>
-            <li>Sage or white long sleeves with neutral pants</li>
-            <li>No rubber shoes</li>
+            <li>Black and white suit</li>
+            <li>White and gray suit</li>
+            <li>Sage green long sleeves with neutral-colored pants</li>
+            <li>White long sleeves with neutral-colored pants</li>
           </ul>
+          <p
+            className={`font-goudy-italic ${ct.body} mx-auto max-w-sm pt-1 leading-snug`}
+            style={{ color: detailText.body }}
+          >
+            Strictly no rubber shoes
+          </p>
         </MotifLook>
       </div>
     </div>
@@ -787,7 +794,7 @@ export function Details() {
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/bottom-left-corner.png"
+            src="/decoration/deco/bottom-left.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -796,7 +803,7 @@ export function Details() {
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/bottom-right-corner.png"
+            src="/decoration/deco/bottom-right.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}

@@ -52,7 +52,7 @@ function messageKey(msg: Message) {
   return `${msg.name.trim().toLowerCase()}|${msg.message.trim().toLowerCase()}`
 }
 
-const INITIAL_VISIBLE = 5
+const INITIAL_VISIBLE = 3
 
 export default function MessageWallDisplay({ messages, loading, freshKey = null }: MessageWallDisplayProps) {
   const seenKeys = useRef(new Set<string>())

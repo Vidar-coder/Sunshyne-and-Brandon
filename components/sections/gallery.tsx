@@ -101,7 +101,7 @@ function GalleryTitle() {
 }
 
 const galleryItems = [
-  { image: "/mobile-background/couples (23).webp", text: " " },
+  { image: "/mobile-background/couples (21).webp", text: " " },
   { image: "/mobile-background/couples (8).webp", text: " " },
   { image: "/mobile-background/couples (26).webp", text: " " },
   { image: "/mobile-background/couples (22).webp", text: " " },
@@ -220,7 +220,7 @@ export function Gallery() {
         <div className="pointer-events-none absolute bottom-0 left-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/bottom-left-corner.png"
+            src="/decoration/deco/bottom-left.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
@@ -229,7 +229,7 @@ export function Gallery() {
         <div className="pointer-events-none absolute bottom-0 right-0 z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/decoration/bottom-right-corner.png"
+            src="/decoration/deco/bottom-right.png"
             alt=""
             aria-hidden="true"
             className={CORNER_DECO_CLASS}
