@@ -139,9 +139,14 @@ function MixedFontText({
           return (
             <span
               key={`${part}-${index}`}
-              className={`${cinzel.className} relative -top-[0.04em] mx-[0.06em] inline-block font-normal not-italic tracking-normal`}
+              className="relative -top-[0.08em] mx-[0.1em] inline-block font-normal not-italic tracking-normal"
+              style={{
+                fontFamily: '"SortsMillGoudy", Georgia, "Times New Roman", serif',
+                fontSize: "0.95em",
+              }}
+              aria-label="of blessed memory"
             >
-              {part}
+              †
             </span>
           )
         }
@@ -557,7 +562,7 @@ export function Entourage() {
               : {}),
             color: NAVY,
           }}
-          title={displayName}
+          title={displayName.replace(/\+/g, "†")}
         >
           {displayName ? (
             <MixedFontText

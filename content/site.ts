@@ -10,7 +10,7 @@ export const siteConfig = {
     groom: "Ricky A. Balila II", //Ltryl B. Benitez
     groomNickname: "Ricky",
     monogram:"/monogram/mono-image.png" ,//Ltryl
-    backgroundMusic:"/background_music/The 1975 - About You.mp3"
+    backgroundMusic:"/background_music/Enchanted (Taylor Swift Cover) by Joseph William Morgan [Bridgerton Season 4 (Netflix Series)].mp3"
   },
   googleAPI:{
     messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScd8BvFRvQPqJIKUhSiaimQ2jjnmb3zqAMoYIRBaj6F1QuSWQ/formResponse",   //done
