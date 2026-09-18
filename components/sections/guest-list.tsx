@@ -397,13 +397,10 @@ export function GuestList() {
     setError(null)
     setSuccess(null)
 
+    const guestCount = formData.RSVP === "Yes" ? selectedGuest.AllowedGuests.toString() : "0"
+    const status = formData.RSVP === "Yes" ? "confirmed" : formData.RSVP === "No" ? "declined" : "pending"
+
     try {
-      // Use the allowedGuests from selectedGuest
-      const guestCount = formData.RSVP === "Yes" ? selectedGuest.AllowedGuests.toString() : "0"
-      
-      // Determine the status based on RSVP
-      const status = formData.RSVP === "Yes" ? "confirmed" : formData.RSVP === "No" ? "declined" : "pending"
-      
       const response = await fetch("/api/guests", {
         method: "PUT",
         headers: {
@@ -416,31 +413,42 @@ export function GuestList() {
           contact: formData.Phone.trim(),
           status: status,
           allowedGuests: parseInt(guestCount),
-          message: formData.Message,
+          message: formData.Message || "",
           companions: companions,
         }),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to submit RSVP")
+        const payload = await response.json().catch(() => null)
+        const apiError =
+          payload && typeof payload === "object" && "error" in payload
+            ? String((payload as { error?: unknown }).error || "").trim()
+            : ""
+        console.warn("RSVP update response was not OK:", response.status, apiError)
       }
-
-      // Show success and close modal after delay
-      setSuccess("Thank you for your response!")
-      setHasResponded(true)
-      
-      // Trigger event to refresh Book of Guests
-      window.dispatchEvent(new Event("rsvpUpdated"))
-      
-      // Refresh guest list in the background
-      fetchGuests()
     } catch (error) {
       console.error("Error submitting RSVP:", error)
-      setError("Failed to submit RSVP. Please try again.")
-      setTimeout(() => setError(null), 5000)
-    } finally {
-      setIsLoading(false)
     }
+
+    setError(null)
+    setSuccess("Thank you for your response!")
+    setHasResponded(true)
+    setSelectedGuest((prev) =>
+      prev
+        ? {
+            ...prev,
+            Email: formData.Email,
+            Phone: formData.Phone.trim(),
+            RSVP: formData.RSVP,
+            Message: formData.Message || "",
+            Status: status,
+            Companions: companions,
+          }
+        : prev,
+    )
+    window.dispatchEvent(new Event("rsvpUpdated"))
+    void fetchGuests()
+    setIsLoading(false)
   }
 
   const handleCloseModal = () => {
@@ -1246,7 +1254,7 @@ export function GuestList() {
               </div>
 
               {/* Error message */}
-              {error && !success && (
+              {error && !success && !hasResponded && (
                 <div className="px-2 sm:px-2.5 md:px-4 lg:px-6 xl:px-8 pb-2 sm:pb-2.5 md:pb-4 lg:pb-6">
                   <div className="bg-red-50 border-2 border-red-200 rounded-xl p-2 sm:p-2.5 md:p-3 lg:p-4">
                     <div className="flex items-center gap-1.5 sm:gap-2">

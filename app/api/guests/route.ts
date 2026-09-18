@@ -4,6 +4,7 @@ import {
   fetchGoogleScriptJson,
   invalidateSheetsCache,
   listResponseHeaders,
+  postGoogleScriptJson,
   SHEETS_CACHE_KEYS,
   withSheetsCache,
 } from "@/lib/sheets-cache"
@@ -123,26 +124,10 @@ export async function POST(request: NextRequest) {
       addedBy: body.addedBy?.trim() || '',
     }
 
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(guestData),
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to add guest')
-    }
-
-    const data = await response.json()
-    
-    if (data.error) {
-      throw new Error(data.error)
-    }
+    const data = await postGoogleScriptJson(GOOGLE_SCRIPT_URL, guestData)
 
     invalidateSheetsCache(SHEETS_CACHE_KEYS.guests)
-    return NextResponse.json(data, { status: 201 })
+    return NextResponse.json(data ?? { success: true }, { status: 201 })
   } catch (error) {
     console.error('Error adding guest:', error)
     return NextResponse.json(
@@ -157,8 +142,8 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validation
-    if (!body.id || typeof body.id !== 'string') {
+    const guestId = body.id == null ? "" : String(body.id).trim()
+    if (!guestId) {
       return NextResponse.json(
         { error: 'Guest ID is required' },
         { status: 400 }
@@ -167,30 +152,14 @@ export async function PUT(request: NextRequest) {
 
     const updateData = {
       action: 'update',
-      id: body.id,
-      ...body
+      ...body,
+      id: guestId,
     }
 
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updateData),
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to update guest')
-    }
-
-    const data = await response.json()
-    
-    if (data.error) {
-      throw new Error(data.error)
-    }
+    const data = await postGoogleScriptJson(GOOGLE_SCRIPT_URL, updateData)
 
     invalidateSheetsCache(SHEETS_CACHE_KEYS.guests)
-    return NextResponse.json(data, { status: 200 })
+    return NextResponse.json(data ?? { success: true }, { status: 200 })
   } catch (error: any) {
     console.error('Error updating guest:', error)
     return NextResponse.json(
@@ -205,39 +174,21 @@ export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validation
-    if (!body.id || typeof body.id !== 'string') {
+    const guestId = body.id == null ? "" : String(body.id).trim()
+    if (!guestId) {
       return NextResponse.json(
         { error: 'Guest ID is required' },
         { status: 400 }
       )
     }
 
-    const deleteData = {
+    const data = await postGoogleScriptJson(GOOGLE_SCRIPT_URL, {
       action: 'delete',
-      id: body.id,
-    }
-
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(deleteData),
+      id: guestId,
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to delete guest')
-    }
-
-    const data = await response.json()
-    
-    if (data.error) {
-      throw new Error(data.error)
-    }
-    
     invalidateSheetsCache(SHEETS_CACHE_KEYS.guests)
-    return NextResponse.json(data, { status: 200 })
+    return NextResponse.json(data ?? { success: true }, { status: 200 })
   } catch (error) {
     console.error('Error deleting guest:', error)
     return NextResponse.json(

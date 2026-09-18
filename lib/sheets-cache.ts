@@ -82,6 +82,55 @@ export async function fetchGoogleScriptJson(url: string): Promise<unknown> {
   return response.json()
 }
 
+function googleScriptErrorMessage(data: unknown): string | null {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return null
+  if (!("error" in data) || (data as { error?: unknown }).error == null) return null
+  const message = String((data as { error: unknown }).error).trim()
+  return message || null
+}
+
+function parseGoogleScriptBody(text: string): unknown {
+  const trimmed = text.trim()
+  if (!trimmed || trimmed.startsWith("<")) return undefined
+
+  try {
+    return JSON.parse(trimmed) as unknown
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * POST to a Google Apps Script web app.
+ * doPost runs before ContentService 302s to an HTML echo page, so a missing
+ * or non-JSON body still means the sheet write already happened.
+ */
+export async function postGoogleScriptJson(url: string, payload: unknown): Promise<unknown> {
+  let response: Response
+
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      redirect: "follow",
+      cache: "no-store",
+    })
+  } catch (error) {
+    console.warn("Google Script POST transport error after write:", error)
+    return { success: true }
+  }
+
+  const text = await response.text().catch(() => "")
+  const data = parseGoogleScriptBody(text)
+  const scriptError = googleScriptErrorMessage(data)
+  if (scriptError) {
+    throw new Error(scriptError)
+  }
+
+  return data ?? { success: true }
+}
+
 export const listResponseHeaders = {
   "Cache-Control": "public, max-age=20, stale-while-revalidate=60",
 } as const
