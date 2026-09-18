@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import Image from "next/image"
 import localFont from "next/font/local"
@@ -119,7 +120,7 @@ export function Gallery() {
   const [selectedImage, setSelectedImage] = useState<(typeof galleryItems)[0] | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
-  // reserved for potential skeleton tracking; not used after fade-in simplification
+  const [isMounted, setIsMounted] = useState(false)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const [touchDeltaX, setTouchDeltaX] = useState(0)
   const [zoomScale, setZoomScale] = useState(1)
@@ -128,47 +129,85 @@ export function Gallery() {
   const [pinchStartScale, setPinchStartScale] = useState(1)
   const [lastTap, setLastTap] = useState(0)
   const [panStart, setPanStart] = useState<{ x: number; y: number; panX: number; panY: number } | null>(null)
+  const pointerStart = useRef({ x: 0, y: 0, dragging: false })
+  const swipeConsumed = useRef(false)
+
+  const resetZoom = useCallback(() => {
+    setZoomScale(1)
+    setPan({ x: 0, y: 0 })
+    setPanStart(null)
+  }, [])
+
+  const closeLightbox = useCallback(() => {
+    setSelectedImage(null)
+    resetZoom()
+  }, [resetZoom])
+
+  const openLightbox = useCallback((item: (typeof galleryItems)[0], index: number) => {
+    if (pointerStart.current.dragging) return
+    setSelectedImage(item)
+    setCurrentIndex(index)
+    resetZoom()
+  }, [resetZoom])
+
+  const handleThumbPointerDown = (event: React.PointerEvent) => {
+    pointerStart.current = { x: event.clientX, y: event.clientY, dragging: false }
+  }
+
+  const handleThumbPointerMove = (event: React.PointerEvent) => {
+    const dx = event.clientX - pointerStart.current.x
+    const dy = event.clientY - pointerStart.current.y
+    if (dx * dx + dy * dy > 64) pointerStart.current.dragging = true
+  }
 
   useEffect(() => {
-    // Simulate loading for better UX
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500)
     return () => clearTimeout(timer)
   }, [])
 
   const navigateImage = useCallback((direction: 'prev' | 'next') => {
     setCurrentIndex((prevIndex) => {
-      let newIndex = prevIndex
-      if (direction === 'next') {
-        newIndex = (prevIndex + 1) % galleryItems.length
-      } else {
-        newIndex = (prevIndex - 1 + galleryItems.length) % galleryItems.length
-      }
+      const newIndex =
+        direction === 'next'
+          ? (prevIndex + 1) % galleryItems.length
+          : (prevIndex - 1 + galleryItems.length) % galleryItems.length
       setSelectedImage(galleryItems[newIndex])
       return newIndex
     })
-  }, [])
+    resetZoom()
+  }, [resetZoom])
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!selectedImage) return
-      if (e.key === 'ArrowLeft') navigateImage('prev')
-      if (e.key === 'ArrowRight') navigateImage('next')
-      if (e.key === 'Escape') setSelectedImage(null)
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        navigateImage('prev')
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        navigateImage('next')
+      }
+      if (e.key === 'Escape') closeLightbox()
     }
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [selectedImage, currentIndex, navigateImage])
+  }, [selectedImage, navigateImage, closeLightbox])
 
-  // Prevent background scroll when lightbox is open
   useEffect(() => {
-    if (selectedImage) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    if (!selectedImage) return
+    const previousHtmlOverflow = document.documentElement.style.overflow
+    const previousBodyOverflow = document.body.style.overflow
+    document.documentElement.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = ''
+      document.documentElement.style.overflow = previousHtmlOverflow
+      document.body.style.overflow = previousBodyOverflow
     }
   }, [selectedImage])
 
@@ -183,11 +222,6 @@ export function Gallery() {
   }, [selectedImage, currentIndex])
 
   const clamp = (val: number, min: number, max: number) => Math.min(max, Math.max(min, val))
-  const resetZoom = () => {
-    setZoomScale(1)
-    setPan({ x: 0, y: 0 })
-    setPanStart(null)
-  }
 
   return (
     <div
@@ -294,10 +328,9 @@ export function Gallery() {
                     key={item.image + index}
                     type="button"
                     className="group relative snap-center shrink-0 w-[82%] overflow-hidden rounded-lg transition-all duration-300"
-                    onClick={() => {
-                      setSelectedImage(item)
-                      setCurrentIndex(index)
-                    }}
+                    onPointerDown={handleThumbPointerDown}
+                    onPointerMove={handleThumbPointerMove}
+                    onClick={() => openLightbox(item, index)}
                     aria-label={`Open image ${index + 1}`}
                   >
                     <div
@@ -352,10 +385,9 @@ export function Gallery() {
                   key={item.image + index}
                   type="button"
                   className="group relative w-full overflow-hidden rounded-xl transition-all duration-300"
-                  onClick={() => {
-                    setSelectedImage(item)
-                    setCurrentIndex(index)
-                  }}
+                  onPointerDown={handleThumbPointerDown}
+                  onPointerMove={handleThumbPointerMove}
+                  onClick={() => openLightbox(item, index)}
                   aria-label={`Open image ${index + 1}`}
                 >
                   <div
@@ -411,178 +443,169 @@ export function Gallery() {
           </>
         )}
       </div>
+      </Section>
 
-      {/* Lightbox Modal */}
-      {selectedImage && (
+      {isMounted && selectedImage && createPortal(
         <div
-          className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-3 backdrop-blur-sm animate-in fade-in duration-200 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Gallery lightbox"
           onClick={() => {
-            setSelectedImage(null)
-            resetZoom()
+            if (swipeConsumed.current) {
+              swipeConsumed.current = false
+              return
+            }
+            closeLightbox()
           }}
         >
-            <div
-              className="relative max-w-6xl w-full h-full sm:h-auto flex flex-col items-center justify-center"
-              onTouchStart={(e) => {
-                if (e.touches.length === 1) {
-                  const now = Date.now()
-                  if (now - lastTap < 300) {
-                    setZoomScale((s) => (s > 1 ? 1 : 2))
-                    setPan({ x: 0, y: 0 })
-                  }
-                  setLastTap(now)
-                  const t = e.touches[0]
-                  setTouchStartX(t.clientX)
-                  setTouchDeltaX(0)
-                  if (zoomScale > 1) {
-                    setPanStart({ x: t.clientX, y: t.clientY, panX: pan.x, panY: pan.y })
-                  }
+          <div
+            className="relative flex h-full w-full items-center justify-center"
+            onTouchStart={(e) => {
+              if (e.touches.length === 1) {
+                const now = Date.now()
+                if (now - lastTap < 300) {
+                  e.preventDefault()
+                  setZoomScale((s) => (s > 1 ? 1 : 2))
+                  setPan({ x: 0, y: 0 })
                 }
-                if (e.touches.length === 2) {
-                  const dx = e.touches[0].clientX - e.touches[1].clientX
-                  const dy = e.touches[0].clientY - e.touches[1].clientY
-                  const dist = Math.hypot(dx, dy)
-                  setPinchStartDist(dist)
-                  setPinchStartScale(zoomScale)
-                }
-              }}
-              onTouchMove={(e) => {
-                if (e.touches.length === 2 && pinchStartDist) {
-                  const dx = e.touches[0].clientX - e.touches[1].clientX
-                  const dy = e.touches[0].clientY - e.touches[1].clientY
-                  const dist = Math.hypot(dx, dy)
-                  const scale = clamp((dist / pinchStartDist) * pinchStartScale, 1, 3)
-                  setZoomScale(scale)
-                } else if (e.touches.length === 1) {
-                  const t = e.touches[0]
-                  if (zoomScale > 1 && panStart) {
-                    const dx = t.clientX - panStart.x
-                    const dy = t.clientY - panStart.y
-                    setPan({ x: panStart.panX + dx, y: panStart.panY + dy })
-                  } else if (touchStartX !== null) {
-                    setTouchDeltaX(t.clientX - touchStartX)
-                  }
-                }
-              }}
-              onTouchEnd={() => {
-                setPinchStartDist(null)
-                setPanStart(null)
-                if (zoomScale === 1 && Math.abs(touchDeltaX) > 50) {
-                  navigateImage(touchDeltaX > 0 ? 'prev' : 'next')
-                }
-                setTouchStartX(null)
+                setLastTap(now)
+                const t = e.touches[0]
+                setTouchStartX(t.clientX)
                 setTouchDeltaX(0)
-              }}
-            >
-            {/* Top bar with counter and close */}
-            <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-4 sm:p-6">
-              {/* Image counter */}
+                if (zoomScale > 1) {
+                  setPanStart({ x: t.clientX, y: t.clientY, panX: pan.x, panY: pan.y })
+                }
+              }
+              if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX
+                const dy = e.touches[0].clientY - e.touches[1].clientY
+                setPinchStartDist(Math.hypot(dx, dy))
+                setPinchStartScale(zoomScale)
+              }
+            }}
+            onTouchMove={(e) => {
+              if (e.touches.length === 2 && pinchStartDist) {
+                e.preventDefault()
+                const dx = e.touches[0].clientX - e.touches[1].clientX
+                const dy = e.touches[0].clientY - e.touches[1].clientY
+                const dist = Math.hypot(dx, dy)
+                setZoomScale(clamp((dist / pinchStartDist) * pinchStartScale, 1, 3))
+              } else if (e.touches.length === 1) {
+                const t = e.touches[0]
+                if (zoomScale > 1 && panStart) {
+                  e.preventDefault()
+                  setPan({ x: panStart.panX + (t.clientX - panStart.x), y: panStart.panY + (t.clientY - panStart.y) })
+                } else if (touchStartX !== null) {
+                  setTouchDeltaX(t.clientX - touchStartX)
+                }
+              }
+            }}
+            onTouchEnd={() => {
+              setPinchStartDist(null)
+              setPanStart(null)
+              if (zoomScale === 1 && Math.abs(touchDeltaX) > 50) {
+                swipeConsumed.current = true
+                navigateImage(touchDeltaX > 0 ? "prev" : "next")
+              }
+              setTouchStartX(null)
+              setTouchDeltaX(0)
+            }}
+          >
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-center justify-between p-4 sm:p-6">
               <div
-                className="rounded-full border px-4 py-2 backdrop-blur-md"
+                className="pointer-events-auto rounded-full border px-4 py-2 backdrop-blur-md"
                 style={{
-                  backgroundColor: "rgba(0,0,0,0.4)",
-                  borderColor:
-                    "color-mix(in srgb, var(--color-welcome-gold) 50%, transparent)",
+                  backgroundColor: "rgba(0,0,0,0.45)",
+                  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 50%, transparent)",
                 }}
               >
-                <span
-                  className="text-sm font-medium sm:text-base"
-                  style={{ color: "var(--color-welcome-bg)" }}
-                >
+                <span className="text-sm font-medium sm:text-base" style={{ color: "var(--color-welcome-bg)" }}>
                   {currentIndex + 1} / {galleryItems.length}
                 </span>
               </div>
-              
-              {/* Close button */}
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation()
-                  setSelectedImage(null)
-                  resetZoom()
+                  closeLightbox()
                 }}
-                className="bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full p-2 sm:p-3 transition-all duration-200 border border-white/20 hover:border-white/40"
+                className="pointer-events-auto rounded-full border border-white/20 bg-black/40 p-2 backdrop-blur-md transition-all duration-200 hover:border-white/40 hover:bg-black/60 sm:p-3"
                 aria-label="Close lightbox"
               >
-                <X size={20} className="sm:w-6 sm:h-6 text-white" />
+                <X size={20} className="text-white sm:h-6 sm:w-6" />
               </button>
             </div>
 
-            {/* Navigation buttons */}
             {galleryItems.length > 1 && (
               <>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation()
-                    navigateImage('prev')
-                    resetZoom()
+                    navigateImage("prev")
                   }}
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full p-3 sm:p-4 transition-all duration-200 border border-white/20 hover:border-white/40"
+                  className="absolute left-2 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/40 p-3 backdrop-blur-md transition-all duration-200 hover:border-white/40 hover:bg-black/60 sm:left-4 sm:p-4"
                   aria-label="Previous image"
                 >
-                  <ChevronLeft size={24} className="sm:w-7 sm:h-7 text-white" />
+                  <ChevronLeft size={24} className="text-white sm:h-7 sm:w-7" />
                 </button>
-
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation()
-                    navigateImage('next')
-                    resetZoom()
+                    navigateImage("next")
                   }}
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full p-3 sm:p-4 transition-all duration-200 border border-white/20 hover:border-white/40"
+                  className="absolute right-2 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/40 p-3 backdrop-blur-md transition-all duration-200 hover:border-white/40 hover:bg-black/60 sm:right-4 sm:p-4"
                   aria-label="Next image"
                 >
-                  <ChevronRight size={24} className="sm:w-7 sm:h-7 text-white" />
+                  <ChevronRight size={24} className="text-white sm:h-7 sm:w-7" />
                 </button>
               </>
             )}
 
-            {/* Image container */}
-            <div className="relative w-full h-full flex items-center justify-center pt-16 sm:pt-20 pb-4 sm:pb-6 overflow-hidden">
-              <div
-                className="relative inline-block max-w-full max-h-full"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Image
-                  src={selectedImage.image || "/placeholder.svg"}
-                  alt={selectedImage.text || "Gallery image"}
-                  width={1200}
-                  height={1600}
-                  sizes="100vw"
-                  priority
-                  style={{
-                    transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomScale})`,
-                    transition: pinchStartDist ? "none" : "transform 200ms ease-out",
+            <div
+              className="relative flex max-h-[82dvh] max-w-[92vw] items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={selectedImage.image}
+                alt={selectedImage.text.trim() || `Gallery image ${currentIndex + 1}`}
+                width={1600}
+                height={2000}
+                sizes="100vw"
+                priority
+                style={{
+                  transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomScale})`,
+                  transition: pinchStartDist ? "none" : "transform 200ms ease-out",
+                }}
+                className="h-auto max-h-[82dvh] w-auto max-w-[92vw] rounded-lg object-contain shadow-2xl will-change-transform"
+              />
+              {zoomScale > 1 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    resetZoom()
                   }}
-                  className="max-w-full max-h-[75vh] w-auto h-auto sm:max-h-[85vh] object-contain rounded-lg shadow-2xl will-change-transform"
-                />
-                
-                {/* Zoom reset button */}
-                {zoomScale > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      resetZoom()
-                    }}
-                    className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white rounded-full px-3 py-1.5 text-xs font-medium border border-white/20 transition-all duration-200"
-                  >
-                    Reset Zoom
-                  </button>
-                )}
-              </div>
+                  className="absolute bottom-3 right-3 rounded-full border border-white/20 bg-black/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md transition-all duration-200 hover:bg-black/80"
+                >
+                  Reset Zoom
+                </button>
+              )}
             </div>
 
-            {/* Bottom hint for mobile */}
             {galleryItems.length > 1 && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 sm:hidden z-20">
-                <p className="text-xs text-white/60 bg-black/40 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/10">
+              <div className="pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 sm:hidden">
+                <p className="rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white/70 backdrop-blur-sm">
                   Swipe to navigate
                 </p>
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
-      </Section>
     </div>
   )
 }

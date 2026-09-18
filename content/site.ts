@@ -10,7 +10,7 @@ export const siteConfig = {
     groom: "Ricky A. Balila II", //Ltryl B. Benitez
     groomNickname: "Ricky",
     monogram:"/monogram/mono-image.png" ,//Ltryl
-    backgroundMusic:"/background_music/Enchanted (Taylor Swift Cover) by Joseph William Morgan [Bridgerton Season 4 (Netflix Series)].mp3"
+    backgroundMusic:"/background_music/The 1975 - About You.mp3"
   },
   googleAPI:{
     messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScd8BvFRvQPqJIKUhSiaimQ2jjnmb3zqAMoYIRBaj6F1QuSWQ/formResponse",   //done
@@ -91,7 +91,7 @@ export const siteConfig = {
     date: "November 19, 2026",
     day: "Thursday",
     time: "12:00 noon",
-    image: ["/Details/reception.png", "/Details/reception2.png","/Details/reception3.png","/Details/reception4.png","/Details/reception5.png", "/Details/reception6.png"],
+    image: ["/Details/reception7.png", "/Details/reception2.png","/Details/reception3.png","/Details/reception4.png","/Details/reception5.png", "/Details/reception6.png"],
   },
   dressCode: {
     theme: "Whimsical Spring Minimalist",

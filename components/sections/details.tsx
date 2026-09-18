@@ -406,7 +406,7 @@ function DressCodePalette() {
             className={`font-goudy-italic ${ct.body} mx-auto list-none space-y-1 p-0 text-center leading-snug`}
             style={{ color: detailText.body }}
           >
-            <li>Floor-length dress in pastel green</li>
+            <li>Floor length dress in shades of pastel green</li>
           </ul>
         </MotifLook>
         <MotifLook
