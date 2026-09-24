@@ -6,11 +6,11 @@ import {
 export const siteConfig = {
   couple: {
     bride: "Jonna Lynne D. Capacete", //Noenyl Bryle M. Gonzaga
-    brideNickname: "Jonna", //Ltryl
+    brideNickname: "Sunshyne", //Ltryl
     groom: "Ricky A. Balila II", //Ltryl B. Benitez
-    groomNickname: "Ricky",
-    monogram:"/monogram/mono-image.png" ,//Ltryl
-    backgroundMusic:"/background_music/Enchanted (Taylor Swift Cover) by Joseph William Morgan [Bridgerton Season 4 (Netflix Series)].mp3"
+    groomNickname: "Brandon",
+    monogram:"/image/beauty-and-beast.png" ,//Ltryl
+    backgroundMusic:"/background_music/BEAUTY AND THE BEAST CELLO COVER.mp3"
   },
   googleAPI:{
     messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScd8BvFRvQPqJIKUhSiaimQ2jjnmb3zqAMoYIRBaj6F1QuSWQ/formResponse",   //done
@@ -27,9 +27,9 @@ export const siteConfig = {
       "https://docs.google.com/forms/d/e/1FAIpQLSfeGlEl4CMXWefdvCw6AOPHFS1ROku_rs-Gbofa2LkVJ0sLGQ/viewform", 
   },
   wedding: {
-    date: "November 19, 2026",
+    date: "August 14, 2027",
     time: "9:30 AM",
-    venue: "St. Benedict Parish",
+    venue: "Davao City",
     tagline: "are getting married!!!!!",
     theme: "Whimsical Spring Minimalist",
     motif: "#FFCA8B, #FFB383, #F6CEC8, #E99997, #C8C29E",
@@ -74,10 +74,10 @@ export const siteConfig = {
     // }
   },
   ceremony: {
-    location: "St. Benedict Parish",
+    location: "Davao City",
     venue: "Ayala Westgrove Heights, South Blvd, Silang, 4118 Cavite, Philippines",
     map: "https://maps.app.goo.gl/yRMLmsfaZwjEWzy36",
-    date: "November 19, 2026",
+    date: "August 14, 2027",
     day: "Thursday",
     time: "9:30 AM",
     entourageTime: "8:00 AM",
@@ -85,10 +85,10 @@ export const siteConfig = {
     image: ["/Details/ceremony (1).jpg", "/Details/ceremony (2).jpg","/Details/ceremony3.webp"],
   },
   reception: {
-    location: "Hillbarn Tagaytay",
-    venue: "Hillbarn Tagaytay, Daang Luma, Tagaytay City, 4120 Cavite",
+    location: "Davao City",
+    venue: "Davao City",
     map: "https://maps.app.goo.gl/5ydREXRam4A1zcyT9",
-    date: "November 19, 2026",
+    date: "August 14, 2027",
     day: "Thursday",
     time: "12:00 noon",
     image: ["/Details/reception7.png", "/Details/reception2.png","/Details/reception3.png","/Details/reception4.png","/Details/reception5.png", "/Details/reception6.png"],

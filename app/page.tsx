@@ -23,7 +23,6 @@ import { LoveStory } from "@/components/sections/love-story"
 import { WeddingPlaylist } from "@/components/sections/wedding-playlist"
 import { Hero as InvitationHero } from "@/components/loader/Hero"
 import { LoadingScreen } from "@/components/loader/LoadingScreen"
-import { InvitePhotoBackdrop } from "@/components/loader/invite-photo-backdrop"
 import { Navbar } from "@/components/navbar"
 import { AppState } from "@/components/types"
 import { SnapShare } from "@/components/sections/snap-share"
@@ -152,24 +151,6 @@ export default function Home() {
 
   return (
       <div className={`relative min-h-screen bg-cloud text-charcoal selection:bg-birch selection:text-nut font-sans ${pageScrollLocked ? "overflow-hidden" : ""}`}>
-        {(loadingOverlayVisible || showInvitation || enteringFromInvite) && (
-          <motion.div
-            className="invite-photo-backdrop-wrap"
-            aria-hidden="true"
-            initial={false}
-            animate={{
-              opacity: loadingOverlayVisible || showInvitation ? 1 : 0,
-            }}
-            transition={{
-              duration: 1.15,
-              ease: mainEntryEase,
-              delay: showInvitation || loadingOverlayVisible ? 0 : 0.4,
-            }}
-          >
-            <InvitePhotoBackdrop className="invite-photo-backdrop--page" />
-          </motion.div>
-        )}
-
         {loadingOverlayVisible && (
           <LoadingScreen
             onFadeStart={handleLoadingFadeStart}
@@ -213,7 +194,7 @@ export default function Home() {
                 transition={cinematicEntry ? undefined : { duration: 0.01 }}
               >
                 <Suspense fallback={<div className="w-full h-full bg-gradient-to-b from-primary/10 to-secondary/5" />}>
-                  <Silk speed={8} scale={0.9} color="#EFDAC1" noiseIntensity={0} rotation={0.3} />
+                  <Silk speed={8} scale={0.9} color="#780008" noiseIntensity={0} rotation={0.3} />
                 </Suspense>
               </motion.div>
             )}
@@ -245,17 +226,17 @@ export default function Home() {
                 animate={cinematicEntry ? "show" : detailsVisible ? "show" : "hidden"}
                 transition={cinematicEntry ? undefined : { duration: 0.01 }}
               >
-              <GuestList />
+              {/* <GuestList />
               <WeddingTimeline />
-              <Details />
+              <Details /> */}
               <Entourage />
-              <Gallery />
+              {/* <Gallery />
               <Messages />
               <FAQ />
               <Registry />
               <SnapShare />
               <SeeYouThere />
-              <Footer />
+              <Footer /> */}
               </motion.div>
             </div>
           </motion.div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect, Suspense, type CSSProperties, type ReactNode } from "react"
+import { useState, useEffect, useCallback, useMemo, Suspense, type CSSProperties, type ReactNode } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import Image from "next/image"
@@ -12,21 +12,31 @@ import {
   Sparkles,
 } from "lucide-react"
 import localFont from "next/font/local"
-import { Cinzel } from "next/font/google"
+import { Cinzel, Playfair_Display } from "next/font/google"
 import { useSiteConfig } from "@/hooks/use-site-config"
+import { Hero as InvitationHero } from "@/components/loader/Hero"
 import { LoadingScreen } from "@/components/loader/LoadingScreen"
 import { getRoleSingular } from "@/lib/proposal-roles"
 import { parseWeddingDate } from "@/lib/wedding-date"
 import { sectionType, welcomeTitleSize } from "@/lib/section-typography"
-import { sectionBackground } from "@/lib/section-background"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
 import type { ProposalRole, ProposalResponse } from "@/lib/proposal-types"
 
 const Silk = dynamic(() => import("@/components/silk"), { ssr: false })
 
+const proposalEntryEase = [0.22, 1, 0.36, 1] as const
+const CINEMATIC_ENTRY_MS = 3000
+const BEIGE = "#f6efe4"
+
 const cinzel = Cinzel({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600"],
+})
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
 })
 
 const theSeasons = localFont({
@@ -42,44 +52,47 @@ const aboveTheBeyond = localFont({
 })
 
 const IVORY = "#fffaf4"
-const GOLD = "var(--color-welcome-gold)"
-const NAVY = "var(--color-welcome-navy)"
-const SCRIPT = "var(--color-welcome-green)"
-const BODY = "var(--color-welcome-text)"
-const NAV_GOLD = "linear-gradient(180deg, #E8D5A3 0%, #CDB072 52%, #C4A265 100%)"
-const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
-const GOLD_BORDER_SOFT = "color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)"
 const CHAMPAGNE = "#E8D5A3"
+const GOLD_BRIGHT = "#d4af37"
+const INK = "#2a221c"
+const CREAM = "#3d3228"
+const LABEL_GOLD = "#8a6414"
+const GOLD_BORDER = "color-mix(in srgb, #d4af37 45%, transparent)"
+const GOLD_BORDER_SOFT = "color-mix(in srgb, #d4af37 28%, transparent)"
+
+const goldGradientText: CSSProperties = {
+  background:
+    "linear-gradient(168deg, #7a5810 0%, #5c400c 42%, #3d2a06 100%)",
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  color: "transparent",
+}
 
 const palette = {
-  body: BODY,
-  bodySoft: "var(--color-welcome-text-soft)",
-  heading: NAVY,
-  label: GOLD,
-  accent: SCRIPT,
-  script: GOLD,
+  body: CREAM,
+  bodySoft: "#4a3c30",
+  heading: INK,
+  label: LABEL_GOLD,
+  accent: LABEL_GOLD,
+  script: CHAMPAGNE,
 } as const
 
-const NAME_SHADOW =
-  "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)"
-
 const BORDER_SOFT = GOLD_BORDER_SOFT
-const INNER_SURFACE = `color-mix(in srgb, ${IVORY} 82%, ${CHAMPAGNE})`
+const INNER_SURFACE = "#efe4d2"
 
 const CORNER_DECO_CLASS =
   "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 const ambientGlowStyle = {
-  background:
-    "linear-gradient(135deg, color-mix(in srgb, var(--color-welcome-gold) 18%, transparent) 0%, color-mix(in srgb, var(--color-welcome-green) 10%, transparent) 48%, color-mix(in srgb, var(--color-welcome-gold) 10%, transparent) 100%)",
+  background: `radial-gradient(ellipse 80% 65% at 50% 50%, color-mix(in srgb, ${GOLD_BRIGHT} 28%, transparent), transparent 68%)`,
 } as const
 
 const dividerLineStyle = {
-  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
+  background: "linear-gradient(to right, transparent, rgb(212 175 55 / 70%), transparent)",
 } as const
 
 const coupleLabelLineStyle = {
-  background: "linear-gradient(to right, transparent, var(--color-welcome-gold))",
+  background: "linear-gradient(to right, transparent, rgb(212 175 55 / 70%))",
 } as const
 
 const nameStyle: CSSProperties = {
@@ -88,27 +101,28 @@ const nameStyle: CSSProperties = {
 }
 
 const cardStyle: CSSProperties = {
-  background: IVORY,
+  background: BEIGE,
   borderColor: GOLD_BORDER,
   borderWidth: "1px",
   borderStyle: "solid",
   boxShadow:
-    "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent), inset 0 1px 0 rgb(255 250 244 / 70%)",
+    "0 18px 48px rgb(42 34 28 / 18%), inset 0 1px 0 rgb(255 250 244 / 80%)",
 }
 
 const primaryBtnStyle: CSSProperties = {
   fontWeight: 600,
-  background: NAV_GOLD,
-  borderColor: GOLD_BORDER,
-  color: IVORY,
-  boxShadow: "0 8px 18px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)",
+  background: "linear-gradient(180deg, #fff8dc 0%, #f5d76e 42%, #c9a227 100%)",
+  borderColor: "color-mix(in srgb, #fff8dc 60%, #d4af37)",
+  color: INK,
+  boxShadow: "0 8px 22px color-mix(in srgb, #d4af37 34%, transparent)",
 }
 
 const secondaryBtnStyle: CSSProperties = {
   fontWeight: 600,
-  color: NAVY,
-  backgroundColor: IVORY,
+  color: INK,
+  backgroundColor: BEIGE,
   borderColor: GOLD_BORDER,
+  boxShadow: "0 0 24px color-mix(in srgb, #d4af37 16%, transparent)",
 }
 
 const labelStyle = (color: string, extra?: CSSProperties): CSSProperties => ({
@@ -120,19 +134,13 @@ const labelStyle = (color: string, extra?: CSSProperties): CSSProperties => ({
 
 function OrnamentalDivider({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={`flex items-center justify-center ${compact ? "gap-1.5" : "gap-2"}`}>
-      <span
-        className={`h-px ${compact ? "w-6 sm:w-10" : "w-8 sm:w-12"}`}
-        style={dividerLineStyle}
-      />
-      <span className="h-0.5 w-0.5 rounded-full sm:h-1 sm:w-1" style={{ background: GOLD }} aria-hidden />
-      <span
-        className={`h-px ${compact ? "w-6 sm:w-10" : "w-8 sm:w-12"}`}
-        style={{
-          background:
-            "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
-        }}
-      />
+    <div
+      className={`mx-auto flex items-center justify-center gap-2 ${compact ? "max-w-[10rem]" : "max-w-xs sm:max-w-sm"}`}
+      aria-hidden
+    >
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-[#d4af37]/70 to-transparent" />
+      <span className="h-1 w-1 rotate-45 bg-[#d4af37]" />
+      <span className="h-px flex-1 bg-gradient-to-l from-transparent via-[#d4af37]/70 to-transparent" />
     </div>
   )
 }
@@ -142,17 +150,13 @@ function CoupleLabel({ groom, bride }: { groom: string; bride: string }) {
     <div className="flex items-center justify-center gap-2.5 pt-1 sm:gap-3.5 sm:pt-1.5">
       <span className="h-px w-5 sm:w-7 md:w-9" style={coupleLabelLineStyle} aria-hidden />
       <p
-        className={`${cinzel.className} ${sectionType.label} shrink-0 py-0.5 font-semibold uppercase leading-normal tracking-[0.34em] min-[400px]:tracking-[0.38em] sm:tracking-[0.44em]`}
-        style={{ color: palette.label }}
+        className={`${theSeasons.className} shrink-0 py-0.5 text-[clamp(0.95rem,3.6vw,1.25rem)] uppercase leading-snug tracking-[0.14em] sm:tracking-[0.18em]`}
+        style={{ color: INK }}
       >
         {groom}
         <span
-          className={`${aboveTheBeyond.className} mx-1.5 inline-block normal-case tracking-normal sm:mx-2`}
-          style={{
-            fontSize: "1.35em",
-            color: palette.accent,
-            verticalAlign: "middle",
-          }}
+          className={`${aboveTheBeyond.className} mx-2 inline-block text-[clamp(1.15rem,4.2vw,1.5rem)] normal-case tracking-normal`}
+          style={{ color: "#8a6840", verticalAlign: "middle" }}
           aria-hidden
         >
           &
@@ -162,8 +166,7 @@ function CoupleLabel({ groom, bride }: { groom: string; bride: string }) {
       <span
         className="h-px w-5 sm:w-7 md:w-9"
         style={{
-          background:
-            "linear-gradient(to left, transparent, var(--color-welcome-gold))",
+          background: "linear-gradient(to left, transparent, rgb(212 175 55 / 70%))",
         }}
         aria-hidden
       />
@@ -198,22 +201,21 @@ function LayeredProposalTitle({
       }
     >
       <span
-        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em]`}
+        className={`${theSeasons.className} block uppercase leading-[0.92] tracking-[0.05em] min-[400px]:tracking-[0.08em] sm:leading-[0.94] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--welcome-size)",
-          color: palette.heading,
+          ...goldGradientText,
         }}
       >
         {main}
       </span>
       <span
         aria-hidden
-        className={`${aboveTheBeyond.className} relative z-10 mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] ${scriptClassName}`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto block w-fit max-w-full px-1 leading-[1] ${scriptClassName}`}
         style={{
           marginTop: "var(--script-overlap)",
           fontSize: "var(--script-size)",
-          color: palette.accent,
-          textShadow: NAME_SHADOW,
+          color: "#5c4014",
         }}
       >
         {script}
@@ -294,7 +296,7 @@ function ProposalFlowBody({
 }) {
   return (
     <p
-      className={`font-goudy-italic mx-auto max-w-lg ${sectionType.textRelaxed} ${className}`}
+      className={`${playfair.className} mx-auto max-w-lg italic ${sectionType.textRelaxed} ${className}`}
       style={{ color: palette.body }}
     >
       {children}
@@ -316,16 +318,17 @@ function ProposalDateBlock({
   year: string
 }) {
   const dateLineStyle = {
-    background:
-      "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
+    background: "linear-gradient(to right, transparent, rgb(212 175 55 / 70%), transparent)",
   } as const
 
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="flex flex-col items-center gap-1.5 sm:gap-2.5 md:gap-3">
         <span
-          className={`${cinzel.className} ${sectionType.label} font-light uppercase tracking-[0.4em] sm:tracking-[0.5em]`}
-          style={{ color: palette.heading }}
+          className={`${theSeasons.className} text-[clamp(1.15rem,4.5vw,1.85rem)] uppercase leading-none tracking-[0.12em] sm:tracking-[0.16em]`}
+          style={{
+            color: INK,
+          }}
         >
           {month}
         </span>
@@ -351,17 +354,12 @@ function ProposalDateBlock({
               aria-hidden
               className="absolute inset-0 mx-auto h-[70%] max-h-[180px] w-[100px] rounded-full opacity-80 blur-[28px] sm:w-[140px] md:w-[170px]"
               style={{
-                background:
-                  "linear-gradient(to bottom, color-mix(in srgb, var(--color-welcome-gold) 35%, transparent), color-mix(in srgb, var(--color-welcome-gold) 18%, transparent), transparent)",
+                background: `radial-gradient(ellipse 80% 65% at 50% 50%, color-mix(in srgb, ${GOLD_BRIGHT} 42%, transparent), transparent 68%)`,
               }}
             />
             <span
-              className={`${cinzel.className} relative text-[4rem] font-light leading-none tracking-wider sm:text-[5.5rem] md:text-[6.5rem] lg:text-[7rem]`}
-              style={{
-                color: palette.accent,
-                textShadow:
-                  "0 0 18px color-mix(in srgb, var(--color-welcome-gold) 45%, transparent), 0 2px 8px color-mix(in srgb, var(--color-welcome-navy) 12%, transparent)",
-              }}
+              className={`${playfair.className} relative text-[clamp(3rem,16vw,6rem)] font-semibold italic leading-[0.92] tabular-nums tracking-[0.01em]`}
+              style={goldGradientText}
             >
               {dayNumber}
             </span>
@@ -384,8 +382,8 @@ function ProposalDateBlock({
         </div>
 
         <span
-          className={`${cinzel.className} ${sectionType.label} font-light uppercase tracking-[0.4em] sm:tracking-[0.5em]`}
-          style={{ color: palette.heading }}
+          className={`${cinzel.className} text-[clamp(0.85rem,3.2vw,1.15rem)] font-semibold uppercase tracking-[0.32em] sm:tracking-[0.38em]`}
+          style={goldGradientText}
         >
           {year}
         </span>
@@ -417,11 +415,10 @@ function ProposalRoleTitle({ roleSingular }: { roleSingular: string }) {
       </div> */}
 
       <h2
-        className={`${theSeasons.className} capitalize leading-[1.1] tracking-[0.06em] sm:tracking-[0.08em] [overflow-wrap:anywhere]`}
+        className={`${theSeasons.className} capitalize leading-[0.94] tracking-[0.06em] sm:tracking-[0.1em] [overflow-wrap:anywhere]`}
         style={{
           fontSize: "clamp(2rem, 8.5vw, 3.75rem)",
-          color: palette.heading,
-          textShadow: NAME_SHADOW,
+          ...goldGradientText,
         }}
       >
         {roleSingular}?
@@ -542,7 +539,7 @@ function ProposalIntroSection() {
       </header>
 
       <div
-        className={`font-goudy-italic mx-auto max-w-xl space-y-3 px-1 text-pretty sm:space-y-3.5 sm:px-2 ${sectionType.textRelaxed}`}
+        className={`${playfair.className} italic mx-auto max-w-xl space-y-3 px-1 text-pretty sm:space-y-3.5 sm:px-2 ${sectionType.textRelaxed}`}
         style={{ color: palette.body }}
       >
         <p>
@@ -573,8 +570,8 @@ function ProposalIntroSection() {
       />
 
       <p
-        className={`${cinzel.className} ${sectionType.subheader} font-medium uppercase tracking-[0.22em] sm:tracking-[0.26em] md:tracking-[0.3em]`}
-        style={{ color: palette.heading }}
+        className={`${cinzel.className} text-[0.58rem] font-medium uppercase leading-relaxed tracking-[0.18em] sm:text-[0.65rem] sm:tracking-[0.22em]`}
+        style={{ color: INK }}
       >
         {venue}
       </p>
@@ -605,24 +602,6 @@ function ProposalAskSection({
   onYes: () => void
   onNo: () => void
 }) {
-  const questionRef = useRef<HTMLDivElement>(null)
-  const [questionHeight, setQuestionHeight] = useState<number | null>(null)
-
-  useLayoutEffect(() => {
-    const node = questionRef.current
-    if (!node) return
-
-    const syncHeight = () => {
-      setQuestionHeight(node.getBoundingClientRect().height)
-    }
-
-    syncHeight()
-    const observer = new ResizeObserver(syncHeight)
-    observer.observe(node)
-
-    return () => observer.disconnect()
-  }, [roleSingular, description])
-
   return (
     <div className="relative mx-auto mt-0 w-full sm:mt-10">
       {/* {coAttendants.length > 0 && (
@@ -641,7 +620,7 @@ function ProposalAskSection({
             {coAttendants.map((name, idx) => (
               <span
                 key={idx}
-                className="font-goudy-italic rounded-full px-3 py-1 text-xs shadow-sm"
+                className="italic rounded-full px-3 py-1 text-xs shadow-sm"
                 style={{ color: palette.body, border: `1px solid ${BORDER_SOFT}`, backgroundColor: "var(--color-welcome-bg)" }}
               >
                 {name}
@@ -657,36 +636,30 @@ function ProposalAskSection({
         <div className="mb-6 flex items-center justify-center sm:mb-8">
           <DividerLine className="w-full max-w-md" />
         </div>
-        <div className="relative mt-8 flex flex-col gap-5 sm:mt-10 sm:flex-row sm:items-end sm:justify-between sm:gap-8 md:gap-10">
-          {/* Question + quote — text wraps around floated image on mobile */}
+        <div className="relative mt-8 flex flex-col gap-5 sm:mt-10">
           <div className="relative z-10 min-w-0 flex-1 text-center sm:text-left">
-            {/* <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              aria-hidden
-              className="pointer-events-none relative float-right ml-3 mb-2 h-[clamp(240px,62vw,340px)] w-[44%] max-w-[190px] shrink-0 sm:hidden"
-              style={{ shapeOutside: "margin-box" }}
-            >
-              <Image
-                src="/Details/coupleImage.png"
-                alt=""
-                fill
-                className="object-contain object-bottom drop-shadow-[0_20px_48px_rgba(42,37,32,0.12)]"
-                sizes="44vw"
-                priority
-              />
-            </motion.div> */}
+            <div className="mx-auto flex w-full max-w-xl items-center gap-3 sm:gap-6">
+              <div className="min-w-0 flex-1 space-y-5 sm:space-y-6">
+                <ProposalRoleTitle roleSingular={roleSingular} />
 
-            <div ref={questionRef} className="mx-auto w-full max-w-xl space-y-5 sm:space-y-6">
-              <ProposalRoleTitle roleSingular={roleSingular} />
+                <p
+                  className={`${playfair.className} italic mx-auto max-w-lg ${sectionType.textRelaxed} sm:text-left`}
+                  style={{ color: palette.body }}
+                >
+                  &ldquo;{description}&rdquo;
+                </p>
+              </div>
 
-              <p
-                className={`font-goudy-italic mx-auto max-w-lg ${sectionType.textRelaxed} sm:text-left`}
-                style={{ color: palette.body }}
-              >
-                &ldquo;{description}&rdquo;
-              </p>
+              <div className="relative h-[9.5rem] w-[5.75rem] shrink-0 sm:h-64 sm:w-40 md:h-72 md:w-48">
+                <Image
+                  src="/image/couple-image.png"
+                  alt=""
+                  fill
+                  className="object-contain object-bottom drop-shadow-[0_16px_32px_rgba(42,37,32,0.18)]"
+                  sizes="(max-width: 640px) 92px, 192px"
+                  priority
+                />
+              </div>
             </div>
 
             <div className="clear-both mt-10 hidden w-full flex-row gap-3 sm:mt-12 sm:flex sm:max-w-md md:mt-14">
@@ -706,34 +679,6 @@ function ProposalAskSection({
               </button>
             </div>
           </div>
-
-          {/* Couple illustration — desktop */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            aria-hidden
-            style={
-              questionHeight
-                ? ({ "--ask-image-h": `${questionHeight}px` } as CSSProperties)
-                : undefined
-            }
-            className="pointer-events-none relative hidden shrink-0 sm:block sm:w-[min(36vw,240px)] md:w-[min(32vw,280px)] lg:w-[300px]"
-          >
-            <div
-              className="relative w-full sm:aspect-[3/4] sm:translate-y-4 md:translate-y-6"
-              style={questionHeight ? { minHeight: "var(--ask-image-h)" } : undefined}
-            >
-              <Image
-                src="/Details/coupleImage.png"
-                alt=""
-                fill
-                className="object-contain object-bottom drop-shadow-[0_20px_48px_rgba(42,37,32,0.12)]"
-                sizes="(max-width: 640px) 44vw, 300px"
-                priority
-              />
-            </div>
-          </motion.div>
 
           <div className="flex w-full flex-row gap-2.5 sm:hidden">
             <button
@@ -769,16 +714,40 @@ interface ProposalPageProps {
 }
 
 export function ProposalPage({ role }: ProposalPageProps) {
-  const [isReady, setIsReady] = useState(false)
   const [flowState, setFlowState] = useState<ProposalFlowState>("question")
   const [preferredName, setPreferredName] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [validationError, setValidationError] = useState("")
   const [responses, setResponses] = useState<ProposalResponse[]>([])
+  const [showInvitation, setShowInvitation] = useState(false)
+  const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(true)
+  const [heroEnterFromLoading, setHeroEnterFromLoading] = useState(false)
+  const [proposalVisible, setProposalVisible] = useState(false)
+  const [enteringFromInvite, setEnteringFromInvite] = useState(false)
+
+  const handleLoadingFadeStart = useCallback(() => {
+    setShowInvitation(true)
+    setHeroEnterFromLoading(true)
+  }, [])
 
   const handleLoadingComplete = useCallback(() => {
-    setIsReady(true)
+    setLoadingOverlayVisible(false)
   }, [])
+
+  const handleTransitionStart = useCallback(() => {
+    setEnteringFromInvite(true)
+    setProposalVisible(true)
+    window.scrollTo({ top: 0, behavior: "instant" })
+  }, [])
+
+  const handleOpenInvitation = useCallback(() => {
+    setShowInvitation(false)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+    window.setTimeout(() => setEnteringFromInvite(false), CINEMATIC_ENTRY_MS)
+  }, [])
+
+  const pageScrollLocked = loadingOverlayVisible || showInvitation
+  const cinematicEntry = enteringFromInvite && proposalVisible
 
   useEffect(() => {
     fetch("/api/proposal-responses", { cache: "no-store" })
@@ -847,26 +816,56 @@ export function ProposalPage({ role }: ProposalPageProps) {
 
   return (
     <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen select-none overflow-x-hidden px-3 py-10 sm:px-6 sm:py-16 md:py-20`}
-      style={{ background: sectionBackground }}
+      className={`${theSeasons.variable} ${aboveTheBeyond.variable} ${playfair.className} relative min-h-screen select-none px-3 py-10 text-[#3d3228] sm:px-6 sm:py-16 md:py-20 ${pageScrollLocked ? "overflow-hidden" : "overflow-x-hidden"}`}
+      style={{ background: "#780008" }}
     >
-      {process.env.NEXT_PUBLIC_ENABLE_DECOR !== "false" && (
-        <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
-          <Suspense fallback={<div className="h-full w-full" style={{ background: sectionBackground }} />}>
-            <Silk speed={8} scale={0.9} color="#EFDAC1" noiseIntensity={0} rotation={0.3} />
-          </Suspense>
-        </div>
-      )}
+      <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
+        <Suspense fallback={<div className="h-full w-full bg-[#780008]" />}>
+          <Silk speed={8} scale={0.9} color="#780008" noiseIntensity={0} rotation={0.3} />
+        </Suspense>
+      </div>
 
       <CornerDecorations />
 
-      {!isReady && <LoadingScreen onComplete={handleLoadingComplete} />}
+      {loadingOverlayVisible && (
+        <LoadingScreen
+          onFadeStart={handleLoadingFadeStart}
+          onComplete={handleLoadingComplete}
+        />
+      )}
+
+      {(loadingOverlayVisible || showInvitation) && (
+        <InvitationHero
+          onOpen={handleOpenInvitation}
+          onTransitionStart={handleTransitionStart}
+          enterFromLoading={heroEnterFromLoading}
+          visible={showInvitation}
+        />
+      )}
+
+      {cinematicEntry && (
+        <motion.div
+          className="pointer-events-none fixed inset-0 z-[28] bg-[#faf7f1]"
+          aria-hidden="true"
+          initial={{ clipPath: "circle(0% at 50% 46%)", opacity: 0.98 }}
+          animate={{ clipPath: "circle(145% at 50% 46%)", opacity: 0 }}
+          transition={{ duration: 1.55, delay: 0.12, ease: proposalEntryEase }}
+        />
+      )}
 
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center justify-center lg:max-w-4xl min-h-[calc(100dvh-5rem)] sm:min-h-[calc(100dvh-8rem)]"
+        initial={false}
+        animate={
+          proposalVisible
+            ? { opacity: 1, y: 0, filter: "blur(0px)" }
+            : { opacity: 0, y: 40, filter: "blur(8px)" }
+        }
+        transition={
+          cinematicEntry
+            ? { duration: 1.08, ease: proposalEntryEase, delay: 0.86 }
+            : { duration: 0.01 }
+        }
+        className={`relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center justify-center lg:max-w-4xl min-h-[calc(100dvh-5rem)] sm:min-h-[calc(100dvh-8rem)] ${proposalVisible ? "" : "pointer-events-none"}`}
         style={{ color: palette.body }}
       >
         <AnimatePresence mode="wait">
@@ -894,7 +893,7 @@ export function ProposalPage({ role }: ProposalPageProps) {
                   >
                     <blockquote>
                       <p
-                        className={`font-goudy-italic ${sectionType.textSnug}`}
+                        className={`${playfair.className} italic ${sectionType.textSnug}`}
                         style={{ color: palette.body }}
                       >
                         In choosing who will stand with us, we did not begin with titles — we began
@@ -905,7 +904,7 @@ export function ProposalPage({ role }: ProposalPageProps) {
                   </figure>
 
                   <div
-                    className={`font-goudy-italic space-y-3 text-pretty sm:space-y-3.5 ${sectionType.textRelaxed}`}
+                    className={`${playfair.className} italic space-y-3 text-pretty sm:space-y-3.5 ${sectionType.textRelaxed}`}
                     style={{ color: palette.body }}
                   >
                     <p>
@@ -952,12 +951,12 @@ export function ProposalPage({ role }: ProposalPageProps) {
               <ProposalCard>
               <div className="relative z-10 w-full space-y-4 py-1 sm:space-y-6 sm:py-3">
                 <ProposalFlowHeader
-                  icon={<Check className="h-6 w-6" style={{ color: IVORY }} />}
+                  icon={<Check className="h-6 w-6" style={{ color: INK }} />}
                   iconClassName=""
                   iconStyle={{
                     border: `1px solid ${GOLD_BORDER}`,
-                    background: NAV_GOLD,
-                    color: IVORY,
+                    background: "linear-gradient(180deg, #fff8dc 0%, #d4af37 100%)",
+                    color: INK,
                   }}
                   main="We are Honored"
                   script="you said yes"
@@ -971,8 +970,8 @@ export function ProposalPage({ role }: ProposalPageProps) {
                 </ProposalFlowBody>
 
                 <p
-                  className={`font-goudy-italic mx-auto mb-1 max-w-md text-center ${sectionType.textSnug}`}
-                  style={{ color: palette.bodySoft }}
+                  className={`${playfair.className} italic mx-auto mb-1 max-w-md text-center ${sectionType.textSnug}`}
+                  style={{ color: INK }}
                 >
                   Please enter the exact name you would like displayed on our wedding invitation
                   and guest lists:
@@ -988,12 +987,12 @@ export function ProposalPage({ role }: ProposalPageProps) {
                     placeholder="e.g. Aunt Maria Clara / Mr. James Bond"
                     value={preferredName}
                     onChange={(e) => setPreferredName(e.target.value)}
-                    className="font-goudy-italic w-full rounded-xl px-4 py-2.5 text-xs transition-all focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-welcome-gold)_28%,transparent)] sm:py-3 sm:text-sm"
+                    className={`${playfair.className} italic w-full rounded-xl px-4 py-2.5 text-xs text-[#3d3228] placeholder:text-[#3d3228]/45 transition-all focus:outline-none focus:ring-2 focus:ring-[#d4af37]/40 sm:py-3 sm:text-sm`}
                     style={{
-                      color: palette.body,
+                      color: INK,
                       backgroundColor: INNER_SURFACE,
                       border: `1px solid ${BORDER_SOFT}`,
-                      boxShadow: "inset 0 1px 2px color-mix(in srgb, var(--color-welcome-gold) 10%, transparent)",
+                      boxShadow: "inset 0 1px 2px rgb(0 0 0 / 28%)",
                     }}
                   />
                   {validationError && (
@@ -1040,13 +1039,13 @@ export function ProposalPage({ role }: ProposalPageProps) {
               <div className="relative z-10 space-y-4">
                 <ProposalFlowHeader
                   animated
-                  icon={<Sparkles className="h-8 w-8" style={{ color: palette.heading }} />}
+                  icon={<Sparkles className="h-8 w-8" style={{ color: CHAMPAGNE }} />}
                   iconClassName=""
                   iconStyle={{
-                    color: palette.heading,
+                    color: CHAMPAGNE,
                     border: `1px solid ${BORDER_SOFT}`,
                     backgroundColor: INNER_SURFACE,
-                    boxShadow: "0 8px 24px color-mix(in srgb, var(--color-welcome-gold) 16%, transparent)",
+                    boxShadow: "0 8px 24px color-mix(in srgb, #d4af37 28%, transparent)",
                   }}
                   main="It's Official"
                   script="thank you"
@@ -1065,7 +1064,7 @@ export function ProposalPage({ role }: ProposalPageProps) {
                     Registered name
                   </span>
                   <p
-                    className={`font-goudy-italic ${sectionType.text} font-medium`}
+                    className={`${playfair.className} italic ${sectionType.text} font-medium`}
                     style={{ ...nameStyle, color: palette.heading }}
                   >
                     {preferredName}
@@ -1109,11 +1108,12 @@ export function ProposalPage({ role }: ProposalPageProps) {
               <ProposalCard>
               <div className="relative z-10 space-y-4">
                 <ProposalFlowHeader
-                  icon={<X className="h-6 w-6" style={{ color: "#9b3d3d" }} />}
+                  icon={<X className="h-6 w-6" style={{ color: CHAMPAGNE }} />}
                   iconClassName=""
                   iconStyle={{
-                    border: "1px solid color-mix(in srgb, #C99F91 45%, transparent)",
-                    backgroundColor: "color-mix(in srgb, #C99F91 14%, white)",
+                    border: `1px solid ${BORDER_SOFT}`,
+                    backgroundColor: INNER_SURFACE,
+                    color: CHAMPAGNE,
                   }}
                   main="Thank You"
                   script="for responding"
@@ -1135,11 +1135,7 @@ export function ProposalPage({ role }: ProposalPageProps) {
                     onClick={handleNoSubmit}
                     disabled={submitting}
                     className={`${cinzel.className} flex-1 cursor-pointer rounded-full border px-8 py-4 text-[11px] font-semibold tracking-[0.18em] uppercase shadow-md transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50`}
-                    style={{
-                      backgroundColor: "#C99F91",
-                      borderColor: "color-mix(in srgb, #C99F91 70%, transparent)",
-                      color: IVORY,
-                    }}
+                    style={primaryBtnStyle}
                   >
                     {submitting ? "Sending..." : "Send Response"}
                   </button>
@@ -1165,9 +1161,9 @@ export function ProposalPage({ role }: ProposalPageProps) {
               <ProposalCard>
               <div className="relative z-10 space-y-4">
                 <ProposalFlowHeader
-                  icon={<Heart className="h-6 w-6" style={{ color: palette.heading }} />}
+                  icon={<Heart className="h-6 w-6" style={{ color: CHAMPAGNE }} />}
                   iconStyle={{
-                    color: palette.heading,
+                    color: CHAMPAGNE,
                     border: `1px solid ${BORDER_SOFT}`,
                     backgroundColor: INNER_SURFACE,
                   }}

@@ -16,6 +16,8 @@ const cormorant = Cormorant_Garamond({
 // Edit there once to update every component.
 
 
+const NAV_MONOGRAM = "/image/beauty-and-beast.png"
+
 const navLinks = [
   { href: "#home", label: "Home" },
   { href: "#guest-list", label: "RSVP" },
@@ -109,10 +111,10 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 relative">
         <div className="flex justify-between items-center h-12 sm:h-14 md:h-16">
           <Link href="#home" className="flex-shrink-0 group relative z-10">
-            <div className="relative w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12">
+            <div className="relative h-9 w-14 sm:h-10 sm:w-16 md:h-12 md:w-[4.75rem]">
               <Image
-                src={siteConfig.couple.monogram}
-                alt={`${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} Monogram`}
+                src={NAV_MONOGRAM}
+                alt={`${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}`}
                 fill
                 className="object-contain group-hover:scale-110 group-active:scale-105 transition-all duration-500 drop-shadow-[0_2px_8px_rgba(42,34,28,0.35)] group-hover:drop-shadow-[0_4px_14px_rgba(255,250,244,0.45)]"
                 style={{
