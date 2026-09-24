@@ -13,16 +13,16 @@ export const siteConfig = {
     backgroundMusic:"/background_music/BEAUTY AND THE BEAST CELLO COVER.mp3"
   },
   googleAPI:{
-    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScd8BvFRvQPqJIKUhSiaimQ2jjnmb3zqAMoYIRBaj6F1QuSWQ/formResponse",   //done
-    message: "https://script.google.com/macros/s/AKfycbwNbmXV6gdpOI88CqM0heCVNTa_uyQaQw88cXmsB9LtjvYJXXusN-a7sBOg7cTXcGHI/exec",  //done
-    guestList: "https://script.google.com/macros/s/AKfycbzlM2GNw_7ueXpsAozs0kU8OCQ02gehC0GMz4xDl4xs_u7Dd8UmV0Vt_naiGUlUrUER/exec",  //done
-    guestRequest: "https://script.google.com/macros/s/AKfycbwsY9UOcNs3CGb6YqpqWDO2ivmONNAf0771XsOY6claCjovh8dXQjdQ2WHBYbP_cxzt/exec",   //done
-    entourage: "https://script.google.com/macros/s/AKfycbzMq4bf26jpdyjiyQVkLO87uJt1h-wHxjUZYPqS_n1ruMh4Qk78sr5Ze6o_6yggR6LA/exec",  //done
-    sponsors: "https://script.google.com/macros/s/AKfycbzsI8cHgdN0g0zuGP7L2ID1TFy4MnsokySv0HNQYyUlWmtSZX5djwW4ytgbUWNYyNH7/exec",  //done 
+    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLSfnnT3Az9zCbJk9vxa_20FMwYj1n_-17uDqHYHS27rj9eon5Q/formResponse",   //done
+    message: "https://script.google.com/macros/s/AKfycbzaWTfuQYnZ0FSIUSxeYUjdYxS6OyzQGyTCg4evHNrdYQPYHpfBQ3TD5THUU2w_A90u/exec",  //done
+    guestList: "https://script.google.com/macros/s/AKfycbzOuquXRVxaajjhmGRPYOfxjz_qAYv1tUBxacTfpdPB7CT0vLx4Q3851HtWd1qpaFXA/exec",  //done
+    guestRequest: "https://script.google.com/macros/s/AKfycbxMRURFTG18O6rqUShJeI26g0DsBlinHztCUyIhkSYxuMfxO-EwUeY3SyNyUJKRF1tu/exec",   //done
+    entourage: "https://script.google.com/macros/s/AKfycby_pMOvwFt4fqXUltkfoeyT4JkzZ4HoRAVCymfDaaRnLIc7TI1u_yMcOP2K5KRdAQQL/exec",  //done
+    sponsors: "https://script.google.com/macros/s/AKfycbwRjDNJ_VK5qbPYI6-F8DtOCwP6h058I-9VQiFy8cgHNFRxaTSTovBC7Y-gfZL5aXC9/exec",  //done 
     proposalResponses: "https://script.google.com/macros/s/AKfycbwIUDKMoMIHVwbmr6KbgmBtlGRpMGj1Z9maeHSEwsFaXNi0dAH8WYhqbtiAfg_p5D4lgw/exec", // uses entourage script with action: proposal
     weddingDetails: "https://script.google.com/macros/s/AKfycbz7149AyRaR8Vtxf6gF374syfJMeHGzhEE8Sa6ydkcgHNXcJ7atiQdc7rSt_RTaUlhv/exec",   //done
 ////google share 
-    googleShare: "https://docs.google.com/spreadsheets/d/16iVp_hSJzdBPzGbuIPK2CeeiW3nde1rd2jk4oJLxZQw/edit?usp=sharing",
+    googleShare: "https://docs.google.com/spreadsheets/d/1H0jEyW9VOMBVLSPBgVlPZ1Mlg_vhO-UUv2epgcy1Llk/edit?usp=sharing",
     videoMessageForm:
       "https://docs.google.com/forms/d/e/1FAIpQLSfeGlEl4CMXWefdvCw6AOPHFS1ROku_rs-Gbofa2LkVJ0sLGQ/viewform", 
   },
