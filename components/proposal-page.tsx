@@ -769,6 +769,7 @@ export function ProposalPage({ role }: ProposalPageProps) {
       setFlowState("yes_submitted")
     } catch (err) {
       console.error("Failed to submit confirmation:", err)
+      setValidationError("We couldn't save your name. Please try again.")
     } finally {
       setSubmitting(false)
     }

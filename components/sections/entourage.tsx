@@ -466,16 +466,16 @@ function sortBrideParents(members: EntourageMember[]): EntourageMember[] {
   })
 }
 
-async function loadEntourageFromApi(signal?: AbortSignal): Promise<EntourageMember[]> {
-  const data = await fetchInvitationList<Record<string, unknown>>("/api/entourage", { signal })
+async function loadEntourageFromApi(signal?: AbortSignal, reload = false): Promise<EntourageMember[]> {
+  const data = await fetchInvitationList<Record<string, unknown>>("/api/entourage", { signal, reload })
   return data
     .map((row) => entourageMemberFromApi(row))
     .filter((member) => member.roleCategory.trim() || member.roleTitle.trim() || member.name.trim())
     .filter((member) => !isCoupleMember(member))
 }
 
-async function loadSponsorsFromApi(signal?: AbortSignal): Promise<PrincipalSponsor[]> {
-  const data = await fetchInvitationList<Record<string, unknown>>("/api/principal-sponsor", { signal })
+async function loadSponsorsFromApi(signal?: AbortSignal, reload = false): Promise<PrincipalSponsor[]> {
+  const data = await fetchInvitationList<Record<string, unknown>>("/api/principal-sponsor", { signal, reload })
   return data
     .map((row) => principalSponsorFromApi(row))
     .filter((sponsor) => sponsor.malePrincipalSponsor.trim() || sponsor.femalePrincipalSponsor.trim())
@@ -503,14 +503,14 @@ export function Entourage() {
       const [members, sponsorList] = await Promise.all([
         fetchUntilReady({
           signal,
-          load: loadEntourageFromApi,
+          load: (signal) => loadEntourageFromApi(signal, !replace),
           isReady: () => true,
           maxAttempts: 3,
           onRetry: () => setIsRetrying(true),
         }),
         fetchUntilReady({
           signal,
-          load: loadSponsorsFromApi,
+          load: (signal) => loadSponsorsFromApi(signal, !replace),
           isReady: () => true,
           maxAttempts: 3,
           onRetry: () => setIsRetrying(true),

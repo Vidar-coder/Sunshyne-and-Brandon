@@ -5,9 +5,9 @@ import {
 
 export const siteConfig = {
   couple: {
-    bride: "Jonna Lynne D. Capacete", //Noenyl Bryle M. Gonzaga
+    bride: "Sunshyne", //Noenyl Bryle M. Gonzaga
     brideNickname: "Sunshyne", //Ltryl
-    groom: "Ricky A. Balila II", //Ltryl B. Benitez
+    groom: "Brandon", //Ltryl B. Benitez
     groomNickname: "Brandon",
     monogram:"/image/beauty-and-beast.png" ,//Ltryl
     backgroundMusic:"/background_music/BEAUTY AND THE BEAST CELLO COVER.mp3"
@@ -19,8 +19,6 @@ export const siteConfig = {
     guestRequest: "https://script.google.com/macros/s/AKfycbxMRURFTG18O6rqUShJeI26g0DsBlinHztCUyIhkSYxuMfxO-EwUeY3SyNyUJKRF1tu/exec",   //done
     entourage: "https://script.google.com/macros/s/AKfycby_pMOvwFt4fqXUltkfoeyT4JkzZ4HoRAVCymfDaaRnLIc7TI1u_yMcOP2K5KRdAQQL/exec",  //done
     sponsors: "https://script.google.com/macros/s/AKfycbwRjDNJ_VK5qbPYI6-F8DtOCwP6h058I-9VQiFy8cgHNFRxaTSTovBC7Y-gfZL5aXC9/exec",  //done 
-    proposalResponses: "https://script.google.com/macros/s/AKfycbwIUDKMoMIHVwbmr6KbgmBtlGRpMGj1Z9maeHSEwsFaXNi0dAH8WYhqbtiAfg_p5D4lgw/exec", // uses entourage script with action: proposal
-    weddingDetails: "https://script.google.com/macros/s/AKfycbz7149AyRaR8Vtxf6gF374syfJMeHGzhEE8Sa6ydkcgHNXcJ7atiQdc7rSt_RTaUlhv/exec",   //done
 ////google share 
     googleShare: "https://docs.google.com/spreadsheets/d/1H0jEyW9VOMBVLSPBgVlPZ1Mlg_vhO-UUv2epgcy1Llk/edit?usp=sharing",
     videoMessageForm:

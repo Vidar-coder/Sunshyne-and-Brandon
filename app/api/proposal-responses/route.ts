@@ -1,112 +1,136 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { siteConfig } from "@/content/site"
-import { getProposalRoleById } from "@/lib/proposal-roles"
+import { PROPOSAL_ROLES, getProposalRoleById } from "@/lib/proposal-roles"
 import type { ProposalResponse, ProposalSubmitPayload } from "@/lib/proposal-types"
+import {
+  fetchGoogleScriptJson,
+  invalidateSheetsCache,
+  postGoogleScriptJson,
+  SHEETS_CACHE_KEYS,
+} from "@/lib/sheets-cache"
 
-const PROPOSAL_SCRIPT_URL = siteConfig.googleAPI.proposalResponses
 const ENTOURAGE_SCRIPT_URL = siteConfig.googleAPI.entourage
 const SPONSORS_SCRIPT_URL = siteConfig.googleAPI.sponsors
 
-function normalizeResponse(row: Record<string, unknown>): ProposalResponse | null {
-  const r = row as Record<string, string | undefined>
-  const role = r.role ?? r.Role ?? ""
-  const name = r.name ?? r.Name ?? ""
-  const status = (r.status ?? r.Status ?? "") as ProposalResponse["status"]
-  const submittedAt = r.submittedAt ?? r.SubmittedAt ?? r.timestamp ?? r.Timestamp ?? ""
-  const category =
-    r.category ?? r.Category ?? r.roleCategory ?? r.RoleCategory ?? ""
-  const id = r.id ?? r.Id ?? `${role}-${submittedAt}-${name}`
-
-  if (!role && !category && !name) return null
-  if (status !== "Confirmed" && status !== "Declined") return null
-
-  return {
-    id,
-    role,
-    name,
-    status,
-    submittedAt,
-    category,
-  }
+function text(value: unknown) {
+  return typeof value === "string" ? value.trim() : ""
 }
 
-async function syncConfirmedToSheet(payload: ProposalSubmitPayload) {
+function roleIdForCategory(category: string) {
+  const normalized = category.trim().toLowerCase()
+  const role = PROPOSAL_ROLES.find(
+    (entry) =>
+      entry.roleCategory.trim().toLowerCase() === normalized ||
+      entry.roleCategoryAliases?.some((alias) => alias.trim().toLowerCase() === normalized)
+  )
+  return role?.id ?? normalized
+}
+
+function entourageResponses(rows: unknown[]): ProposalResponse[] {
+  return rows.flatMap((row) => {
+    const record = row as Record<string, unknown>
+    const name = text(record.Name ?? record.name)
+    const category = text(record.RoleCategory ?? record.roleCategory)
+    if (!name || !category) return []
+
+    return [
+      {
+        id: `entourage-${category}-${name}`,
+        role: roleIdForCategory(category),
+        name,
+        status: "Confirmed" as const,
+        submittedAt: text(record.SubmittedAt ?? record.submittedAt),
+        category,
+      },
+    ]
+  })
+}
+
+function sponsorResponses(rows: unknown[]): ProposalResponse[] {
+  return rows.flatMap((row, index) => {
+    const record = row as Record<string, unknown>
+    const responses: ProposalResponse[] = []
+    const male = text(record.MalePrincipalSponsor ?? record.malePrincipalSponsor)
+    const female = text(record.FemalePrincipalSponsor ?? record.femalePrincipalSponsor)
+
+    if (male) {
+      responses.push({
+        id: `sponsor-ninong-${index}-${male}`,
+        role: "principal-sponsor-ninong",
+        name: male,
+        status: "Confirmed",
+        submittedAt: "",
+        category: "Principal Sponsors",
+      })
+    }
+
+    if (female) {
+      responses.push({
+        id: `sponsor-ninang-${index}-${female}`,
+        role: "principal-sponsor-ninang",
+        name: female,
+        status: "Confirmed",
+        submittedAt: "",
+        category: "Principal Sponsors",
+      })
+    }
+
+    return responses
+  })
+}
+
+async function readSheet(url: string) {
+  const payload = await fetchGoogleScriptJson(url)
+  return Array.isArray(payload) ? payload : []
+}
+
+async function saveConfirmedResponse(payload: ProposalSubmitPayload) {
   const roleDef = getProposalRoleById(payload.role)
-  if (!roleDef || payload.status !== "Confirmed") return
+  if (!roleDef) {
+    throw new Error("Invalid role")
+  }
 
   if (roleDef.type === "entourage") {
-    await fetch(ENTOURAGE_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "fill-slot",
-        Name: payload.name.trim(),
-        RoleCategory: roleDef.roleCategory,
-        RoleCategoryAliases: roleDef.roleCategoryAliases ?? [],
-        Email: "",
-      }),
+    await postGoogleScriptJson(ENTOURAGE_SCRIPT_URL, {
+      Name: payload.name.trim(),
+      RoleCategory: roleDef.roleCategory,
+      RoleTitle: roleDef.title,
+      Email: "",
     })
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.entourage)
     return
   }
 
   if (roleDef.type === "sponsor-ninong") {
-    await fetch(SPONSORS_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "fill-slot",
-        fillColumn: "male",
-        MalePrincipalSponsor: payload.name.trim(),
-        FemalePrincipalSponsor: "",
-      }),
+    await postGoogleScriptJson(SPONSORS_SCRIPT_URL, {
+      MalePrincipalSponsor: payload.name.trim(),
+      FemalePrincipalSponsor: "",
     })
+    invalidateSheetsCache(SHEETS_CACHE_KEYS.sponsors)
     return
   }
 
-  if (roleDef.type === "sponsor-ninang") {
-    await fetch(SPONSORS_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "fill-slot",
-        fillColumn: "female",
-        MalePrincipalSponsor: "",
-        FemalePrincipalSponsor: payload.name.trim(),
-      }),
-    })
-  }
+  await postGoogleScriptJson(SPONSORS_SCRIPT_URL, {
+    MalePrincipalSponsor: "",
+    FemalePrincipalSponsor: payload.name.trim(),
+  })
+  invalidateSheetsCache(SHEETS_CACHE_KEYS.sponsors)
 }
 
 export async function GET() {
   try {
-    const response = await fetch(`${PROPOSAL_SCRIPT_URL}?action=proposals`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      cache: "no-store",
-    })
+    const [entourageRows, sponsorRows] = await Promise.all([
+      readSheet(ENTOURAGE_SCRIPT_URL),
+      readSheet(SPONSORS_SCRIPT_URL),
+    ])
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch proposal responses")
-    }
-
-    const data = await response.json()
-
-    if (Array.isArray(data)) {
-      const parsed = data
-        .map((row) => normalizeResponse(row as Record<string, unknown>))
-        .filter((row): row is ProposalResponse => row !== null)
-      return NextResponse.json(parsed, { status: 200 })
-    }
-
-    const rows = (data?.proposals ?? data?.GoogleSheetData ?? []) as Record<string, unknown>[]
-    if (Array.isArray(rows)) {
-      const parsed = rows
-        .map((row) => normalizeResponse(row))
-        .filter((row): row is ProposalResponse => row !== null)
-      return NextResponse.json(parsed, { status: 200 })
-    }
-
-    return NextResponse.json([], { status: 200 })
+    return NextResponse.json(
+      [...entourageResponses(entourageRows), ...sponsorResponses(sponsorRows)],
+      {
+        status: 200,
+        headers: { "Cache-Control": "no-store" },
+      }
+    )
   } catch (error) {
     console.error("Error fetching proposal responses:", error)
     return NextResponse.json(
@@ -136,44 +160,23 @@ export async function POST(request: NextRequest) {
 
     const payload: ProposalSubmitPayload = {
       role,
-      name: name?.trim() || (status === "Declined" ? "Declined Entourage Offer" : ""),
+      name: name?.trim() || "",
       status,
       submittedAt: submittedAt || new Date().toISOString(),
     }
 
-    let logSaved = false
-    try {
-      const response = await fetch(PROPOSAL_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "proposal",
-          role: payload.role,
-          name: payload.name,
-          status: payload.status,
-          submittedAt: payload.submittedAt,
-          category: roleDef.roleCategory,
-          id: `${role}-${Date.now()}`,
-        }),
-      })
-      logSaved = response.ok
-    } catch {
-      logSaved = false
-    }
-
-    if (status === "Confirmed" && payload.name) {
-      await syncConfirmedToSheet(payload)
-    }
-
-    if (!logSaved && status === "Declined") {
-      throw new Error("Failed to save proposal response")
+    if (status === "Confirmed") {
+      if (!payload.name) {
+        return NextResponse.json({ error: "Name is required" }, { status: 400 })
+      }
+      await saveConfirmedResponse(payload)
     }
 
     return NextResponse.json(
       {
         success: true,
-        logSaved,
-        synced: status === "Confirmed" && Boolean(payload.name),
+        synced: status === "Confirmed",
+        category: roleDef.roleCategory,
       },
       { status: 201 }
     )
@@ -181,39 +184,6 @@ export async function POST(request: NextRequest) {
     console.error("Error saving proposal response:", error)
     return NextResponse.json(
       { error: "Failed to save proposal response" },
-      { status: 500 }
-    )
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { id } = body
-
-    if (!id || typeof id !== "string") {
-      return NextResponse.json({ error: "id is required" }, { status: 400 })
-    }
-
-    const response = await fetch(PROPOSAL_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "delete-proposal",
-        id: id.trim(),
-      }),
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to delete proposal response")
-    }
-
-    const data = await response.json()
-    return NextResponse.json(data, { status: 200 })
-  } catch (error) {
-    console.error("Error deleting proposal response:", error)
-    return NextResponse.json(
-      { error: "Failed to delete proposal response" },
       { status: 500 }
     )
   }
