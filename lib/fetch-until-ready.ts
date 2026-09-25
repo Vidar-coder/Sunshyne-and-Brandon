@@ -34,6 +34,7 @@ export async function fetchUntilReady<T>({
   signal,
   initialDelayMs = 200,
   maxDelayMs = 2000,
+  maxAttempts = Number.POSITIVE_INFINITY,
   onRetry,
 }: {
   load: (signal: AbortSignal) => Promise<T>
@@ -41,10 +42,12 @@ export async function fetchUntilReady<T>({
   signal?: AbortSignal
   initialDelayMs?: number
   maxDelayMs?: number
+  maxAttempts?: number
   onRetry?: (attempt: number) => void
 }): Promise<T> {
   let delay = initialDelayMs
   let attempt = 0
+  let lastError: unknown
 
   while (true) {
     if (signal?.aborted) {
@@ -56,9 +59,13 @@ export async function fetchUntilReady<T>({
       if (isReady(value)) return value
     } catch (error) {
       if (isAbortError(error)) throw error
+      lastError = error
     }
 
     attempt += 1
+    if (attempt >= maxAttempts) {
+      throw lastError instanceof Error ? lastError : new Error("Data is not ready")
+    }
     onRetry?.(attempt)
     await sleep(delay, signal)
     delay = Math.min(Math.round(delay * 1.35), maxDelayMs)

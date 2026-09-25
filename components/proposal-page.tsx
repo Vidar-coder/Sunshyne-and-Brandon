@@ -80,9 +80,6 @@ const palette = {
 const BORDER_SOFT = GOLD_BORDER_SOFT
 const INNER_SURFACE = "#efe4d2"
 
-const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
-
 const ambientGlowStyle = {
   background: `radial-gradient(ellipse 80% 65% at 50% 50%, color-mix(in srgb, ${GOLD_BRIGHT} 28%, transparent), transparent 68%)`,
 } as const
@@ -456,29 +453,6 @@ function DividerLine({ className = "w-16 sm:w-24 md:w-32" }: { className?: strin
   return <span className={`h-px ${className}`} style={dividerLineStyle} aria-hidden />
 }
 
-function CornerDecorations() {
-  return (
-    <>
-      <div className="pointer-events-none absolute left-0 top-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/decoration/left-top-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute right-0 top-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/decoration/right-top-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/decoration/left-bottom-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/decoration/right-bottom-corner.png" alt="" aria-hidden="true" className={CORNER_DECO_CLASS} />
-      </div>
-    </>
-  )
-}
-
 function ProposalCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div className={`relative w-full ${className}`}>
@@ -824,8 +798,6 @@ export function ProposalPage({ role }: ProposalPageProps) {
           <Silk speed={8} scale={0.9} color="#780008" noiseIntensity={0} rotation={0.3} />
         </Suspense>
       </div>
-
-      <CornerDecorations />
 
       {loadingOverlayVisible && (
         <LoadingScreen

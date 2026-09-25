@@ -127,12 +127,6 @@ const cardStyle = {
 
 const BB_MOTIF = "/image/beauty-and-beast.png"
 
-const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[80px] sm:max-w-[120px] md:max-w-[170px] lg:max-w-[205px] xl:max-w-[245px] select-none opacity-[0.72] mix-blend-screen"
-
-const CORNER_DECO_FILTER =
-  "sepia(0.35) saturate(1.15) hue-rotate(318deg) brightness(0.92) drop-shadow(0 0 8px color-mix(in srgb, #d4af37 25%, transparent))"
-
 function OutsideDivider() {
   return (
     <div className="flex items-center justify-center gap-1.5">
@@ -146,9 +140,9 @@ function OutsideDivider() {
 const SECTION_TITLE_CLASS = `${theSeasons.className} text-[0.8rem] sm:text-[0.95rem] md:text-[1.1rem] tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em] uppercase leading-tight`
 
 const nameStyle: React.CSSProperties = {
-  fontSize: "clamp(0.74rem, min(2.3vw, 5.8cqi), 1.18rem)",
-  lineHeight: 1.2,
-  letterSpacing: "0.02em",
+  fontSize: "clamp(0.82rem, min(2.6vw, 6.4cqi), 1.28rem)",
+  lineHeight: 1.35,
+  letterSpacing: "0.03em",
 }
 
 const roleTitleStyle: React.CSSProperties = {
@@ -476,7 +470,7 @@ async function loadEntourageFromApi(signal?: AbortSignal): Promise<EntourageMemb
   const data = await fetchInvitationList<Record<string, unknown>>("/api/entourage", { signal })
   return data
     .map((row) => entourageMemberFromApi(row))
-    .filter((member) => member.name.trim())
+    .filter((member) => member.roleCategory.trim() || member.roleTitle.trim() || member.name.trim())
     .filter((member) => !isCoupleMember(member))
 }
 
@@ -510,13 +504,15 @@ export function Entourage() {
         fetchUntilReady({
           signal,
           load: loadEntourageFromApi,
-          isReady: (list) => list.length > 0,
+          isReady: () => true,
+          maxAttempts: 3,
           onRetry: () => setIsRetrying(true),
         }),
         fetchUntilReady({
           signal,
           load: loadSponsorsFromApi,
           isReady: () => true,
+          maxAttempts: 3,
           onRetry: () => setIsRetrying(true),
         }),
       ])
@@ -527,6 +523,7 @@ export function Entourage() {
     } catch (err: unknown) {
       if (isAbortError(err)) return
       console.error("Failed to load entourage:", err)
+      setIsRetrying(false)
       if (replace) {
         setError("Unable to load entourage")
       }
@@ -656,7 +653,7 @@ export function Entourage() {
           style={{ background: `linear-gradient(to right, transparent, color-mix(in srgb, ${GOLD} 18%, transparent), transparent)` }}
         />
         <p
-          className={`${theSeasons.className} relative ${textAlign} transition-all duration-300 max-w-full break-words`}
+          className={`${theSeasons.className} relative ${textAlign} text-balance transition-all duration-300 max-w-full break-words`}
           style={{
             ...nameStyle,
             ...(featured
@@ -673,7 +670,14 @@ export function Entourage() {
               text={displayName}
               specialClassName="font-goudy-italic tracking-normal"
             />
-          ) : null}
+          ) : (
+            <span
+              className={`${aboveTheBeyond.className} normal-case tracking-normal`}
+              style={{ color: GOLD, fontSize: "1.2em" }}
+            >
+              Coming soon
+            </span>
+          )}
         </p>
         {showRole && displayRole && (
           <p
@@ -757,48 +761,6 @@ export function Entourage() {
             backgroundSize: "120px 120px, 180px 180px",
           }}
         />
-        {/* Corner decorations */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/decoration/top-left-corner.png"
-            alt=""
-            aria-hidden="true"
-            className={CORNER_DECO_CLASS}
-            style={{ filter: CORNER_DECO_FILTER }}
-          />
-        </div>
-        <div className="pointer-events-none absolute right-0 top-0 z-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/decoration/top-right-corner.png"
-            alt=""
-            aria-hidden="true"
-            className={CORNER_DECO_CLASS}
-            style={{ filter: CORNER_DECO_FILTER }}
-          />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/decoration/deco/bottom-left.png"
-            alt=""
-            aria-hidden="true"
-            className={CORNER_DECO_CLASS}
-            style={{ filter: CORNER_DECO_FILTER }}
-          />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/decoration/deco/bottom-right.png"
-            alt=""
-            aria-hidden="true"
-            className={CORNER_DECO_CLASS}
-            style={{ filter: CORNER_DECO_FILTER }}
-          />
-        </div>
-
         <div className="relative z-20 mx-auto w-full max-w-7xl px-3 sm:px-4 md:px-6 lg:px-8">
       {/* Section Header */}
       <div className={`relative mx-auto mb-8 max-w-5xl text-center @container/entourage sm:mb-10 md:mb-12 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}`}>
@@ -912,6 +874,14 @@ export function Entourage() {
                   </div>
                 </div>
               </div>
+              {entourage.length === 0 && sponsors.length === 0 && (
+                <p
+                  className={`${aboveTheBeyond.className} mt-8 text-center sm:mt-10`}
+                  style={{ color: GOLD, fontSize: "clamp(1.6rem, 4vw, 2.25rem)" }}
+                >
+                  Coming soon
+                </p>
+              )}
               {ROLE_CATEGORY_ORDER.map((category, categoryIndex) => {
                 const members = grouped[category] || []
                 const bridalPartyHasMembers =
@@ -999,36 +969,28 @@ export function Entourage() {
                               {sponsors.map((sponsor, idx) => (
                                 <React.Fragment key={`sponsor-row-${idx}`}>
                                   <div key={`sponsor-male-${idx}`} className="px-0.5 sm:px-1 md:px-1.5 min-w-0 overflow-hidden">
-                                    {sponsor.malePrincipalSponsor ? (
-                                      <NameItem 
-                                        member={{
-                                          name: sponsor.malePrincipalSponsor,
-                                          roleCategory: "",
-                                          roleTitle: "",
-                                          email: ""
-                                        }} 
-                                        align="right" 
-                                        showRole={false}
-                                      />
-                                    ) : (
-                                      <div className="py-0.5 sm:py-1 md:py-1.5" />
-                                    )}
+                                    <NameItem
+                                      member={{
+                                        name: sponsor.malePrincipalSponsor,
+                                        roleCategory: "",
+                                        roleTitle: "",
+                                        email: "",
+                                      }}
+                                      align="right"
+                                      showRole={false}
+                                    />
                                   </div>
                                   <div key={`sponsor-female-${idx}`} className="px-0.5 sm:px-1 md:px-1.5 min-w-0 overflow-hidden">
-                                    {sponsor.femalePrincipalSponsor ? (
-                                      <NameItem 
-                                        member={{
-                                          name: sponsor.femalePrincipalSponsor,
-                                          roleCategory: "",
-                                          roleTitle: "",
-                                          email: ""
-                                        }} 
-                                        align="left" 
-                                        showRole={false}
-                                      />
-                                    ) : (
-                                      <div className="py-0.5 sm:py-1 md:py-1.5" />
-                                    )}
+                                    <NameItem
+                                      member={{
+                                        name: sponsor.femalePrincipalSponsor,
+                                        roleCategory: "",
+                                        roleTitle: "",
+                                        email: "",
+                                      }}
+                                      align="left"
+                                      showRole={false}
+                                    />
                                   </div>
                                 </React.Fragment>
                               ))}

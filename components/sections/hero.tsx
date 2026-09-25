@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
 import { Cinzel, Playfair_Display } from "next/font/google"
 import localFont from "next/font/local"
-import Image from "next/image"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { parseWeddingDate } from "@/lib/wedding-date"
 
@@ -51,24 +50,6 @@ const goldGradientText: React.CSSProperties = {
   filter:
     "drop-shadow(0 1px 0 rgba(139, 105, 20, 0.85)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 20px rgba(255, 215, 100, 0.4))",
 }
-
-const SLIDE_MS = 5600
-
-const MOBILE_HERO_PHOTOS = [
-  encodeURI("/mobile-background/couples (9).webp"),
-  encodeURI("/mobile-background/couples (14).webp"),
-  encodeURI("/mobile-background/couples (69).webp"),
-  encodeURI("/mobile-background/couples (62).webp"),
-  encodeURI("/mobile-background/couples (76).webp"),
-]
-
-const DESKTOP_HERO_PHOTOS = [
-  encodeURI("/desktop-background/couples (34).webp"),
-  encodeURI("/desktop-background/couples (27).webp"),
-  encodeURI("/mobile-background/couples (23).webp"),
-  encodeURI("/mobile-background/couples (31).webp"),
-  encodeURI("/mobile-background/couples (11).webp"),
-]
 
 interface TimeLeft {
   days: number
@@ -181,76 +162,6 @@ function useCeremonyCountdown() {
   }, [targetTimestamp])
 
   return timeLeft
-}
-
-function HeroSlideshow() {
-  const reduceMotion = useReducedMotion()
-  const [isMobile, setIsMobile] = useState(true)
-  const [index, setIndex] = useState(0)
-  const photos = isMobile ? MOBILE_HERO_PHOTOS : DESKTOP_HERO_PHOTOS
-
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 767px)")
-    const update = () => {
-      setIsMobile(media.matches)
-      setIndex(0)
-    }
-    update()
-    media.addEventListener("change", update)
-    return () => media.removeEventListener("change", update)
-  }, [])
-
-  useEffect(() => {
-    if (reduceMotion || photos.length < 2) return
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % photos.length)
-    }, SLIDE_MS)
-    return () => window.clearInterval(timer)
-  }, [photos.length, reduceMotion])
-
-  return (
-    <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-      {photos.map((src, photoIndex) => {
-        const isActive = photoIndex === index
-        return (
-          <motion.div
-            key={src}
-            className="absolute inset-0"
-            initial={false}
-            animate={{
-              opacity: isActive ? 1 : 0,
-              scale: reduceMotion ? 1 : isActive ? 1.06 : 1.02,
-            }}
-            transition={{
-              opacity: { duration: reduceMotion ? 0.01 : 1.45, ease: "easeInOut" },
-              scale: {
-                duration: reduceMotion ? 0.01 : isActive ? 8.5 : 1.45,
-                ease: isActive ? "linear" : "easeOut",
-              },
-            }}
-          >
-            <Image
-              src={src}
-              alt=""
-              fill
-              priority={photoIndex === 0}
-              className="object-cover object-[center_28%] md:object-center"
-              sizes="100vw"
-            />
-          </motion.div>
-        )
-      })}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(180deg, rgb(42 34 28 / 46%) 0%, rgb(42 34 28 / 22%) 26%, rgb(42 34 28 / 28%) 48%, rgb(42 34 28 / 52%) 100%),
-            radial-gradient(ellipse 88% 62% at 50% 42%, rgb(42 34 28 / 28%) 0%, transparent 72%)
-          `,
-        }}
-      />
-    </div>
-  )
 }
 
 function CountdownUnit({
@@ -476,9 +387,8 @@ export function Hero() {
   return (
     <section
       id="home"
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative -mt-12 flex min-h-[100dvh] w-full flex-col overflow-hidden sm:-mt-14 md:-mt-16`}
+      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative -mt-12 flex min-h-[100dvh] w-full flex-col overflow-hidden bg-transparent sm:-mt-14 md:-mt-16`}
     >
-      <HeroSlideshow />
 
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-5 pb-6 pt-[max(clamp(3.75rem,14vw,5.5rem),calc(3rem+env(safe-area-inset-top)))] text-center sm:px-8 sm:py-8">
         <div className="flex w-full max-w-3xl flex-col items-center justify-center md:max-w-4xl">
@@ -573,14 +483,7 @@ export function Hero() {
         </div>
       </div>
 
-      <motion.div
-        className="relative z-10 mt-auto w-full"
-        style={{
-          background:
-            "linear-gradient(180deg, transparent 0%, rgb(42 34 28 / 35%) 32%, rgb(42 34 28 / 72%) 100%)",
-        }}
-        {...fadeUp(0.42)}
-      >
+      <motion.div className="relative z-10 mt-auto w-full" {...fadeUp(0.42)}>
         <HeroCountdown />
       </motion.div>
     </section>
