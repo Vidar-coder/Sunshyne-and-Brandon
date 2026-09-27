@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { siteConfig } from "@/content/site"
 import {
+  asSheetRows,
   fetchGoogleScriptJson,
   invalidateSheetsCache,
   listResponseHeaders,
@@ -22,10 +23,11 @@ export async function GET() {
   try {
     const data = await withSheetsCache(SHEETS_CACHE_KEYS.sponsors, async () => {
       const payload = await fetchGoogleScriptJson(PRINCIPAL_SPONSOR_SCRIPT_URL)
-      if (!Array.isArray(payload)) {
+      const rows = asSheetRows(payload)
+      if (!rows) {
         throw new Error("Failed to fetch principal sponsors")
       }
-      return payload
+      return rows
     })
 
     return NextResponse.json(data, { status: 200, headers: listResponseHeaders })

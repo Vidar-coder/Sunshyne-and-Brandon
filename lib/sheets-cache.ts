@@ -1,3 +1,7 @@
+import { setDefaultResultOrder } from "node:dns"
+
+setDefaultResultOrder("ipv4first")
+
 type CacheEntry<T> = {
   value?: T
   expiresAt: number
@@ -67,19 +71,45 @@ export function invalidateSheetsCache(key: string) {
   store.delete(key)
 }
 
-export async function fetchGoogleScriptJson(url: string): Promise<unknown> {
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    cache: "no-store",
-    signal: AbortSignal.timeout(12_000),
-  })
+export function asSheetRows(payload: unknown): unknown[] | null {
+  if (Array.isArray(payload)) return payload
+  if (!payload || typeof payload !== "object") return null
 
-  if (!response.ok) {
-    throw new Error(`Google Script request failed (${response.status})`)
+  const record = payload as Record<string, unknown>
+  for (const key of ["data", "GoogleSheetData", "entourage", "sponsors", "rows", "items"]) {
+    if (Array.isArray(record[key])) return record[key]
   }
 
-  return response.json()
+  return null
+}
+
+export async function fetchGoogleScriptJson(url: string): Promise<unknown> {
+  let lastError: unknown
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        redirect: "follow",
+        signal: AbortSignal.timeout(30_000),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Google Script request failed (${response.status})`)
+      }
+
+      return response.json()
+    } catch (error) {
+      lastError = error
+      if (attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)))
+      }
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Google Script request failed")
 }
 
 function googleScriptErrorMessage(data: unknown): string | null {

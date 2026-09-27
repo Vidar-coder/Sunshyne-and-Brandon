@@ -7,7 +7,7 @@ import Image from "next/image"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { Cinzel } from "next/font/google"
 import { useSiteConfig } from "@/hooks/use-site-config"
-import { fetchUntilReady, isAbortError } from "@/lib/fetch-until-ready"
+import { isAbortError } from "@/lib/fetch-until-ready"
 import { fetchInvitationList } from "@/lib/invitation-data"
 
 const cinzel = Cinzel({
@@ -341,11 +341,31 @@ function entourageMemberFromApi(row: Record<string, unknown>): EntourageMember {
   }
 }
 
+function firstSheetText(row: Record<string, string | undefined>, keys: string[]) {
+  for (const key of keys) {
+    const value = row[key]?.trim()
+    if (value) return value
+  }
+  return ""
+}
+
 function principalSponsorFromApi(row: Record<string, unknown>): PrincipalSponsor {
   const r = row as Record<string, string | undefined>
   return {
-    malePrincipalSponsor: r.malePrincipalSponsor ?? r.MalePrincipalSponsor ?? "",
-    femalePrincipalSponsor: r.femalePrincipalSponsor ?? r.FemalePrincipalSponsor ?? "",
+    malePrincipalSponsor: firstSheetText(r, [
+      "malePrincipalSponsor",
+      "MalePrincipalSponsor",
+      "Male",
+      "Ninong",
+      "ninong",
+    ]),
+    femalePrincipalSponsor: firstSheetText(r, [
+      "femalePrincipalSponsor",
+      "FemalePrincipalSponsor",
+      "Female",
+      "Ninang",
+      "ninang",
+    ]),
   }
 }
 
@@ -499,38 +519,51 @@ export function Entourage() {
       setError(null)
     }
     setIsRetrying(false)
-    try {
-      const [members, sponsorList] = await Promise.all([
-        fetchUntilReady({
-          signal,
-          load: (signal) => loadEntourageFromApi(signal, !replace),
-          isReady: () => true,
-          maxAttempts: 3,
-          onRetry: () => setIsRetrying(true),
-        }),
-        fetchUntilReady({
-          signal,
-          load: (signal) => loadSponsorsFromApi(signal, !replace),
-          isReady: () => true,
-          maxAttempts: 3,
-          onRetry: () => setIsRetrying(true),
-        }),
-      ])
-      setEntourage(members)
-      setSponsors(sponsorList)
-      setError(null)
-      setIsRetrying(false)
-    } catch (err: unknown) {
-      if (isAbortError(err)) return
-      console.error("Failed to load entourage:", err)
-      setIsRetrying(false)
-      if (replace) {
-        setError("Unable to load entourage")
+
+    let delay = 400
+    while (!signal?.aborted) {
+      try {
+        const [membersResult, sponsorResult] = await Promise.allSettled([
+          loadEntourageFromApi(signal, true),
+          loadSponsorsFromApi(signal, true),
+        ])
+
+        if (signal?.aborted) return
+
+        const members = membersResult.status === "fulfilled" ? membersResult.value : []
+        const sponsorList = sponsorResult.status === "fulfilled" ? sponsorResult.value : []
+        const hasEntourage = members.some((member) => member.name.trim())
+        const hasSponsors = sponsorList.some(
+          (sponsor) => sponsor.malePrincipalSponsor.trim() || sponsor.femalePrincipalSponsor.trim()
+        )
+
+        if (hasEntourage && hasSponsors) {
+          setEntourage(members)
+          setSponsors(sponsorList)
+          setError(null)
+          setIsRetrying(false)
+          setIsLoading(false)
+          return
+        }
+      } catch (err: unknown) {
+        if (isAbortError(err) || signal?.aborted) return
+        console.error("Failed to load entourage:", err)
       }
-    } finally {
-      if (!signal?.aborted) {
-        setIsLoading(false)
-      }
+
+      if (signal?.aborted) return
+      setIsRetrying(true)
+      await new Promise<void>((resolve, reject) => {
+        const timer = window.setTimeout(resolve, delay)
+        signal?.addEventListener(
+          "abort",
+          () => {
+            window.clearTimeout(timer)
+            reject(new DOMException("Aborted", "AbortError"))
+          },
+          { once: true }
+        )
+      }).catch(() => undefined)
+      delay = Math.min(Math.round(delay * 1.35), 2000)
     }
   }
 
@@ -581,8 +614,7 @@ export function Entourage() {
     entourage.forEach((member) => {
       const category = normalizeRoleCategory(member.roleCategory)
 
-      // Skip members without a category or in "Other"
-      if (!category || category === "Other") {
+      if (!category) {
         return
       }
       if (!grouped[category]) {
@@ -890,9 +922,15 @@ export function Entourage() {
 
                 if (category === "The Couple") return null
                 
+                const peerSponsorCount = grouped["Peer Sponsors"]?.length ?? 0
+                const parentsBlockNeeded =
+                  category === "Parents of the Groom" &&
+                  (hasParents || peerSponsorCount > 0)
+
                 if (
                   members.length === 0 &&
-                  !(category === "Groomsmen" && bridalPartyHasMembers)
+                  !(category === "Groomsmen" && bridalPartyHasMembers) &&
+                  !parentsBlockNeeded
                 ) {
                   return null
                 }
@@ -911,11 +949,12 @@ export function Entourage() {
                   if (category === "Parents of the Groom") {
                     return (
                       <div key="Parents">
-                        {categoryIndex > 0 && (
+                        {hasParents && categoryIndex > 0 && (
                           <div className="flex justify-center py-2 sm:py-2.5 md:py-3 mb-2 sm:mb-2.5 md:mb-3">
                             <div className="w-full max-w-md h-px" style={dividerLineStyle} />
                           </div>
                         )}
+                        {hasParents && (
                         <TwoColumnLayout leftTitle="Parents of the Groom" rightTitle="Parents of the Bride">
                           {(() => {
                             const leftArr = sortGroomParents(parentsGroom)
@@ -939,6 +978,7 @@ export function Entourage() {
                             return rows
                           })()}
                         </TwoColumnLayout>
+                        )}
                         
                         {/* Officiating Minister section - displayed above Principal Sponsors */}
                         {(() => {
@@ -960,45 +1000,7 @@ export function Entourage() {
                           )
                         })()}
 
-                        {/* Principal Sponsors section - displayed after Parents */}
-                        {sponsors.length > 0 && (
-                          <div key="SponsorsAfterParents">
-                            <div className="flex justify-center py-1.5 sm:py-2 md:py-2.5 mb-2 sm:mb-2.5 md:mb-3">
-                            </div>
-                            <TwoColumnLayout singleTitle="Principal Sponsors" centerContent={true}>
-                              {sponsors.map((sponsor, idx) => (
-                                <React.Fragment key={`sponsor-row-${idx}`}>
-                                  <div key={`sponsor-male-${idx}`} className="px-0.5 sm:px-1 md:px-1.5 min-w-0 overflow-hidden">
-                                    <NameItem
-                                      member={{
-                                        name: sponsor.malePrincipalSponsor,
-                                        roleCategory: "",
-                                        roleTitle: "",
-                                        email: "",
-                                      }}
-                                      align="right"
-                                      showRole={false}
-                                    />
-                                  </div>
-                                  <div key={`sponsor-female-${idx}`} className="px-0.5 sm:px-1 md:px-1.5 min-w-0 overflow-hidden">
-                                    <NameItem
-                                      member={{
-                                        name: sponsor.femalePrincipalSponsor,
-                                        roleCategory: "",
-                                        roleTitle: "",
-                                        email: "",
-                                      }}
-                                      align="left"
-                                      showRole={false}
-                                    />
-                                  </div>
-                                </React.Fragment>
-                              ))}
-                            </TwoColumnLayout>
-                          </div>
-                        )}
-
-                        {/* Peer Sponsors section - displayed after Principal Sponsors */}
+                        {/* Peer Sponsors section - displayed after parents */}
                         {(() => {
                           const peerSponsors = grouped["Peer Sponsors"] || []
                           if (peerSponsors.length === 0) return null
@@ -1452,7 +1454,7 @@ export function Entourage() {
               })}
               
               {/* Display any other categories not in the ordered list */}
-              {Object.keys(grouped).filter(cat => !ROLE_CATEGORY_ORDER.includes(cat) && cat !== "Other" && cat !== "Peer Sponsors").map((category) => {
+              {Object.keys(grouped).filter(cat => !ROLE_CATEGORY_ORDER.includes(cat) && cat !== "Peer Sponsors").map((category) => {
                 const members = grouped[category]
                 return (
                   <div key={category}>
@@ -1498,6 +1500,44 @@ export function Entourage() {
                   </div>
                 )
               })}
+
+              {sponsors.length > 0 && (
+                <div>
+                  <div className="mb-2 flex justify-center py-2 sm:mb-2.5 sm:py-2.5 md:mb-3 md:py-3">
+                    <div className="h-px w-full max-w-md" style={dividerLineStyle} />
+                  </div>
+                  <TwoColumnLayout singleTitle="Principal Sponsors" centerContent={true}>
+                    {sponsors.map((sponsor, idx) => (
+                      <React.Fragment key={`sponsor-row-${idx}`}>
+                        <div className="min-w-0 overflow-hidden px-0.5 sm:px-1 md:px-1.5">
+                          <NameItem
+                            member={{
+                              name: sponsor.malePrincipalSponsor,
+                              roleCategory: "Principal Sponsors",
+                              roleTitle: "Ninong",
+                              email: "",
+                            }}
+                            align="right"
+                            showRole={false}
+                          />
+                        </div>
+                        <div className="min-w-0 overflow-hidden px-0.5 sm:px-1 md:px-1.5">
+                          <NameItem
+                            member={{
+                              name: sponsor.femalePrincipalSponsor,
+                              roleCategory: "Principal Sponsors",
+                              roleTitle: "Ninang",
+                              email: "",
+                            }}
+                            align="left"
+                            showRole={false}
+                          />
+                        </div>
+                      </React.Fragment>
+                    ))}
+                  </TwoColumnLayout>
+                </div>
+              )}
             </>
             )}
           </div>

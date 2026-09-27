@@ -11,7 +11,7 @@ export const INVITATION_DATA_URLS = [
 
 export function prefetchInvitationData() {
   for (const url of INVITATION_DATA_URLS) {
-    void fetchInvitationList(url)
+    void fetchInvitationList(url).catch(() => undefined)
   }
   void import("@/components/sections/guest-list")
 }
@@ -51,17 +51,32 @@ export async function fetchInvitationList<T>(
   }
 
   const request = (async () => {
-    const response = await fetch(url, {
-      cache: options?.reload ? "no-store" : "default",
-    })
-    const data: unknown = await response.json().catch(() => null)
-    if (!response.ok || !Array.isArray(data)) {
-      throw new Error("API list is not ready")
+    let lastError: unknown
+
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      if (options?.signal?.aborted) {
+        throw new DOMException("Aborted", "AbortError")
+      }
+
+      const response = await fetch(url, {
+        cache: "no-store",
+        signal: options?.signal,
+      })
+      const data: unknown = await response.json().catch(() => null)
+      if (response.ok && Array.isArray(data)) {
+        if (data.length > 0) {
+          jsonCache.set(url, { data, at: Date.now() })
+        }
+        return data
+      }
+
+      lastError = new Error("API list is not ready")
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)))
+      }
     }
-    if (data.length > 0) {
-      jsonCache.set(url, { data, at: Date.now() })
-    }
-    return data
+
+    throw lastError instanceof Error ? lastError : new Error("API list is not ready")
   })()
 
   inflight.set(url, request)
