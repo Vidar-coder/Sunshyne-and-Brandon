@@ -74,6 +74,15 @@ export const proposalRoleDefinitions: ProposalRoleDefinition[] = [
       "To carry the arrhae with reverence during our wedding ceremony — honoring this beautiful Filipino tradition and representing the blessings, prosperity, and shared future we gratefully begin together.",
   },
   {
+    id: "bible-bearer",
+    title: "Bible Bearer",
+    category: "Entourage",
+    type: "entourage",
+    roleCategory: "Bible Bearer",
+    description:
+      "To carry the Bible with reverence during our wedding ceremony — honoring the Word that guides our faith and our marriage, and playing a meaningful part as we pledge our lives to one another before God.",
+  },
+  {
     id: "little-bride",
     title: "Little Bride",
     category: "Entourage",
